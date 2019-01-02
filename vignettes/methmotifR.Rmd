@@ -1,0 +1,1217 @@
+---
+title: "Access to MethMotif database with methmotifR"
+author: 
+ - name: Quy Xiao Xuan Lin
+   affiliation: National University of Singapore
+ - name: Touati Benoukraf
+   affiliation: National University of Singapore & Memorial University of Newfoundland
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+abstract: >
+  Several recent studies have portrayed DNA methylation as a new player in the 
+  recruitment of transcription factors (TF) within chromatin, highlighting a 
+  need to connect TF binding sites (TFBS) with their respective DNA methylation 
+  profiles.Recently, we launched MethMotif, a comprehensive database that combines 
+  TFBS Position Weight Matrices (PWM) coupled with DNA methylation status in a 
+  cell-specific manner. MethMotif portal is accessible through an open source web 
+  interface. To date, MethMotif records more than 530 TFBS computed from over 2200 
+  ChIP-seq datasets in 13 different cell types. Although the MethMotif web portal 
+  provides access to all of our methyl-PWM records, additional tools are required 
+  for a better navigation throughout this large pool of integrative information. 
+  Therefore, we have developed methmotifR, an effective and efficient application 
+  programming interface (API) based R package that facilitates the retrieval and 
+  exploitation of MethMotif datasets (i.e. PWM, ChIP-seq peaks and DNA methylation 
+  levels). This package comprises functions that simplify the queries in MethMotif 
+  database. In addition, methmotifR uses standard objects compatible with other 
+  TFBS packages such as TFBSTools, allowing users to take advantage of the tools 
+  developed by the community. Further, the functionalities implemented in our 
+  toolbox allow to better understand the mechanism of TF recruitment in a cell-specific 
+  manner. As an illustration, we are able to identify different MAFF co-binding 
+  proteins (including the known partners), which are associated with distinct DNA 
+  binding motifs and varied methyl-CpG binding abilities across cell types, and 
+  to explore the different functions associated with MAFF different binding contexts. 
+  In conclusion, MethMotif database along with the methmotifR provide a simple and 
+  intelligible toolbox to study the interplays between DNA methylation and TF recruitment.
+  methmotifR package version: `r packageVersion("methmotifR")`
+
+output: 
+  rmarkdown::html_document:
+    toc: true
+    fig_caption: yes
+vignette: >
+  %\VignetteIndexEntry{Access to MethMotif database with methmotifR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, echo=FALSE, results="hide"}
+knitr::opts_chunk$set(
+  tidy=FALSE, cache=TRUE,
+  dev="png",
+  message=FALSE, error=FALSE, warning=TRUE
+)
+```
+
+## Read MethMotif database
+
+methmotifR allows users to access the MethMotif database and get the information 
+of the existing species, cell types as well as transcription factor binding 
+sites (TFBSs) in the MethMotif database, by using `listSpecies`, `listCell` and 
+`listTF` respectively. Particularly, in the output of `listTF`, MethMotif ID, 
+transcription factor (TF) name, cell line, and species will be returned. Among 
+them, MethMotif ID is very important for the following analysis. MethMotif ID is 
+a unique identifer for a TFBS of a given cell type in MethMotif database. It 
+contains MethMotif version, species, cell type and TF. For example, MethMotif ID 
+"MM1_HSA_K562_CEBPB" denotes the MethMotif version 1 CEBPB TFBS in human K562.
+
+```{r eval=FALSE}
+library(methmotifR)
+# list species available in MethMotif database
+listSpecies()
+#> [1] "human" "mouse"
+# list available cell types in human
+listCell(species = "human")
+#> [1] "A549"    "K562"    "HepG2"   "MCF-7"   "HCT116"  "HEK293"  "IMR-90" 
+#> [8] "GM12878" "H1-hESC" "HeLa-S3" "SK-N-SH"
+# list available TFs in K562
+K562_TF <- listTF(cell_type = "K562")
+head(K562_TF)
+#>                    ID     TF cell_line species
+#> 1   MM1_HSA_K562_AFF1   AFF1      K562   human
+#> 2  MM1_HSA_K562_ARID2  ARID2      K562   human
+#> 3 MM1_HSA_K562_ARID3A ARID3A      K562   human
+#> 4   MM1_HSA_K562_ATF1   ATF1      K562   human
+#> 5   MM1_HSA_K562_ATF2   ATF2      K562   human
+#> 6   MM1_HSA_K562_ATF3   ATF3      K562   human
+```
+
+## Retrieve datasets from MethMotif database
+
+We have designed some easy functions to aid in data retrival from MethMotif database, and they include MethMotif matrix retrival (motif weight position matrix and DNA methylation matrix) by `searchMethMotif`, TF peak files loading (all or motif-contained only) by `loadPeaks`, motif position frequency matrix locally saving by `exportMMPFM` and MethMotif logo plotting by `plotLogo`. Here, we introduce the MethMotif matrix, a combination of a TF motif weight position matrix and its DNA methylation matrix (beta score matrix). 
+
+In order for an easy and intuitive storage, manipulation and conversion (with other packages such as "TFBSTools") of a MethMotif matrix, we designed an objectof class "MethMotif" using S4 class. To obtain the element or slot from an S4 obejct, one can use `@`. For instance, if one is interested in CEBPB in K562 or all CEBPBs in MethMoitf database, using `searchMethMotif` as below to retrieve the MethMotif matrices.
+
+```{r eval=FALSE}
+# get MethMotif matrix of CEBPB in K562
+K562_CEBPB <- searchMethMotif(id = "MM1_HSA_K562_CEBPB", motif_format = "MEME")
+#> There are 1 matched record(s) exported in a (list of) MethMotif object(s).
+K562_CEBPB_MM <- K562_CEBPB$MM1_HSA_K562_CEBPB
+class(K562_CEBPB_MM)
+#> [1] "MethMotif"
+#> attr(,"package")
+#> [1] "methmotifR"
+
+# get MethMotif matrices of all CEBPBs in MethMotif database
+CEBPB_all <- searchMethMotif(tf = "CEBPB", motif_format = "MEME")
+#> There are 8 matched record(s) exported in a (list of) MethMotif object(s).
+names(CEBPB_all)
+#> [1] "MM1_HSA_A549_CEBPB"    "MM1_HSA_H1-hESC_CEBPB" "MM1_HSA_HCT116_CEBPB" 
+#> [4] "MM1_HSA_HeLa-S3_CEBPB" "MM1_HSA_HepG2_CEBPB"   "MM1_HSA_IMR-90_CEBPB" 
+#> [7] "MM1_HSA_K562_CEBPB"    "MM1_HSA_MCF-7_CEBPB"  
+
+# get beta score matrix
+K562_CEBPB_MM_betaScore <- K562_CEBPB_MM@MMBetaScore
+K562_CEBPB_MM_betaScore
+#>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11]
+#> [1,]   35    0    0    0    0  503    0    0    0     0    31
+#> [2,]   18    0    0    0    0  797    0    0    0     0    22
+#> [3,]    3    0    0    0    0  739    0    0    0     0     0
+
+# get motif postion weight matrix
+# the output is an S4 object named as 'MMmotif'
+K562_CEBPB_MM_motifPWM <- K562_CEBPB_MM@MMmotif
+K562_CEBPB_MM_motifPWM
+#> An object of class "MMmotif"
+#> Slot "motif_format":
+#> [1] "MEME"
+#> 
+#> Slot "version":
+#> [1] 4
+#> 
+#> Slot "alphabet":
+#> [1] "ACGT"
+#> 
+#> Slot "strand":
+#> [1] "+ -"
+#> 
+#> Slot "background":
+#>      A      C      G      T 
+#> 0.2717 0.2283 0.2283 0.2717 
+#> 
+#> Slot "id":
+#> [1] "MM1_HSA_K562_CEBPB"
+#> 
+#> Slot "alternate_name":
+#> [1] "CEBPB"
+#> 
+#> Slot "width":
+#> [1] 11
+#> 
+#> Slot "nsites":
+#> [1] 533
+#> 
+#> Slot "evalue":
+#> [1] 0
+#> 
+#> Slot "motif_matrix":
+#>              A        C        G        T
+#>  [1,] 0.174484 0.114447 0.360225 0.350844
+#>  [2,] 0.572233 0.138837 0.264540 0.024390
+#>  [3,] 0.000000 0.000000 0.000000 1.000000
+#>  [4,] 0.000000 0.000000 0.000000 1.000000
+#>  [5,] 0.091932 0.000000 0.731707 0.176360
+#>  [6,] 0.000000 1.000000 0.000000 0.000000
+#>  [7,] 0.525328 0.110694 0.260788 0.103189
+#>  [8,] 0.170732 0.384615 0.005629 0.439024
+#>  [9,] 0.544090 0.454034 0.000000 0.001876
+#> [10,] 1.000000 0.000000 0.000000 0.000000
+#> [11,] 0.028143 0.403377 0.136961 0.431520
+
+# get motif matrix
+K562_CEBPB_MM_motifPWM@motif_matrix
+#> Slot "motif_matrix":
+#>              A        C        G        T
+#>  [1,] 0.174484 0.114447 0.360225 0.350844
+#>  [2,] 0.572233 0.138837 0.264540 0.024390
+#>  [3,] 0.000000 0.000000 0.000000 1.000000
+#>  [4,] 0.000000 0.000000 0.000000 1.000000
+#>  [5,] 0.091932 0.000000 0.731707 0.176360
+#>  [6,] 0.000000 1.000000 0.000000 0.000000
+#>  [7,] 0.525328 0.110694 0.260788 0.103189
+#>  [8,] 0.170732 0.384615 0.005629 0.439024
+#>  [9,] 0.544090 0.454034 0.000000 0.001876
+#> [10,] 1.000000 0.000000 0.000000 0.000000
+#> [11,] 0.028143 0.403377 0.136961 0.431520
+```
+
+After obtaining a MethMotif matrix, one can use `plotLogo` to plot MethMotif logo as below (Figure 1). One can choose "entropy" and "frequency" for motif logo, and different methylation levels ("all", "methylated" and "unmethylated"), as shown in MethMotif website.
+
+```{r eval=FALSE}
+plotLogo(K562_CEBPB_MM, logo_type = "entropy", meth_level = "all")
+#> Success: a PDF named 'MM1_HSA_K562_CEBPB-logo-entropy.pdf' has been saved!
+plotLogo(K562_CEBPB_MM, logo_type = "entropy", meth_level = "methylated")
+#> Success: a PDF named 'MM1_HSA_K562_CEBPB-logo-entropy-methylated-only.pdf' has been saved!
+plotLogo(K562_CEBPB_MM, logo_type = "entropy", meth_level = "unmethylated")
+#> Success: a PDF named 'MM1_HSA_K562_CEBPB-logo-entropy-unmethylated-only.pdf' has been saved!
+plotLogo(K562_CEBPB_MM, logo_type = "frequency", meth_level = "all")
+#> Success: a PDF named 'MM1_HSA_K562_CEBPB-logo-frequency.pdf' has been saved!
+plotLogo(K562_CEBPB_MM, logo_type = "frequency", meth_level = "methylated")
+#> Success: a PDF named 'MM1_HSA_K562_CEBPB-logo-frequency-methylated-only.pdf' has been saved!
+plotLogo(K562_CEBPB_MM, logo_type = "frequency", meth_level = "unmethylated")
+#> Success: a PDF named 'MM1_HSA_K562_CEBPB-logo-frequency-unmethylated-only.pdf' has been saved!
+```
+
+```{r echo=FALSE, fig.cap="Figure 1. K562 CEBPB MethMotif logos", out.width = '100%',fig.align="center"}
+knitr::include_graphics("../inst/extdata/plotLogo.png")
+```
+
+MethMotif matrix, including motif position frequency matrix and beta score matrix, can be saved locally using `exportMMPFM`. To be noted, the function `exportMMPFM` is also able to export MethMotif matrix for the outputs of `commonPeaks`, `exclusivePeaks` and `intersectPeakMatrix` by specifying "fun = ".
+
+```{r eval=FALSE}
+exportMMPFM(fun_output = K562_CEBPB, fun = "searchMethMotif", save_motif_PFM = T, save_betaScore_matrix = T)
+#> Start exporting ... ...
+#> ... ... You chose to save motif PFM and beta score matrix.
+#> ... ... export searchMethMotif...
+#> ... ... ... export id = MM1_HSA_K562_CEBPB
+#> ... ... ... ... Beta score matrix has been saved as 'MM1_HSA_K562_CEBPB-methScore.txt'.
+#> ... ... ... ... Motif PFM has been saved as 'MM1_HSA_K562_CEBPB-motif-MEME.txt'.
+
+# exprot PFM in TRANSFAC format
+K562_CEBPB_TRANSFAC <- searchMethMotif(id = "MM1_HSA_K562_CEBPB", motif_format = "TRANSFAC")
+#> There are 1 matched record(s) exported in a (list of) MethMotif object(s).
+exportMMPFM(fun_output = K562_CEBPB_TRANSFAC, fun = "searchMethMotif", save_motif_PFM = T, save_betaScore_matrix = T)
+#> Start exporting ... ...
+#> ... ... You chose to save motif PFM and beta score matrix.
+#> ... ... export searchMethMotif...
+#> ... ... ... export id = MM1_HSA_K562_CEBPB
+#> ... ... ... ... Beta score matrix has been saved as 'MM1_HSA_K562_CEBPB-methScore.txt'.
+#> ... ... ... ... Motif PFM has been saved as 'MM1_HSA_K562_CEBPB-motif-TRANSFAC.txt'.
+```
+
+More improtantly, when studying a TF DNA binding propensity, the initial but vital step is to localise the TF's genomic occupancy regions. Therefore, we allow the users to load peak regions (all or only with motif) of all TFs in MethMotif database using `loadPeaks`. To be noted, the peak regions of a given TF in MethMotif database are the peak summits (hg38 for human and mm10 for mouse), and the TFBS is enriched in a +/- 100bp window surrounding the peak summits.
+
+```{r eval=FALSE}
+K562_CEBPB_peaks <- loadPeaks(id = "MM1_HSA_K562_CEBPB", includeMotifOnly = T)
+#> Success: peak file has been returned in a data frame!
+head(K562_CEBPB_peaks)
+#>    chr     start       end                                    id
+#> 1 chr3 101823721 101823722 MM1_HSA_K562_CEBPB_peaks_with_motif_1
+#> 2 chr3 101850619 101850620 MM1_HSA_K562_CEBPB_peaks_with_motif_2
+#> 3 chr3 102182290 102182291 MM1_HSA_K562_CEBPB_peaks_with_motif_3
+#> 4 chr3 105626970 105626971 MM1_HSA_K562_CEBPB_peaks_with_motif_4
+#> 5 chr3 105647238 105647239 MM1_HSA_K562_CEBPB_peaks_with_motif_5
+#> 6 chr3 105899733 105899734 MM1_HSA_K562_CEBPB_peaks_with_motif_6
+```
+
+## Study TFBS propensity
+
+### Common peak regions
+
+methmotifR provides the functionality to find the common peak regions using `commonPeaks`. One can input serveral peak sets in a list in  `target_peak_list`, such as `target_peak_list = list(target_peak1, target_peak2, ...)`, and each peak set should be a bed-like data.frame with the first three columns as chromosome (starting with 'chr'), start and end. The peak set can be loaded from MethMotif database (hg38 or mm10) or from local files. Same as `target_peak_list`, `compared_peak_list` is a list of peak sets, loaded from MethMotif database or self provided, using `compared_peak_list = list(compared_peak1, compared_peak2, ...)`.  
+
+`commonPeaks` will compare each peak set in `target_peak_list` with `compared_peak_list`, to obtain the subsets common with the latter peak list, e.g. a subset of `target_peak1` common with all peak sets in `compared_peak_list`. In addition, it is required to provide a unique ID for each peak set in `target_peak_list` and `compared_peak_list`, using `target_peak_id` and `compared_peak_id` respectively. If the peak set is originally from MethMotif database, the MethMotif ID should be input accordingly; if it is self provided, you can name it with a unique ID yourself. The provided MethMotif IDs allow  `commonPeaks` to capture the motifs and their DNA methylation in the common subsets of `target_peak_list`. 
+
+It should be noted that even though the loaded peak regions from the MethMotif database are the peak summits (hg38 or mm10), you don't need to expand the regions. Once you tell `commonPeaks` the peak set is originally from the MethMotif database by providing MethMotif ID in the `target_peak_id` or `compared_peak_id`, it will automatically expand +/- 100bp during the analysis.
+
+```{r eval=FALSE}
+# load K562 CEBPB peak regions with motif only from MethMotif database
+K562_CEBPB_peaks <- loadPeaks(id = "MM1_HSA_K562_CEBPB", includeMotifOnly = T)
+#> Success: peak file has been returned in a data frame!
+
+# read my local file. Here we use the HCT116 CEBPB binding sites published in Nucleic Acids Research
+my_peak_path <- system.file("extdata", "HCT116_CEBPb_binding_sites.txt", package = "methmotifR")
+my_peak <- read.delim(my_peak_path, sep = "\t", header = F)
+head(my_peak)
+#>      V1        V2        V3
+#> 1  chr1  58585814  58585827
+#> 2 chr12 122925699 122925712
+#> 3  chr9   5818111   5818124
+#> 4 chr19   5850889   5850902
+#> 5 chr10   5951274   5951287
+#> 6  chr1   8175025   8175038
+
+# I want to get the subsets of K562 CEBPB peaks and my peaks, which are common with (conserved in) the CEBPB peaks in all cell types available in MethMotif database.
+# load the CEBPB peaks in all cell types available in MethMotif database
+CEBPB_peaks_all <- list()
+MethMotif_CEBPB <- searchMethMotif(tf = "CEBPB")
+#> There are 8 matched record(s) exported in a (list of) MethMotif object(s).
+CEBPB_peaks_all_id <- names(MethMotif_CEBPB)
+CEBPB_peaks_all_id
+#> [1] "MM1_HSA_A549_CEBPB"    "MM1_HSA_H1-hESC_CEBPB" "MM1_HSA_HCT116_CEBPB"  "MM1_HSA_HeLa-S3_CEBPB"
+#> [5] "MM1_HSA_HepG2_CEBPB"   "MM1_HSA_IMR-90_CEBPB"  "MM1_HSA_K562_CEBPB"    "MM1_HSA_MCF-7_CEBPB"  
+for (i in CEBPB_peaks_all_id){
+  CEBPB_peaks_all[[i]] <- loadPeaks(id = i)
+}
+#> Success: peak file has been returned in a data frame!
+#> Success: peak file has been returned in a data frame!
+#> Success: peak file has been returned in a data frame!
+#> Success: peak file has been returned in a data frame!
+#> Success: peak file has been returned in a data frame!
+#> Success: peak file has been returned in a data frame!
+#> Success: peak file has been returned in a data frame!
+#> Success: peak file has been returned in a data frame!
+
+commonPeak_output <- commonPeaks(target_peak_list = list(K562_CEBPB_peaks, my_peak), 
+                                 target_peak_id = c("MM1_HSA_K562_CEBPB", "my_peaks"), 
+                                 compared_peak_list = CEBPB_peaks_all, 
+                                 compared_peak_id = CEBPB_peaks_all_id)
+#> Start analysing: MM1_HSA_K562_CEBPB... ...
+#> ... ... Start analysing: MM1_HSA_A549_CEBPB
+#> ... ... Start analysing: MM1_HSA_H1-hESC_CEBPB
+#> ... ... Start analysing: MM1_HSA_HCT116_CEBPB
+#> ... ... Start analysing: MM1_HSA_HeLa-S3_CEBPB
+#> ... ... Start analysing: MM1_HSA_HepG2_CEBPB
+#> ... ... Start analysing: MM1_HSA_IMR-90_CEBPB
+#> ... ... Start analysing: MM1_HSA_K562_CEBPB
+#> ... ... Start analysing: MM1_HSA_MCF-7_CEBPB
+#> Start analysing: my_peaks... ...
+#> ... ... Start analysing: MM1_HSA_A549_CEBPB
+#> ... ... Start analysing: MM1_HSA_H1-hESC_CEBPB
+#> ... ... Start analysing: MM1_HSA_HCT116_CEBPB
+#> ... ... Start analysing: MM1_HSA_HeLa-S3_CEBPB
+#> ... ... Start analysing: MM1_HSA_HepG2_CEBPB
+#> ... ... Start analysing: MM1_HSA_IMR-90_CEBPB
+#> ... ... Start analysing: MM1_HSA_K562_CEBPB
+#> ... ... Start analysing: MM1_HSA_MCF-7_CEBPB
+```
+
+After obtaining the output of `commonPeaks`, you can use `commonPeakResult` to get 1) the summary, 2) the common peak regions, and 3) the MethMotif logo if any of `target_peak_list` is originally from MethMotif database. In the summary, the percentages of orginal peaks in `target_peak_list` that are common with the `compared_peak_list` will be shown.
+
+```{r eval=FALSE}
+commonPeak_result <- commonPeakResult(commonPeaks = commonPeak_output, 
+                                      return_common_peak_sites = T,
+                                      save_MethMotif_logo = T, 
+                                      return_summary = T)
+#> Start getting the results of commonPeakResult ...
+#> ... ... You chose to return common peak sites;
+#> ... ... You chose to return common peak summary;
+#> ... ... ... Both common peak sets and peak summary will be stored in a list, and named with 'common_peak_list' and 'peak_summary' in the list. Use 'names()' in the output for its detials.
+#> ... ... You chose to save MethMotif logo in PDF if any;
+#> ... ... ... You chose entropy logo;
+#> ... ... ... You chose to show all methylation levels;
+#> Success: a PDF named 'MM1_HSA_K562_CEBPB_common_peaks-logo-entropy.pdf' has been saved!
+
+# the contents in commonPeak_result
+names(commonPeak_result)
+#> [1] "common_peak_list" "peak_summary"
+common_peak_list <- commonPeak_result$common_peak_list
+peak_summary <- commonPeak_result$peak_summary
+
+# peak summary, 9.969674% of K562 CEBPB peaks and 18.902187% of my peaks are common with 
+# the CEBPB peaks in all cell types available in MethMotif database.
+peak_summary
+#>                                 percentage_in_original_inputs
+#> MM1_HSA_K562_CEBPB_common_peaks                      9.969674
+#> my_peaks_common_peaks                               18.902187
+
+# common peak regions
+K562_CEBPB_common_peak <- common_peak_list$MM1_HSA_K562_CEBPB_common_peaks
+head(K562_CEBPB_common_peak)
+#>     chr     start       end                                id
+#> 19 chr3 118538385 118538386 MM1_HSA_K562_CEBPB_target_peak_19
+#> 25 chr3 120160167 120160168 MM1_HSA_K562_CEBPB_target_peak_25
+#> 27 chr3 121769455 121769456 MM1_HSA_K562_CEBPB_target_peak_27
+#> 28 chr3 121834236 121834237 MM1_HSA_K562_CEBPB_target_peak_28
+#> 38 chr3 126103482 126103483 MM1_HSA_K562_CEBPB_target_peak_38
+#> 39 chr3 126261153 126261154 MM1_HSA_K562_CEBPB_target_peak_39
+```
+
+```{r echo=FALSE, fig.cap="Figure 2. MethMotif logo of K562 CEBPB common peaks", out.width = '40%', fig.align="center"}
+knitr::include_graphics("../inst/extdata/MM1_HSA_K562_CEBPB_common_peaks-logo-entropy.png")
+```
+
+### Exclusive peak regions
+
+Exclusive peak regions are important to study a TF's context-specifc function. Hence, we implemented such functionality to achieve extraction of the unique peak loci, `exclusivePeaks`. The target peak sets should be input in a list to `target_peak_list`, e.g. `target_peak_list = list(target_peak1, target_peak2,...)`, and each peak set should be a bed-like data.frame with the first three columns as chromosome (starting with ‘chr’), start and end. The source of peak set can be either loaded from MethMotif database using `loadPeaks` or self provided. 
+
+Each peak set in `target_peak_list` will be compared with regions in `excluded_peak_list`, and the loci overlapped with the latter will be excluded. Similarly, `excluded_peak_list` is a list of peak sets, loaded from MethMotif database or self provided. Unique IDs should be provided for both `target_peak_list` and `excluded_peak_list`, using `target_peak_id` and `excluded_peak_id` respectively. If a peak set is originally from MethMotif database, the MethMotif ID should be input accordingly; if it is self provided, you can name it with a unique ID yourself. The provided MethMotif IDs allow `exclusivePeaks` to capture the motifs and their DNA methylation in the exclusive subsets of target_peak_list.
+
+It should be noted that even though the loaded peak regions from the MethMotif database are the peak summits (hg38 or mm10), you don't need to expand the regions. Once you tell `exclusivePeaks` the peak set is originally from the MethMotif database by providing MethMotif ID in the `target_peak_id` or `excluded_peak_id`, it will automatically expand +/- 100bp during the analysis.
+
+```{r eval=FALSE}
+# get the CEBPB peak regions unique to K562 compared with the CEBPB peaks in 
+# all other cell types
+
+# all other cell types except K562
+CEBPB_peaks_all_exceptK562_id <- CEBPB_peaks_all_id[!(CEBPB_peaks_all_id %in% c("MM1_HSA_K562_CEBPB"))]
+# load peaks
+CEBPB_peaks_all_exceptK562 <- list()
+for (i in CEBPB_peaks_all_exceptK562_id){
+  CEBPB_peaks_all_exceptK562[[i]] <- loadPeaks(id = i)
+}
+#> Success: peak file has been returned in a data frame!
+#> Success: peak file has been returned in a data frame!
+#> Success: peak file has been returned in a data frame!
+#> Success: peak file has been returned in a data frame!
+#> Success: peak file has been returned in a data frame!
+#> Success: peak file has been returned in a data frame!
+#> Success: peak file has been returned in a data frame!
+
+exclusivePeak_output <- exclusivePeaks(target_peak_list = list(K562_CEBPB_peaks), 
+                                       target_peak_id = c("MM1_HSA_K562_CEBPB"), 
+                                       excluded_peak_list = CEBPB_peaks_all_exceptK562, 
+                                       excluded_peak_id = CEBPB_peaks_all_exceptK562_id)
+#> Start analysing: MM1_HSA_K562_CEBPB... ...
+#> ... ... Start analysing: MM1_HSA_A549_CEBPB
+#> ... ... Start analysing: MM1_HSA_H1-hESC_CEBPB
+#> ... ... Start analysing: MM1_HSA_HCT116_CEBPB
+#> ... ... Start analysing: MM1_HSA_HeLa-S3_CEBPB
+#> ... ... Start analysing: MM1_HSA_HepG2_CEBPB
+#> ... ... Start analysing: MM1_HSA_IMR-90_CEBPB
+#> ... ... Start analysing: MM1_HSA_MCF-7_CEBPB
+```
+
+After getting the output of `exclusivePeaks`, you can use `exclusivePeakResult` to get 1) the summary, 2) the exclusive peak regions, and 3) the MethMotif logo if any of `target_peak_id` is originally from the MethMotif database. In the summary, the percentages of orginal peaks in `target_peak_list` that are exclusive compared with the `excluded_peak_list` will be shown.
+
+```{r eval=FALSE}
+exclusivePeak_result <- exclusivePeakResult(exclusivePeaks = exclusivePeak_output, 
+                                            return_exclusive_peak_sites = T, 
+                                            save_MethMotif_logo = T, 
+                                            return_summary = T)
+#> Start getting the results of exclusivePeaks ...
+#> ... ... You chose to return exclusive peak sites;
+#> ... ... You chose to return exclusive peak summary;
+#> ... ... ... Both exclusive peak sets and peak summary will be stored in a list, and named with 'exclusive_peak_list' and 'peak_summary' in the list. Use 'names()' in the output for its detials.
+#> ... ... You chose to save MethMotif logo in PDF if any;
+#> ... ... ... You chose entropy logo;
+#> ... ... ... You chose to show all methylation levels;
+#> Success: a PDF named 'MM1_HSA_K562_CEBPB_exclusive_peaks-logo-entropy.pdf' has been saved!
+
+
+# the contents in exclusivePeak_result
+names(exclusivePeak_result)
+#> [1] "exclusive_peak_list" "peak_summary" 
+exclusive_peak_list <- exclusivePeak_result$exclusive_peak_list
+peak_summary <- exclusivePeak_result$peak_summary
+
+# peak summary, 17.77862% of K562 CEBPB peaks are unique compared with 
+# the HepG2 CEBPB peaks and my peaks.
+peak_summary
+#>                                    percentage_in_original_inputs
+#> MM1_HSA_K562_CEBPB_exclusive_peaks                      17.77862
+K562_CEBPB_exclusive_peak <- exclusive_peak_list$MM1_HSA_K562_CEBPB_exclusive_peaks
+head(K562_CEBPB_exclusive_peak)
+#>    chr     start       end                                id
+#> 4  chr3 105626970 105626971  MM1_HSA_K562_CEBPB_target_peak_4
+#> 10 chr3 106103569 106103570 MM1_HSA_K562_CEBPB_target_peak_10
+#> 22 chr3 119695686 119695687 MM1_HSA_K562_CEBPB_target_peak_22
+#> 36 chr3 125382508 125382509 MM1_HSA_K562_CEBPB_target_peak_36
+#> 57 chr3 130184388 130184389 MM1_HSA_K562_CEBPB_target_peak_57
+#> 58 chr3 130343212 130343213 MM1_HSA_K562_CEBPB_target_peak_58
+```
+
+```{r echo=FALSE, fig.cap="Figure 3. MethMotif logo of K562 CEBPB exclusive peaks", out.width = '40%', fig.align="center"}
+knitr::include_graphics("../inst/extdata/MM1_HSA_K562_CEBPB_exclusive_peaks-logo-entropy.png")
+```
+
+### Intersected peak matrix
+
+methmotifR allows users to portray the co-binding landscapes between two collections of TFs using `intersectPeakMatrix`. This functionality is particularly useful to identify the TF potential binidng partners. Different from `commonPeaks`, `intersectPeakMatrix` perform a exhaustive intersection between a pair of peak sets, one from list x and the other from list y, to form an x*y intersection matrix. Therefore, it is required for users to provide the two lists of peak sets using `peak_list_x` and `peak_list_y`, e.g. `peak_list_x = list(peak_x1, peak_x2, ...)` and `peak_list_y = list(peak_y1, peak_y2, ...)`. Each peak set in the list should be a bed-like data.frame with the first three columns as chromosome (starting with ‘chr’), start and end. The source of peak set can be either loaded from MethMotif database using `loadPeaks` or self provided. The unique IDs for `peak_list_x` and `peak_list_y` should be also provided at the same time in `peak_id_x` and `peak_id_y`. If the peak set is originally from the MethMotif database, the correponding MethMotif ID should be included here. The provided MethMotif IDs allow `intersectPeakMatrix` to capture the motifs and their DNA methylation in the intersected peak subsets.
+
+It should be noted that even though the loaded peak regions from the MethMotif database are the peak summits (hg38 or mm10), you don't need to expand the regions. Once you tell `exclusivePeaks` the peak set is originally from the MethMotif database by providing MethMotif ID in the `target_peak_id` or `excluded_peak_id`, it will automatically expand +/- 100bp during the analysis.
+
+```{r eval=FALSE}
+# profile the co-binding landscapes of all K562 TFs in MethMotif database surrounding
+# K562 CEBPB common and exclusive peaks
+
+# load all TF peaks in K562 from MethMotif database
+K562_tfs_all <- listTF(cell_type = "K562")
+K562_peaks_all <- list()
+K562_peaks_all_id <- c()
+for (i in K562_tfs_all$ID){
+  peak_i <- loadPeaks(id = i)
+  K562_peaks_all[[i]] <- peak_i
+  K562_peaks_all_id <- c(K562_peaks_all_id, i)
+}
+#> Success: peak file has been returned in a data frame!
+#> Success: peak file has been returned in a data frame!
+#> Success: peak file has been returned in a data frame!
+#>   ... ...
+#> Success: peak file has been returned in a data frame!
+
+# K562 CEBPB common peaks
+intersectMatrix_common <- intersectPeakMatrix(peak_list_x = list(K562_CEBPB_common_peak), 
+                                              peak_list_y = K562_peaks_all, 
+                                              peak_id_x = c("MM1_HSA_K562_CEBPB"), 
+                                              peak_id_y = K562_peaks_all_id)
+#> Start analysing list x:MM1_HSA_K562_CEBPB... ...
+#> ... ... Start analysing list y:MM1_HSA_K562_AFF1
+#> ... ... Start analysing list y:MM1_HSA_K562_ARID2
+#> ... ... Start analysing list y:MM1_HSA_K562_ARID3A
+#>                       ... ...
+#> ... ... Start analysing list y:MM1_HSA_K562_ZSCAN29
+
+# K562 CEBPB exclusive peaks
+intersectMatrix_exclusive <- intersectPeakMatrix(peak_list_x = list(K562_CEBPB_exclusive_peak), 
+                                              peak_list_y = K562_peaks_all, 
+                                              peak_id_x = c("MM1_HSA_K562_CEBPB"), 
+                                              peak_id_y = K562_peaks_all_id)
+#> Start analysing list x:MM1_HSA_K562_CEBPB... ...
+#> ... ... Start analysing list y:MM1_HSA_K562_AFF1
+#> ... ... Start analysing list y:MM1_HSA_K562_ARID2
+#> ... ... Start analysing list y:MM1_HSA_K562_ARID3A
+#>                       ... ...
+#> ... ... Start analysing list y:MM1_HSA_K562_ZSCAN29
+```
+
+We have implemented `intersectPeakMatrixResult` in methmotifR package, allowing an easy extraction and interpretation of `intersectPeakMatrix` output. It is worth noting that there are two ways of interpretations in intersection between set A and B, that is, 1) the percentage of A overlapped with B, and 2) the percentage of B intersected with A. The option is usually up to which study object should be focused on. Same principle is applicable for the output of `intersectPeakMatrix`. When one wants to return intersection matrix using `return_intersection_matrix = T` in the input of `intersectPeakMatrixResult`, if he/she wants to know the co-binding profiles in `peak_list_x`, then he/she needs to choose `angle_of_matrix = "x"` and `intersectPeakMatrixResult` will report the percentages of each TF peaks in `peak_list_x` overlapped with each peaks in `peak_list_y`. Similarly, when `save_MethMotif_logo` option is wanted, if `angle_of_logo = "x"`, the function will plot and save the MethMotif logos for the intersected TFBSs in `peak_list_x` (if any is originally from MethMotif database). Indeed, it's not necessary to plot all MethMotif logos for every pair of intersection at the same time. One can focus only on some subsets of `peak_list_x` and `peak_list_y`, using `saving_MethMotif_logo_x_id` and `saving_MethMotif_logo_y_id` respectively.
+
+```{r eval=FALSE}
+# get the intersection matrix for K562 common peaks
+IM_K562_common_result <- intersectPeakMatrixResult(intersectPeakMatrix = intersectMatrix_common, 
+                                                   return_intersection_matrix = T, 
+                                                   angle_of_matrix = "x")
+#> Start getting the results of intersectPeakMatrix ...
+#> ... ... You chose to return intersection matrix;
+#> ... ... ... You chose x-wise intersection matrix;
+#> ... ... You chose NOT to save MethMotif logo in PDF if any;
+
+# the output of IM_K562_common_result, e.g. 6.210393%, 1.901141% and  10.13942% 
+# of K562 common peaks overlapped with MM1_HSA_K562_AFF1, MM1_HSA_K562_ARID2 and 
+# MM1_HSA_K562_ARID3A respectively.
+IM_K562_common_result[1,1:3]
+#>                    MM1_HSA_K562_AFF1 MM1_HSA_K562_ARID2 MM1_HSA_K562_ARID3A
+#> MM1_HSA_K562_CEBPB          6.210393           1.901141            10.13942
+
+# find the top 10 TFs co-binding in K562 common results
+IM_K562_common_result_t <- as.data.frame(t(IM_K562_common_result))
+attach(IM_K562_common_result_t)
+IM_K562_common_result_order <- as.data.frame(IM_K562_common_result_t[order(-MM1_HSA_K562_CEBPB),,drop = FALSE])
+detach(IM_K562_common_result_t)
+head(IM_K562_common_result_order, n = 10)
+#>                    MM1_HSA_K562_CEBPB
+#> MM1_HSA_K562_CEBPB          100.00000
+#> MM1_HSA_K562_CEBPD           52.34474
+#> MM1_HSA_K562_ATF4            41.31812
+#> MM1_HSA_K562_JUND            39.67047
+#> MM1_HSA_K562_ATF7            33.33333
+#> MM1_HSA_K562_ATF3            30.16477
+#> MM1_HSA_K562_MYC             29.78454
+#> MM1_HSA_K562_CREM            26.23574
+#> MM1_HSA_K562_MAZ             25.98226
+#> MM1_HSA_K562_JUN             25.72877
+
+# The highest co-binding factor in K562 CEBPB common peaks is CEBPD.
+# Then plot MethMotif logo for the K562 CEBPB common sites intersected with CEBPD peaks
+intersectPeakMatrixResult(intersectPeakMatrix = intersectMatrix_common, 
+                          save_MethMotif_logo = T, 
+                          angle_of_logo = "x", 
+                          saving_MethMotif_logo_y_id = c("MM1_HSA_K562_CEBPD"))
+#> Start getting the results of intersectPeakMatrix ...
+#> ... ... You chose NOT to return intersection matrix;
+#> ... ... You chose to save MethMotif logo in PDF if any;
+#> ... ... ... You chose x-wise MethMotif logo;
+#> ... ... ... You chose entropy logo;
+#> ... ... ... You chose to show all methylation levels;
+#> Success: a PDF named 'MM1_HSA_K562_CEBPB_overlapped_with_MM1_HSA_K562_CEBPD-logo-entropy.pdf' has been saved!
+
+# get the intersection matrix for K562 exclusive peaks
+IM_K562_exclusive_result <- intersectPeakMatrixResult(intersectPeakMatrix = intersectMatrix_exclusive, 
+                                                      return_intersection_matrix = T, 
+                                                      angle_of_matrix = "x")
+#> Start getting the results of intersectPeakMatrix ...
+#> ... ... You chose to return intersection matrix;
+#> ... ... ... You chose x-wise intersection matrix;
+#> ... ... You chose NOT to save MethMotif logo in PDF if any;
+
+# the output of IM_K562_exclusive_result, e.g. 3.411514%, 0.2842928% and  8.173419% 
+# of K562 exclusive peaks overlapped with MM1_HSA_K562_AFF1, MM1_HSA_K562_ARID2 and 
+# MM1_HSA_K562_ARID3A respectively.
+IM_K562_exclusive_result[1,1:3]
+#>                    MM1_HSA_K562_AFF1 MM1_HSA_K562_ARID2 MM1_HSA_K562_ARID3A
+#> MM1_HSA_K562_CEBPB          3.411514          0.2842928            8.173419
+
+# find the top 10 TFs co-binding in K562 exclusive results
+IM_K562_exclusive_result_t <- as.data.frame(t(IM_K562_exclusive_result))
+attach(IM_K562_exclusive_result_t)
+IM_K562_exclusive_result_order <- as.data.frame(IM_K562_exclusive_result_t[order(-MM1_HSA_K562_CEBPB),,drop = FALSE])
+detach(IM_K562_exclusive_result_t)
+head(IM_K562_exclusive_result_order, n = 10)
+#>                      MM1_HSA_K562_CEBPB
+#> MM1_HSA_K562_CEBPB            100.00000
+#> MM1_HSA_K562_ATF4              37.45558
+#> MM1_HSA_K562_CBFA2T3           26.01279
+#> MM1_HSA_K562_DPF2              25.23099
+#> MM1_HSA_K562_TAL1              22.88557
+#> MM1_HSA_K562_JUND              20.32694
+#> MM1_HSA_K562_TCF12             19.75835
+#> MM1_HSA_K562_CEBPD             18.12367
+#> MM1_HSA_K562_MEIS2             16.98650
+#> MM1_HSA_K562_ATF7              16.06254
+
+# The highest co-binding factor in K562 CEBPB exclusive peaks is ATF4.
+# Then plot MethMotif logo for the K562 CEBPB exclusive sites intersected with ATF4 peaks
+intersectPeakMatrixResult(intersectPeakMatrix = intersectMatrix_exclusive, 
+                          save_MethMotif_logo = T, 
+                          angle_of_logo = "x", 
+                          saving_MethMotif_logo_y_id = c("MM1_HSA_K562_ATF4"))
+#> Start getting the results of intersectPeakMatrix ...
+#> ... ... You chose NOT to return intersection matrix;
+#> ... ... You chose to save MethMotif logo in PDF if any;
+#> ... ... ... You chose x-wise MethMotif logo;
+#> ... ... ... You chose entropy logo;
+#> ... ... ... You chose to show all methylation levels;
+#> Success: a PDF named 'MM1_HSA_K562_CEBPB_overlapped_with_MM1_HSA_K562_ATF4-logo-entropy.pdf' has been saved!
+```
+
+```{r echo=FALSE, fig.cap="Figure 4. MethMotif logo of K562 CEBPB common peaks intersected with K562 CEBPD peaks", out.width = '40%', fig.align="center"}
+knitr::include_graphics("../inst/extdata/MM1_HSA_K562_CEBPB_overlapped_with_MM1_HSA_K562_CEBPD-logo-entropy.png")
+```
+
+```{r echo=FALSE, fig.cap="Figure 5. MethMotif logo of K562 CEBPB exclusive peaks intersected with K562 ATF4 peaks", out.width = '40%', fig.align="center"}
+knitr::include_graphics("../inst/extdata/MM1_HSA_K562_CEBPB_overlapped_with_MM1_HSA_K562_ATF4-logo-entropy.png")
+```
+
+### Export motif PFM and beta score matrix
+
+As aforementioned, `exportMMPFM` is not only designed for `searchMethMotif` outputs, but also compatible with the outputs from `commonPeaks`, `exclusivePeaks`, `intersectPeakMatrix`. Here, we want to export the motif PFMs and beta score matrices for K562 CEBPB common and exclusive peaks, as well as the common peaks intersected with CEBPD peaks and the exclusive peaks intersected with ATF4 peaks.
+
+```{r eval=FALSE}
+# export motif PFM and beta score matrix for K562 CEBPB common peaks
+exportMMPFM(fun_output = commonPeak_output, 
+            fun = "commonPeaks", 
+            save_motif_PFM = T, 
+            save_betaScore_matrix = T)
+#> Start exporting ... ...
+#> ... ... You chose to save motif PFM and beta score matrix.
+#> ... ... export commonPeaks...
+#> ... ... ... export id = MM1_HSA_K562_CEBPB_common_peaks
+#> ... ... ... ... Beta score matrix has been saved as 'MM1_HSA_K562_CEBPB_common_peaks-methScore.txt'.
+#> ... ... ... ... Motif PFM has been saved as 'MM1_HSA_K562_CEBPB_common_peaks-motif-MEME.txt'.
+#> ... ... ... export id = my_peaks_common_peaks
+#> ... ... ... the original peaks of my_peaks_common_peaks is not loaded from MethMotif database, or in the common peak the numbers of TFBS recorded in MethMotif database is zero. Hence no further action for this id!
+
+# export motif PFM and beta score matrix for K562 CEBPB exclusive peaks
+exportMMPFM(fun_output = exclusivePeak_output, 
+            fun = "exclusivePeaks", 
+            save_motif_PFM = T, 
+            save_betaScore_matrix = T)
+#> Start exporting ... ...
+#> ... ... You chose to save motif PFM and beta score matrix.
+#> ... ... export exclusivePeaks...
+#> ... ... ... export id = MM1_HSA_K562_CEBPB_exclusive_peaks
+#> ... ... ... ... Beta score matrix has been saved as 'MM1_HSA_K562_CEBPB_exclusive_peaks-methScore.txt'.
+#> ... ... ... ... Motif PFM has been saved as 'MM1_HSA_K562_CEBPB_exclusive_peaks-motif-MEME.txt'.
+
+# export motif PFM and beta score matrix for K562 CEBPB common peaks intersected with K562 CEBPD peaks
+exportMMPFM(fun_output = intersectMatrix_common, 
+            fun = "intersectPeakMatrix", 
+            save_motif_PFM = T, 
+            save_betaScore_matrix = T, 
+            angle_of_matrix_for_intersectPeakMatrix = "x", 
+            saving_id_y_for_intersectPeakMatrix = c("MM1_HSA_K562_CEBPD"))
+#> Start exporting ... ...
+#> ... ... You chose to save motif PFM and beta score matrix.
+#> ... ... export intersectPeakMatrix...
+#> ... ... we will export in the x wide of intersectPeakMatrix output since the input angle_of_matrix_for_intersectPeakMatrix = 'x'
+#> ... ... ... export id = MM1_HSA_K562_CEBPB
+#> ... ... ... ... Beta score matrix has been saved as 'MM1_HSA_K562_CEBPB_overlapped_with_MM1_HSA_K562_CEBPD-methScore.txt'.
+#> ... ... ... ... Motif PFM has been saved as 'MM1_HSA_K562_CEBPB_overlapped_with_MM1_HSA_K562_CEBPD-motif-MEME.txt'.
+
+# export motif PFM and beta score matrix for K562 CEBPB exclusive peaks intersected with K562 ATF4 peaks
+exportMMPFM(fun_output = intersectMatrix_exclusive, 
+            fun = "intersectPeakMatrix", 
+            save_motif_PFM = T, 
+            save_betaScore_matrix = T, 
+            angle_of_matrix_for_intersectPeakMatrix = "x", 
+            saving_id_y_for_intersectPeakMatrix = c("MM1_HSA_K562_ATF4"))
+#> Start exporting ... ...
+#> ... ... You chose to save motif PFM and beta score matrix.
+#> ... ... export intersectPeakMatrix...
+#> ... ... we will export in the x wide of intersectPeakMatrix output since the input angle_of_matrix_for_intersectPeakMatrix = 'x'
+#> ... ... ... export id = MM1_HSA_K562_CEBPB
+#> ... ... ... ... Beta score matrix has been saved as 'MM1_HSA_K562_CEBPB_overlapped_with_MM1_HSA_K562_ATF4-methScore.txt'.
+#> ... ... ... ... Motif PFM has been saved as 'MM1_HSA_K562_CEBPB_overlapped_with_MM1_HSA_K562_ATF4-motif-MEME.txt'.
+```
+
+### Motif distribution
+
+methmotifR also allows uers to plot the distributions of a given TFBS from the MethMotif database in a list of peak sets, using `motifDistrib` and `plotDistrib` sequentially. By providing the MethMotif ID in `id` as the input of the `motifDistrib`, `motifDistrib` will calculate the occurrences the TFBSs in the given list of peak sets input in `peak_list`. a list of unique IDs correpsonding to `peak_list` is required to be provided at the same time using `peak_id`. If a peak set is originally from MethMotif database, the MethMotif ID should be input accordingly; if it is self provided, you can name it with a unique ID yourself. 
+
+It should be noted that even though the loaded peak regions from the MethMotif database are the peak summits, you don't need to expand the regions. Once you tell `motifDistrib` the peak set is originally from the MethMotif database by providing MethMotif ID in the `peak_id`, it will automatically operate on the peaks itself.
+
+The output of `motifDistrib` is the input of `plotDistrib`. In each motif distribution plot, x-axis is the relative distance (bp) to the peak center, while y-axis is the percentage of the TFBS at the position.
+
+Here, we want to plot distributions of K562 CEBPB motif in K562 CEBPB exclusive peaks and our own peaks locally loaded previously.
+
+```{r eval=FALSE}
+motifDistrib_output <- motifDistrib(id = "MM1_HSA_K562_CEBPB", 
+                                    peak_list = list(K562_CEBPB_exclusive_peak,
+                                                     my_peak),
+                                    peak_id = c("MM1_HSA_K562_CEBPB","my_peak"))
+#> motifDistrib starts analysing for MethMotif ID = MM1_HSA_K562_CEBPB
+#> ... ... analysing peak set MM1_HSA_K562_CEBPB
+#> ... ... analysing peak set my_peak
+plotDistrib(motifDistrib = motifDistrib_output)
+```
+
+```{r echo=FALSE, fig.cap="Figure 6. Motif distribution", out.width = '100%', fig.align="center"}
+knitr::include_graphics("../inst/extdata/motif_distribution.png")
+```
+
+
+## Annotate TFBS functions
+
+The key function of transcription factors is to regulate gene expression. By working with Genomic Regions Enrichment of Annotations Tool (GREAT), methmotifR allows users to annotate the TFBSs using `greatAnnotate`. Given that GREAT server doesn't support hg38, liftOver R package has been incorporated in methmotifR to convert hg38 to hg19. The annotation output of `greatAnnotate` is intuitive, not only will a data.frame containing annotation results be returned, but also an HTML report will be saved. The HTML report takes advantage of `rbokeh` package, which presents a vivid and dynamic interface (Figure 7).
+
+```{r eval=FALSE}
+# annotate the functions of K562 CEBPB exclusive peaks
+# loading GREAT R package 'rGREAT'
+library(rGREAT)
+# the peak assembly is "hg38", and 'liftOver' is needed for conversion
+library(liftOver)
+# 'rbokeh' is required for an HTML report generation
+library(rbokeh)
+
+K562_CEBPB_exclusivePeak_func <- greatAnnotate(peaks = K562_CEBPB_exclusive_peak, 
+                                               return_annotation = T, 
+                                               return_html_report = T)
+#> Start greatAnnotate ...
+#> ... ... You chose to return annotated results in a data.frame.
+#> ... ... You chose to return an HTML report.
+#> ... ... assembly is hg38. Now converting to hg19 using liftOver...
+#> ... ... number of the original input regions is 1407
+#> ... ... number of the regions successfully converted to hg19 is 1406
+#> ... ... start GREAT analysis
+#> ... ... An html report has been generated as 'greatAnnotate_result.html'!
+#> ... ... The annotation results have been returned in a data.frame!
+
+head(K562_CEBPB_exclusivePeak_func)
+  category         ID                                              name
+#> 1       MF GO:0005515                                   protein binding
+#> 2       MF GO:0005488                                           binding
+#> 3       MF GO:0097159                   organic cyclic compound binding
+#> 4       MF GO:1901363                     heterocyclic compound binding
+#> 5       MF GO:0008297 single-stranded DNA exodeoxyribonuclease activity
+#> 6       MF GO:0003824                                catalytic activity
+#>   number_of_targeting_genes adjusted_pvalue
+#> 1                      1006    1.608578e-05
+#> 2                      1457    7.412354e-05
+#> 3                       647    7.401404e-04
+#> 4                       631    3.833909e-03
+#> 5                         2    3.833909e-03
+#> 6                       657    8.484982e-03
+```
+
+
+```{r echo=FALSE, fig.cap="Figure 7. HTML annotation report of the genes targeted by K562 CEBPB exclusive peak", out.width = '100%', fig.align="center"}
+knitr::include_graphics("../inst/extdata/greatAnnotate.png")
+```
+
+## Connect with TFBSTools
+
+methmotifR is not working alone. We have built a function allowing conversion of the motif matrix in MethMotif database to the subclass `PFMatrix` in TFBSTools, using `toTFBSTools`.
+
+```{r eval=FALSE}
+library(TFBSTools)
+K562_CEBPB_TFBS_PFM <- toTFBSTools(id = "MM1_HSA_K562_CEBPB")
+K562_CEBPB_TFBS_PFM
+#> An object of class PFMatrix
+#> ID: MM1_HSA_K562_CEBPB
+#> Name: CEBPB
+#> Matrix Class: Unknown
+#> strand: *
+#> Tags: 
+#> list()
+#> Background: 
+#>      A      C      G      T 
+#> 0.2717 0.2283 0.2283 0.2717 
+#> Matrix: 
+#>   [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11]
+#> A   93  305    0    0   49    0  280   91  290   533    15
+#> C   61   74    0    0    0  533   59  205  242     0   215
+#> G  192  141    0    0  390    0  139    3    0     0    73
+#> T  187   13  533  533   94    0   55  234    1     0   230
+```
+
+## A case study: MAFF binding partners
+
+Here we are going to use MAFF as an example to provide the evidence that 1) different TF binding partners contribute to the distinct TF motifs across celll types; 2) different methyl-DNA bindnig profiles for the same TF are associated with its dist co-binding partners. MethMotif database records MAFF binding motifs in three cell types (Figure 8), namely K562, HeLa-S3 and HepG2. In K562, MAFF binding sites are prone to hypomethylation, while in the other two cell types, they can be methylated or unmethylated.
+
+```{r eval=FALSE}
+# show the MethMotif logos of MAFF in K562, HeLa-S3, HepG2
+MAFF_all <- searchMethMotif(tf = "MAFF")
+#> There are 3 matched record(s) exported in a (list of) MethMotif object(s).
+names(MAFF_all)
+#> [1] "MM1_HSA_HeLa-S3_MAFF" "MM1_HSA_HepG2_MAFF"   "MM1_HSA_K562_MAFF"  
+
+# plot and save the MethMotif logos
+for (i in MAFF_all){plotLogo(i)}
+#> Success: a PDF named 'MM1_HSA_HeLa-S3_MAFF-logo-entropy.pdf' has been saved!
+#> Success: a PDF named 'MM1_HSA_HepG2_MAFF-logo-entropy.pdf' has been saved!
+#> Success: a PDF named 'MM1_HSA_K562_MAFF-logo-entropy.pdf' has been saved!
+```
+
+```{r echo=FALSE, fig.cap="Figure 8. MethMotif logos of MAFF in three cell types", out.width = '100%', fig.align="center"}
+knitr::include_graphics("../inst/extdata/MethMotif_logos_of_MAFF.png")
+```
+
+Next, we want to extract the MAFF binding sites conserved in the three cell types.
+
+```{r eval=FALSE}
+# MAFF common peaks in three cell types
+# load MAFF peaks 
+K562_MAFF_peaks <- loadPeaks(id = "MM1_HSA_K562_MAFF", includeMotifOnly = T)
+#> Success: peak file has been returned in a data frame!
+HeLa_MAFF_peaks <- loadPeaks(id = "MM1_HSA_HeLa-S3_MAFF", includeMotifOnly = T)
+#> Success: peak file has been returned in a data frame!
+HepG2_MAFF_peaks <- loadPeaks(id = "MM1_HSA_HepG2_MAFF", includeMotifOnly = T)
+#> Success: peak file has been returned in a data frame!
+
+# commonPeaks
+MAFF_common_output <- commonPeaks(target_peak_list = list(K562_MAFF_peaks,
+                                                          HeLa_MAFF_peaks, 
+                                                          HepG2_MAFF_peaks), 
+                                  target_peak_id = c("MM1_HSA_K562_MAFF", 
+                                                     "MM1_HSA_HeLa-S3_MAFF", 
+                                                     "MM1_HSA_HepG2_MAFF"),
+                                  compared_peak_list = list(K562_MAFF_peaks,
+                                                            HeLa_MAFF_peaks,
+                                                            HepG2_MAFF_peaks), 
+                                  compared_peak_id = c("MM1_HSA_K562_MAFF",
+                                                       "MM1_HSA_HeLa-S3_MAFF",
+                                                       "MM1_HSA_HepG2_MAFF"))
+#> Start analysing: MM1_HSA_K562_MAFF... ...
+#> ... ... Start analysing: MM1_HSA_K562_MAFF
+#> ... ... Start analysing: MM1_HSA_HeLa-S3_MAFF
+#> ... ... Start analysing: MM1_HSA_HepG2_MAFF
+#> Start analysing: MM1_HSA_HeLa-S3_MAFF... ...
+#> ... ... Start analysing: MM1_HSA_K562_MAFF
+#> ... ... Start analysing: MM1_HSA_HeLa-S3_MAFF
+#> ... ... Start analysing: MM1_HSA_HepG2_MAFF
+#> Start analysing: MM1_HSA_HepG2_MAFF... ...
+#> ... ... Start analysing: MM1_HSA_K562_MAFF
+#> ... ... Start analysing: MM1_HSA_HeLa-S3_MAFF
+#> ... ... Start analysing: MM1_HSA_HepG2_MAFF
+
+# commonPeaks output extraction
+MAFF_common_peaks <- commonPeakResult(commonPeaks = MAFF_common_output, 
+                                      return_common_peak_sites = T, 
+                                      save_MethMotif_logo = T)
+#> Start getting the results of commonPeakResult ...
+#> ... ... You chose to return common peak sites;
+#> ... ... You chose NOT to return common peak summary;
+#> ... ... ... Only list of common peak sets will be returned in a list. Use names() in the output to see the ids of each peak set in the list.
+#> ... ... You chose to save MethMotif logo in PDF if any;
+#> ... ... ... You chose entropy logo;
+#> ... ... ... You chose to show all methylation levels;
+#> Success: a PDF named 'MM1_HSA_K562_MAFF_common_peaks-logo-entropy.pdf' has been saved!
+#> Success: a PDF named 'MM1_HSA_HeLa-S3_MAFF_common_peaks-logo-entropy.pdf' has been saved!
+#> Success: a PDF named 'MM1_HSA_HepG2_MAFF_common_peaks-logo-entropy.pdf' has been saved!
+
+names(MAFF_common_peaks)
+#> [1] "MM1_HSA_K562_MAFF_common_peaks"    "MM1_HSA_HeLa-S3_MAFF_common_peaks"
+#> [3] "MM1_HSA_HepG2_MAFF_common_peaks"  
+K562_MAFF_commonPeaks <- MAFF_common_peaks$MM1_HSA_K562_MAFF_common_peaks
+HeLa_MAFF_commonPeaks <- MAFF_common_peaks$`MM1_HSA_HeLa-S3_MAFF_common_peaks`
+HepG2_MAFF_commonPeaks <- MAFF_common_peaks$MM1_HSA_HepG2_MAFF_common_peaks
+```
+
+```{r echo=FALSE, fig.cap="Figure 9. MethMotif logos of MAFF common peaks in three cell types", out.width = '100%', fig.align="center"}
+knitr::include_graphics("../inst/extdata/MethMotif_logos_of_MAFF_common.png")
+```
+
+Further, we analysed the motif and DNA methylation characteristics in MAFF cell specific binding sites.
+
+```{r eval=FALSE}
+# MAFF exclusive peaks in three cell types
+# exclusivePeaks
+K562_MAFF_exclusive_output <- exclusivePeaks(target_peak_list = list(K562_MAFF_peaks),
+                                             target_peak_id = c("MM1_HSA_K562_MAFF"),
+                                             excluded_peak_list = list(HeLa_MAFF_peaks,
+                                                                       HepG2_MAFF_peaks),
+                                             excluded_peak_id = c("MM1_HSA_HeLa-S3_MAFF",
+                                                                  "MM1_HSA_HepG2_MAFF"))
+#> Start analysing: MM1_HSA_K562_MAFF... ...
+#> ... ... Start analysing: MM1_HSA_HeLa-S3_MAFF
+#> ... ... Start analysing: MM1_HSA_HepG2_MAFF
+HeLa_MAFF_exclusive_output <- exclusivePeaks(target_peak_list = list(HeLa_MAFF_peaks),
+                                             target_peak_id = c("MM1_HSA_HeLa-S3_MAFF"),
+                                             excluded_peak_list = list(K562_MAFF_peaks,
+                                                                       HepG2_MAFF_peaks),
+                                             excluded_peak_id = c("MM1_HSA_K562_MAFF",
+                                                                  "MM1_HSA_HepG2_MAFF"))
+#> Start analysing: MM1_HSA_HeLa-S3_MAFF... ...
+#> ... ... Start analysing: MM1_HSA_K562_MAFF
+#> ... ... Start analysing: MM1_HSA_HepG2_MAFF
+HepG2_MAFF_exclusive_output <- exclusivePeaks(target_peak_list = list(HepG2_MAFF_peaks),
+                                              target_peak_id = c("MM1_HSA_HepG2_MAFF"),
+                                              excluded_peak_list = list(K562_MAFF_peaks,
+                                                                        HeLa_MAFF_peaks),
+                                              excluded_peak_id = c("MM1_HSA_K562_MAFF",
+                                                                   "MM1_HSA_HeLa-S3_MAFF"))
+#> Start analysing: MM1_HSA_HepG2_MAFF... ...
+#> ... ... Start analysing: MM1_HSA_K562_MAFF
+#> ... ... Start analysing: MM1_HSA_HeLa-S3_MAFF
+
+
+# exclusivePeaks output extraction
+K562_MAFF_exclusive_result <- exclusivePeakResult(exclusivePeaks = K562_MAFF_exclusive_output,
+                                                  return_exclusive_peak_sites = T,
+                                                  save_MethMotif_logo = T)
+#> Start getting the results of exclusivePeaks ...
+#> ... ... You chose to return exclusive peak sites;
+#> ... ... You chose NOT to return exclusive peak summary;
+#> ... ... ... Only list of exclusive peak sets will be returned in a list. Use names() in the output to see the ids of each peak set in the list.
+#> ... ... You chose to save MethMotif logo in PDF if any;
+#> ... ... ... You chose entropy logo;
+#> ... ... ... You chose to show all methylation levels;
+#> Success: a PDF named 'MM1_HSA_K562_MAFF_exclusive_peaks-logo-entropy.pdf' has been saved!
+K562_MAFF_exclusivePeaks <- K562_MAFF_exclusive_result$MM1_HSA_K562_MAFF_exclusive_peaks
+
+HeLa_MAFF_exclusive_result <- exclusivePeakResult(exclusivePeaks = HeLa_MAFF_exclusive_output,
+                                                  return_exclusive_peak_sites = T,
+                                                  save_MethMotif_logo = T)
+#> Start getting the results of exclusivePeaks ...
+#> ... ... You chose to return exclusive peak sites;
+#> ... ... You chose NOT to return exclusive peak summary;
+#> ... ... ... Only list of exclusive peak sets will be returned in a list. Use names() in the output to see the ids of each peak set in the list.
+#> ... ... You chose to save MethMotif logo in PDF if any;
+#> ... ... ... You chose entropy logo;
+#> ... ... ... You chose to show all methylation levels;
+#> Success: a PDF named 'MM1_HSA_HeLa-S3_MAFF_exclusive_peaks-logo-entropy.pdf' has been saved!
+HeLa_MAFF_exclusivePeaks <- HeLa_MAFF_exclusive_result$`MM1_HSA_HeLa-S3_MAFF_exclusive_peaks`
+
+HepG2_MAFF_exclusive_result <- exclusivePeakResult(exclusivePeaks = HepG2_MAFF_exclusive_output,
+                                                   return_exclusive_peak_sites = T,
+                                                   save_MethMotif_logo = T)
+#> Start getting the results of exclusivePeaks ...
+#> ... ... You chose to return exclusive peak sites;
+#> ... ... You chose NOT to return exclusive peak summary;
+#> ... ... ... Only list of exclusive peak sets will be returned in a list. Use names() in the output to see the ids of each peak set in the list.
+#> ... ... You chose to save MethMotif logo in PDF if any;
+#> ... ... ... You chose entropy logo;
+#> ... ... ... You chose to show all methylation levels;
+#> Success: a PDF named 'MM1_HSA_HepG2_MAFF_exclusive_peaks-logo-entropy.pdf' has been saved!
+HepG2_MAFF_exclusivePeaks <- HepG2_MAFF_exclusive_result$MM1_HSA_HepG2_MAFF_exclusive_peaks
+```
+
+```{r echo=FALSE, fig.cap="Figure 10. MethMotif logos of MAFF exclusive peaks in three cell types", out.width = '100%', fig.align="center"}
+knitr::include_graphics("../inst/extdata/MethMotif_logos_of_MAFF_exclusive.png")
+```
+
+We observed distinct MAFF motifs in MAFF exclusive peaks across three cell types (Figure 10). In K562, sequence TGA is highly enriched adjacent to TCAGCA, while in HepG2 the MAFF motif in the cell speccific regions is only TCAGCA. The MAFF motif in HeLa-S3 is between K562 and HepG2. Notably, distinct MAFF motifs are associated with different DNA methylation profiles across cell types. In K562 MAFF exclusive binding sites, the CpG is hypomethylated, while it can be methylated or unmethylated in HepG2 MAFF exclusive binding sites. Further, we noticed that different cell-specific MAFF target regions lead to distinct gene ontology enrichments analysed as below.
+
+```{r eval=FALSE}
+# annotating function of genes targeted by K562 MAFF exclusive peaks
+annotation_K562_MAFF_exclu <- greatAnnotate(peaks = K562_MAFF_exclusivePeaks, 
+                                            return_annotation = T,
+                                            return_html_report = T)
+#> Start greatAnnotate ...
+#> ... ... You chose to return annotated results in a data.frame.
+#> ... ... You chose to return an HTML report.
+#> ... ... assembly is hg38. Now converting to hg19 using liftOver...
+#> ... ... number of the original input regions is 3288
+#> ... ... number of the regions successfully converted to hg19 is 3268
+#> ... ... start GREAT analysis
+#> ... ... An html report has been generated as 'greatAnnotate_result.html'!
+#> ... ... The annotation results have been returned in a data.frame!
+
+head(annotation_K562_MAFF_exclu[which(annotation_K562_MAFF_exclu$category=="BP"),])
+#>    category         ID                       name number_of_targeting_genes
+#> 40       BP GO:0008152          metabolic process                      2152
+#> 41       BP GO:0044237 cellular metabolic process                      1965
+#> 42       BP GO:0044238  primary metabolic process                      1936
+#> 43       BP GO:0009987           cellular process                      3186
+#> 44       BP GO:0065007      biological regulation                      2303
+#> 45       BP GO:0050896       response to stimulus                      1637
+#>    adjusted_pvalue
+#> 40    1.336106e-23
+#> 41    1.444034e-23
+#> 42    3.411209e-23
+#> 43    1.765067e-22
+#> 44    9.322571e-19
+#> 45    1.091588e-17
+
+# annotating function of genes targeted by HeLa-S3 MAFF exclusive peaks
+annotation_HeLa_MAFF_exclu <- greatAnnotate(peaks = HeLa_MAFF_exclusivePeaks, 
+                                            return_annotation = T,
+                                            return_html_report = T)
+#> Start greatAnnotate ...
+#> ... ... You chose to return annotated results in a data.frame.
+#> ... ... You chose to return an HTML report.
+#> ... ... assembly is hg38. Now converting to hg19 using liftOver...
+#> ... ... number of the original input regions is 1923
+#> ... ... number of the regions successfully converted to hg19 is 1916
+#> ... ... start GREAT analysis
+#> ... ... An html report has been generated as 'greatAnnotate_result.html'!
+#> ... ... The annotation results have been returned in a data.frame!
+
+head(annotation_HeLa_MAFF_exclu[which(annotation_HeLa_MAFF_exclu$category=="BP"),])
+#>    category         ID                                      name
+#> 8        BP GO:0006950                        response to stress
+#> 9        BP GO:0048519 negative regulation of biological process
+#> 10       BP GO:0048523   negative regulation of cellular process
+#> 11       BP GO:0033554               cellular response to stress
+#> 12       BP GO:0048518 positive regulation of biological process
+#> 13       BP GO:0048522   positive regulation of cellular process
+#>    number_of_targeting_genes adjusted_pvalue
+#> 8                        425    2.287779e-11
+#> 9                        515    2.196399e-08
+#> 10                       476    2.196399e-08
+#> 11                       159    2.913895e-07
+#> 12                       563    3.867037e-07
+#> 13                       518    2.653751e-06
+
+# annotating function of genes targeted by HeLa-S3 MAFF exclusive peaks
+annotation_HepG2_MAFF_exclu <- greatAnnotate(peaks = HepG2_MAFF_exclusivePeaks, 
+                                             return_annotation = T,
+                                             return_html_report = T)
+#> Start greatAnnotate ...
+#> ... ... You chose to return annotated results in a data.frame.
+#> ... ... You chose to return an HTML report.
+#> ... ... assembly is hg38. Now converting to hg19 using liftOver...
+#> ... ... number of the original input regions is 10569
+#> ... ... number of the regions successfully converted to hg19 is 10521
+#> ... ... start GREAT analysis
+#> ... ... An html report has been generated as 'greatAnnotate_result.html'!
+#> ... ... The annotation results have been returned in a data.frame!
+
+head(annotation_HepG2_MAFF_exclu[which(annotation_HepG2_MAFF_exclu$category=="BP"),])
+#>   category         ID                                                      name
+#> 1       BP GO:0048709                           oligodendrocyte differentiation
+#> 2       BP GO:0050769                       positive regulation of neurogenesis
+#> 3       BP GO:0046627 negative regulation of insulin receptor signaling pathway
+#> 4       BP GO:0010033                             response to organic substance
+#> 5       BP GO:0070887                    cellular response to chemical stimulus
+#> 6       BP GO:0045665             negative regulation of neuron differentiation
+#>   number_of_targeting_genes adjusted_pvalue
+#> 1                        24    1.739381e-06
+#> 2                        65    4.560797e-05
+#> 3                         9    4.439313e-04
+#> 4                       686    4.439313e-04
+#> 5                       567    4.439313e-04
+#> 6                        32    4.439313e-04
+```
+
+The differences of MAFF binding propensities in cell specific loci acrosss cell types may be due to the varied binding partners in those regions.
+
+```{r eval=FALSE}
+# profile the co-binding landscapes of MAFF exclusive binding loci in three cell types
+
+# load all TF peaks in K562 from MethMotif database
+K562_tfs_all <- listTF(cell_type = "K562")
+K562_peaks_all <- list()
+K562_peaks_all_id <- c()
+for (i in K562_tfs_all$ID){
+  peak_i <- loadPeaks(id = i)
+  K562_peaks_all[[i]] <- peak_i
+  K562_peaks_all_id <- c(K562_peaks_all_id, i)
+}
+
+# co-binding profiles in K562 using intersectPeaekMatrix
+K562_MAFF_excl_IPM_output <- intersectPeakMatrix(peak_list_x = list(K562_MAFF_exclusivePeaks), 
+                                                 peak_list_y = K562_peaks_all, 
+                                                 peak_id_x = c("MM1_HSA_K562_MAFF"), 
+                                                 peak_id_y = K562_peaks_all_id)
+#> Start analysing list x:MM1_HSA_K562_MAFF... ...
+#> ... ... Start analysing list y:MM1_HSA_K562_AFF1
+#> ... ... Start analysing list y:MM1_HSA_K562_ARID2
+#> ... ... Start analysing list y:MM1_HSA_K562_ARID3A
+#>           ... ...
+#> ... ... Start analysing list y:MM1_HSA_K562_ZSCAN29
+K562_MAFF_excl_IPM_result <- intersectPeakMatrixResult(intersectPeakMatrix = K562_MAFF_excl_IPM_output, 
+                                                       return_intersection_matrix = T, 
+                                                       angle_of_matrix = "x")
+#> Start getting the results of intersectPeakMatrix ...
+#> ... ... You chose to return intersection matrix;
+#> ... ... ... You chose x-wise intersection matrix;
+#> ... ... You chose NOT to save MethMotif logo in PDF if any;
+
+# load all TF peaks in HeLa-S3 from MethMotif database
+HeLa_tfs_all <- listTF(cell_type = "HeLa-S3")
+HeLa_peaks_all <- list()
+HeLa_peaks_all_id <- c()
+for (i in HeLa_tfs_all$ID){
+  peak_i <- loadPeaks(id = i)
+  HeLa_peaks_all[[i]] <- peak_i
+  HeLa_peaks_all_id <- c(HeLa_peaks_all_id, i)
+}
+
+# co-binding profiles in HeLa-S3 using intersectPeaekMatrix
+HeLa_MAFF_excl_IPM_output <- intersectPeakMatrix(peak_list_x = list(HeLa_MAFF_exclusivePeaks), 
+                                                 peak_list_y = HeLa_peaks_all, 
+                                                 peak_id_x = c("MM1_HSA_HeLa-S3_MAFF"), 
+                                                 peak_id_y = HeLa_peaks_all_id)
+#> Start analysing list x:MM1_HSA_HeLa-S3_MAFF... ...
+#> ... ... Start analysing list y:MM1_HSA_HeLa-S3_CEBPB
+#> ... ... Start analysing list y:MM1_HSA_HeLa-S3_CTCF
+#> ... ... Start analysing list y:MM1_HSA_HeLa-S3_E2F4
+#>           ... ...
+#> ... ... Start analysing list y:MM1_HSA_HeLa-S3_ZNF274
+HeLa_MAFF_excl_IPM_result <- intersectPeakMatrixResult(intersectPeakMatrix = HeLa_MAFF_excl_IPM_output, 
+                                                       return_intersection_matrix = T, 
+                                                       angle_of_matrix = "x")
+#> Start getting the results of intersectPeakMatrix ...
+#> ... ... You chose to return intersection matrix;
+#> ... ... ... You chose x-wise intersection matrix;
+#> ... ... You chose NOT to save MethMotif logo in PDF if any;
+
+# load all TF peaks in HepG2 from MethMotif database
+HepG2_tfs_all <- listTF(cell_type = "HepG2")
+HepG2_peaks_all <- list()
+HepG2_peaks_all_id <- c()
+for (i in HepG2_tfs_all$ID){
+  peak_i <- loadPeaks(id = i)
+  HepG2_peaks_all[[i]] <- peak_i
+  HepG2_peaks_all_id <- c(HepG2_peaks_all_id, i)
+}
+
+# co-binding profiles in HepG2 using intersectPeaekMatrix
+HepG2_MAFF_excl_IPM_output <- intersectPeakMatrix(peak_list_x = list(HepG2_MAFF_exclusivePeaks), 
+                                                  peak_list_y = HepG2_peaks_all, 
+                                                  peak_id_x = c("MM1_HSA_HepG2_MAFF"), 
+                                                  peak_id_y = HepG2_peaks_all_id)
+#> Start analysing list x:MM1_HSA_HepG2_MAFF... ...
+#> ... ... Start analysing list y:MM1_HSA_HepG2_ARID3A
+#> ... ... Start analysing list y:MM1_HSA_HepG2_ATF2
+#> ... ... Start analysing list y:MM1_HSA_HepG2_ATF3
+#>           ... ...
+#> ... ... Start analysing list y:MM1_HSA_HepG2_ZNF24
+HepG2_MAFF_excl_IPM_result <- intersectPeakMatrixResult(intersectPeakMatrix = HepG2_MAFF_excl_IPM_output, 
+                                                        return_intersection_matrix = T, 
+                                                        angle_of_matrix = "x")
+#> Start getting the results of intersectPeakMatrix ...
+#> ... ... You chose to return intersection matrix;
+#> ... ... ... You chose x-wise intersection matrix;
+#> ... ... You chose NOT to save MethMotif logo in PDF if any;
+
+# heatmap
+library(gplots)
+color = colorRampPalette(c("white", "#00B2D3", "#012694"))
+# heatmap for K562 MAFF excluisve loci
+K562_MAFF_excl_IPM_result_t <- as.data.frame(t(K562_MAFF_excl_IPM_result))
+K562_MAFF_excl_IPM_order <- as.data.frame(K562_MAFF_excl_IPM_result_t[order(-K562_MAFF_excl_IPM_result_t$MM1_HSA_K562_MAFF),,drop = FALSE])
+pdf("co-binding_heatmap_of_K562_MAFF_exclusive_loci.pdf")
+heatmap.2(as.matrix(cbind(K562_MAFF_excl_IPM_order, K562_MAFF_excl_IPM_order)), col=color(100), trace = "none", Colv = NULL, Rowv = NULL,dendrogram = "none", density.info = "none",key.xlab = "co-binding percentage (%)", keysize = 1.2, cexRow = 0.4,  key.title = "", labCol = NA,  mar=c(2,25))
+dev.off()
+
+# heatmap for HeLa-S3 MAFF excluisve loci
+HeLa_MAFF_excl_IPM_result_t <- as.data.frame(t(HeLa_MAFF_excl_IPM_result))
+HeLa_MAFF_excl_IPM_order <- as.data.frame(HeLa_MAFF_excl_IPM_result_t[order(-HeLa_MAFF_excl_IPM_result_t$`MM1_HSA_HeLa-S3_MAFF`),,drop = FALSE])
+pdf("co-binding_heatmap_of_HeLa-S3_MAFF_exclusive_loci.pdf")
+heatmap.2(as.matrix(cbind(HeLa_MAFF_excl_IPM_order, HeLa_MAFF_excl_IPM_order)), col=color(100), trace = "none", Colv = NULL, Rowv = NULL,dendrogram = "none", density.info = "none",key.xlab = "co-binding percentage (%)", keysize = 1.2 , cexRow = 1, key.title = "",labCol = NA,  mar=c(2,25))
+dev.off()
+
+# heatmap for HepG2 MAFF excluisve loci
+HepG2_MAFF_excl_IPM_result_t <- as.data.frame(t(HepG2_MAFF_excl_IPM_result))
+HepG2_MAFF_excl_IPM_order <- as.data.frame(HepG2_MAFF_excl_IPM_result_t[order(-HepG2_MAFF_excl_IPM_result_t$MM1_HSA_HepG2_MAFF),,drop = FALSE])
+pdf("co-binding_heatmap_of_HepG2_MAFF_exclusive_loci.pdf")
+heatmap.2(as.matrix(cbind(HepG2_MAFF_excl_IPM_order, HepG2_MAFF_excl_IPM_order)), col=color(100), trace = "none", Colv = NULL, Rowv = NULL,dendrogram = "none", density.info = "none",key.xlab = "co-binding percentage (%)", keysize = 1.2 , cexRow = .6, key.title = "",labCol = NA,  mar=c(2,25))
+dev.off()
+```
+
+```{r echo=FALSE, fig.cap="Figure 11. TF co-binding profiles around MAFF exclusive peaks in three cell types", out.width = '100%', fig.align="center"}
+knitr::include_graphics("../inst/extdata/co-binding_of_MAFF_exclusive_peaks.png")
+```
+
+Interestingly, we observed several TFs co-binding with MAFF in MAFF cell specific loci in K562, not only incluing small maf protein MAFK, but also many Jun-related factors such as NFE2, NFE2L2 and JUND (Figure 11). However, in HepG2, only MAFK shows a high co-occupancy. We hypothesise the high enrichment of sequence TGA in the motif of K562 MAFF exclusive peaks is contributed by the Jun-related factors. To validate it, we further focused on the subset of K562 MAFF exclusive peaks which are bound by two very high co-binding Jun-related factors, NFE2 and NFE2L2, using `exclusivePeaks`.
+
+```{r eval=FALSE}
+# exclude the co-binding regions with NFE2 and NFE2L2 from K562 MAFF exclusive peaks 
+# load K562 NFE2 and NFE2L2 peaks
+K562_NFE2_peaks <- loadPeaks(id = "MM1_HSA_K562_NFE2")
+#> Success: peak file has been returned in a data frame!
+K562_NFE2L2_peaks <- loadPeaks(id = "MM1_HSA_K562_NFE2L2")
+#> Success: peak file has been returned in a data frame!
+
+K562_MAFF_exclPeaks_NoNFE_output <- exclusivePeaks(target_peak_list = list(K562_MAFF_exclusivePeaks), 
+                                                   target_peak_id = c("MM1_HSA_K562_MAFF"), 
+                                                   excluded_peak_list = list(K562_NFE2_peaks, 
+                                                                             K562_NFE2L2_peaks), 
+                                                   excluded_peak_id = c("MM1_HSA_K562_NFE2",
+                                                                        "MM1_HSA_K562_NFE2L2"))
+#> Start analysing: MM1_HSA_K562_MAFF... ...
+#> ... ... Start analysing: MM1_HSA_K562_NFE2
+#> ... ... Start analysing: MM1_HSA_K562_NFE2L2
+
+# extract K562 MAFF exclusive peak subset, no overlapping with NFE2 or NFE2L2
+K562_MAFF_exclPeaks_NoNFE_result <- exclusivePeakResult(exclusivePeaks = K562_MAFF_exclPeaks_NoNFE_output, 
+                                                        return_exclusive_peak_sites = T, 
+                                                        save_MethMotif_logo = T)
+#> Start getting the results of exclusivePeaks ...
+#> ... ... You chose to return exclusive peak sites;
+#> ... ... You chose NOT to return exclusive peak summary;
+#> ... ... ... Only list of exclusive peak sets will be returned in a list. Use names() in the output to see the ids of each peak set in the list.
+#> ... ... You chose to save MethMotif logo in PDF if any;
+#> ... ... ... You chose entropy logo;
+#> ... ... ... You chose to show all methylation levels;
+#> Success: a PDF named 'MM1_HSA_K562_MAFF_exclusive_peaks-logo-entropy.pdf' has been saved!
+K562_MAFF_exclPeaks_NoNFE_peaks <- K562_MAFF_exclPeaks_NoNFE_result$MM1_HSA_K562_MAFF_exclusive_peaks
+# number of K562 MAFF exclusive peak subset, no overlapping with NFE2 or NFE2L2
+nrow(K562_MAFF_exclPeaks_NoNFE_peaks)
+#> [1] 371
+
+# profile co-binding factors in K562 MAFF exclusive peak subset, no overlapping with NFE2 or NFE2L2
+K562_MAFF_excl_NoNFE_IPM_output <- intersectPeakMatrix(peak_list_x = list(K562_MAFF_exclPeaks_NoNFE_peaks), 
+                                                       peak_list_y = K562_peaks_all, 
+                                                       peak_id_x = c("MM1_HSA_K562_MAFF"), 
+                                                       peak_id_y = K562_peaks_all_id)
+#> Start analysing list x:MM1_HSA_K562_MAFF... ...
+#> ... ... Start analysing list y:MM1_HSA_K562_AFF1
+#> ... ... Start analysing list y:MM1_HSA_K562_ARID2
+#> ... ... Start analysing list y:MM1_HSA_K562_ARID3A
+#>           ... ...
+#> ... ... Start analysing list y:MM1_HSA_K562_ZSCAN29
+K562_MAFF_excl_NoNFE_IPM_result <- intersectPeakMatrixResult(intersectPeakMatrix = K562_MAFF_excl_NoNFE_IPM_output,
+                                                             return_intersection_matrix = T, 
+                                                             angle_of_matrix = "x")
+#> Start getting the results of intersectPeakMatrix ...
+#> ... ... You chose to return intersection matrix;
+#> ... ... ... You chose x-wise intersection matrix;
+#> ... ... You chose NOT to save MethMotif logo in PDF if any;
+
+# heatmap for K562 MAFF exclusive peak subset, no overlapping with NFE2 or NFE2L2
+K562_MAFF_excl_NoNFE_IPM_result_t <- as.data.frame(t(K562_MAFF_excl_NoNFE_IPM_result))
+K562_MAFF_excl_NoNFE_IPM_result_order <- as.data.frame(K562_MAFF_excl_NoNFE_IPM_result_t[order(-K562_MAFF_excl_NoNFE_IPM_result_t$MM1_HSA_K562_MAFF),,drop = FALSE])
+pdf("co-binding_heatmap_of_K562_MAFF_exclusive_loci_no_NFE2_or_NFE2L2.pdf")
+heatmap.2(as.matrix(cbind(K562_MAFF_excl_NoNFE_IPM_result_order, K562_MAFF_excl_NoNFE_IPM_result_order)), col=color(100), trace = "none", Colv = NULL, Rowv = NULL,dendrogram = "none", density.info = "none",key.xlab = "co-binding percentage (%)", keysize = 1.2, cexRow = 0.4,  key.title = "", labCol = NA,  mar=c(2,25))
+dev.off()
+```
+
+```{r echo=FALSE, fig.cap="Figure 12. TF co-binding profiles around K562 MAFF exclusive peaks excluded NFE2 and NFE2L2 peaks", out.width = '100%', fig.align="center"}
+knitr::include_graphics("../inst/extdata/co-binding_of_K562_MAFF_exclusive_peaks_no_NFE2_NFE2L2.png")
+```
+
+After removing co-binding regions with NFE2 and NFE2L2, a significant decrease in enrichment of sequence TGA in the motif of K562-specific MAFF binding sites (Figure 12). Indeed, the distinct MAFF co-binding partners result in the varied motifs enriched in MAFF peaks across different cell types. In addition, the DNA sequences can be hypermethylated in the HepG2 MAFF exclusive peaks, in which only small maf proteins are co-occupying, while the K562 specific MAFF binding loci are co-bound by many Jun-related factors and hypomethylated (Figure 9). Therefore, it is appealing to hypothesise that different DNA methylation levels in MAFF binding sites are associated with different binding partners.
+
+

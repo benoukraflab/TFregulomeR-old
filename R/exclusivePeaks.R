@@ -1,0 +1,341 @@
+#' exclusivePeaks
+#'
+#' This function allows you to obtain the subsets of a list of peak sets unique to another list of peak sets (either from MethMotif database or the self-provided).
+#' @param target_peak_list Required. List of data.frames, each of which contains bed-format peak regions. They are the peak sets you want to get the exclusive subsets from, and can be loaded from MethMotif database or self-provided.
+#' @param target_peak_id Required. Character of vector, each of which is a unique ID corresponding to the element in "target_peak_list". If a peak set is from MethMotif Database, its MethMotif ID should be used here.
+#' @param excluded_peak_list Required. List of data.frames, each of which contains bed-format peak regions. They are the peak sets you want to exclude from the "target_peak_list", and can be loaded from MethMotif database or self-provided.
+#' @param excluded_peak_id Required. Character of vector, each of which is a unique ID corresponding to the element in "excluded_peak_list". If a peak set is from MethMotif Database, its MethMotif ID should be used here.
+#' @param motif_format Required. Motif PFM format, either in MEME by default or TRANSFAC.
+#' @param TFregulome_url Optional. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
+#' @return  matrix of ExclusivePeaksMM class objects
+#' @keywords exclusivePeaks
+#' @export
+#' @examples
+#' target_peaks <- list(loadPeaks(id = "MM1_HSA_K562_CEBPB"),
+#'                      read.delim("my_own_peaks.bed", header = F))
+#' target_id <- c("MM1_HSA_K562_CEBPB", "my_own_peaks")
+#' excluded_peaks <- list(loadPeaks(id = "MM1_HSA_HepG2_CEBPB"),
+#'                        read.delim("peaks_to_exclude.bed", header = F))
+#' excluded_id <- c("MM1_HSA_HepG2_CEBPB", "peaks_to_exclude")
+#' exclusivePeaks_output <- exclusivePeaks(target_peak_list=target_peaks,
+#'                                         target_peak_id=target_id,
+#'                                         excluded_peak_list=excluded_peaks,
+#'                                         excluded_peak_id=excluded_id)
+
+exclusivePeaks <- function(target_peak_id, motif_only_for_target_peak = F,
+                           user_target_peak_list, excluded_peak_id,
+                           motif_only_for_excluded_peak = F, user_excluded_peak_list,
+                           motif_type = "MEME", TFregulome_url)
+{
+  # check the input arguments
+  if(missing(target_peak_id) && missing(user_target_peak_list))
+  {
+    stop("No target peak input. Please EITHER input TFregulome peaks using TFregulome ID(s) by 'target_peak_id = ' OR your own peak list using a list of data.frame(s) containing bed-format regions by 'user_target_peak_list = '")
+  }
+  if(missing(excluded_peak_id) && missing(user_excluded_peak_list))
+  {
+    stop("No excluded peak input. Please EITHER input TFregulome peaks using TFregulome ID(s) by 'excluded_peak_id = ' OR your own peak list using a list of data.frame(s) containing bed-format regions by 'user_excluded_peak_list = '")
+  }
+  if ((!missing(user_target_peak_list) && class(user_target_peak_list) != "list") ||
+      (!missing(user_excluded_peak_list) && class(user_excluded_peak_list) != "list"))
+  {
+    stop("The class of input 'user_target_peak_list' and 'user_excluded_peak_list' should be 'list', a list of bed-like data.frame storing peak regions!")
+  }
+  if (class(motif_only_for_target_peak) != "logical" || class(motif_only_for_excluded_peak) != "logical")
+  {
+    stop("motif_only_for_target_peak and motif_only_for_excluded_peak should be either TRUE or FALSE (default)")
+  }
+  if (motif_type != "MEME" && motif_type != "TRANSFAC")
+  {
+    stop("motif_type should be either 'MEME' (default) or 'TRANSFAC'!")
+  }
+
+  # make an appropriate API url
+  if (missing(TFregulome_url)){
+    TFregulome_url <- "http://localhost:8888/api/table_query/"
+  } else if (endsWith(TFregulome_url, suffix = "/index.php")==TRUE){
+    TFregulome_url <- gsub("index.php", "", TFregulome_url)
+    TFregulome_url <- paste0(TFregulome_url, "api/table_query/")
+  } else if (endsWith(TFregulome_url, suffix = "/")==TRUE){
+    TFregulome_url <- paste0(TFregulome_url, "api/table_query/")
+  } else {
+    TFregulome_url <- paste0(TFregulome_url, "/api/table_query/")
+  }
+
+  message("TFregulomeR::exclusivePeaks() starting ... ...")
+
+  # loading target peak list
+  message("Loading target peak list ... ...")
+  target_peak_list_all <- list()
+  # loading from TFregulome server
+  TFregulome_target_peak_id <- c()
+  target_list_count <- 0
+  if (!missing(target_peak_id) && length(target_peak_id)>0)
+  {
+    message(paste0("... You have ", length(target_peak_id)," TFBS(s) requested to be loaded from TFregulome server"))
+    if (motif_only_for_target_peak == T)
+    {
+      message("... You chose to load TF peaks with motif only. Using 'motif_only_for_target_peak' tunes your options")
+    }
+    else
+    {
+      message("... You chose to load TF peaks regardless of presence of motif. Using 'motif_only_for_target_peak' tunes your options")
+    }
+    message("... loading TFBS(s) from TFregulome now")
+    for (i in target_peak_id)
+    {
+      peak_i <- suppressMessages(loadPeaks(id = i, includeMotifOnly = motif_only_for_target_peak))
+      if (is.null(peak_i))
+      {
+        message(paste0("... ... NO peak file for your id '", i,"'."))
+      }
+      else
+      {
+        target_list_count <- target_list_count + 1
+        target_peak_list_all[[target_list_count]] <- peak_i
+        TFregulome_target_peak_id <- c(TFregulome_target_peak_id, i)
+        message(paste0(".. ... peak file loaded successfully for id '", i,"'"))
+      }
+    }
+    message("... Done loading TFBS(s) from TFregulome")
+  }
+  # users' peaks
+  user_target_peak_id <- c()
+  if (!missing(user_target_peak_list) && length(user_target_peak_list)>0)
+  {
+    message(paste0("... You have ",length(user_target_peak_list)," customised peak set(s)"))
+    if (is.null(names(user_target_peak_list)) ||
+        length(unique(names(user_target_peak_list)))!=length(names(user_target_peak_list)))
+    {
+      message("... ... You didn't provide the name for each customised peak set or your names are not unique. Instead we will use 'user_target_peak1', 'user_target_peak2'..." )
+      user_target_peak_id <- paste0("user_target_peak", seq(1,length(user_target_peak_list), 1))
+    }
+    else
+    {
+      user_target_peak_id <- names(user_target_peak_list)
+    }
+    for (i in 1:length(user_target_peak_list))
+    {
+      peak_i <- user_target_peak_list[[i]]
+      peak_i_sub <- peak_i[,1:3]
+      colnames(peak_i_sub) <- c("chr","start","end")
+      peak_i_sub$id <- paste0(user_target_peak_id[i], "_", as.vector(rownames(peak_i_sub)))
+      peak_i_sub <- peak_i_sub[,c("chr","start","end","id")]
+      target_list_count <- target_list_count + 1
+      target_peak_list_all[[target_list_count]] <- peak_i_sub
+    }
+  }
+  # combine TFregulome ID and user ID
+  target_peak_id_all <- c(TFregulome_target_peak_id, user_target_peak_id)
+
+  # loading excluded peak list
+  message("Loading excluded peak list ... ...")
+  excluded_peak_list_all <- list()
+  # loading from TFregulome server
+  excluded_list_count <- 0
+  TFregulome_excluded_peak_id <- c()
+  if (!missing(excluded_peak_id) && length(excluded_peak_id)>0)
+  {
+    message(paste0("... You have ", length(excluded_peak_id)," TFBS(s) requested to be loaded from TFregulome server"))
+    if (motif_only_for_excluded_peak == T)
+    {
+      message("... You chose to load TF peaks with motif only. Using 'motif_only_for_excluded_peak' tunes your options")
+    }
+    else
+    {
+      message("... You chose to load TF peaks regardless of presence of motif. Using 'motif_only_for_excluded_peak' tunes your options")
+    }
+    message("... loading TFBS(s) from TFregulome now")
+    for (i in excluded_peak_id)
+    {
+      peak_i <- suppressMessages(loadPeaks(id = i, includeMotifOnly = motif_only_for_excluded_peak))
+      if (is.null(peak_i))
+      {
+        message(paste0("... ... NO peak file for your id '", i,"'."))
+      }
+      else
+      {
+        excluded_list_count <- excluded_list_count + 1
+        excluded_peak_list_all[[excluded_list_count]] <- peak_i
+        TFregulome_excluded_peak_id <- c(TFregulome_excluded_peak_id, i)
+        message(paste0(".. ... peak file loaded successfully for id '", i,"'"))
+      }
+    }
+    message("... Done loading TFBS(s) from TFregulome")
+  }
+  # users' peak
+  if (!missing(user_excluded_peak_list) && length(user_excluded_peak_list)>0)
+  {
+    message(paste0("... You have ",length(user_excluded_peak_list)," customised peak set(s)"))
+    for (i in 1:length(user_excluded_peak_list))
+    {
+      peak_i <- user_excluded_peak_list[[i]]
+      peak_i_sub <- peak_i[,1:3]
+      colnames(peak_i_sub) <- c("chr","start","end")
+      peak_i_sub$id <- paste0("excluded_peak_", as.vector(rownames(peak_i_sub)))
+      peak_i_sub <- peak_i_sub[,c("chr","start","end","id")]
+      excluded_list_count <- excluded_list_count + 1
+      excluded_peak_list_all[[excluded_list_count]] <- peak_i_sub
+    }
+  }
+  # start analysing
+  exclusion_matrix <- list()
+  for (i in 1:length(target_peak_list_all))
+  {
+    target_id_i <- target_peak_id_all[i]
+    target_peak_i <- target_peak_list_all[[i]]
+    number_of_orignal_target <- nrow(target_peak_i)
+    message(paste0("Start analysing: ", target_id_i, "... ..."))
+
+    ## if it is from TFregulome
+    if (i <= length(TFregulome_target_peak_id))
+    {
+      isTFregulome_target <- TRUE
+      query_url <- paste0("listTFBS.php?AllTable=F&id=",target_id_i)
+      request_content_json <- tryCatch({
+        fromJSON(paste0(TFregulome_url,query_url))
+      },
+      error = function(cond)
+      {
+        message("There is a warning to connect TFregulome API!")
+        message("Advice:")
+        message("1) Check internet access;")
+        message("2) Check dependent package 'jsonlite';")
+        message("3) Current TFregulome server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
+        message(paste0("warning: ",cond))
+        return(NULL)
+      })
+      request_content_df <- as.data.frame(request_content_json$TFBS_records)
+      source_i <- request_content_df[,"source"]
+      if (source_i == "MethMotif")
+      {
+        isMethMotifID_target <- TRUE
+        motif_seq_path_target <- request_content_df[1,c("TFBS")]
+        meth_file_path_target <- request_content_df[1,c("DNA_methylation_profile")]
+        WGBS_replicate_target <- request_content_df[1,c("WGBS_num")]
+      }
+      else
+      {
+        isMethMotifID_target <- FALSE
+        motif_seq_path_target <- request_content_df[1,c("TFBS")]
+      }
+    }
+    else
+    {
+      isTFregulome_target <- FALSE
+    }
+    # excluding peaks
+    for (j in 1:length(excluded_peak_list_all))
+    {
+      excluded_peak_j <- excluded_peak_list_all[[j]]
+      if (isTFregulome_target)
+      {
+        bed_target_i <- with(target_peak_i, GRanges(chr, IRanges(start-99, end+100), id=id))
+      }
+      else
+      {
+        bed_target_i <- with(target_peak_i, GRanges(chr, IRanges(start, end), id=id))
+      }
+      if (j <= length(TFregulome_excluded_peak_id))
+      {
+        bed_excluded_j <- with(excluded_peak_j, GRanges(chr, IRanges(start-99, end+100), id=id))
+      }
+      else
+      {
+        bed_excluded_j <- with(excluded_peak_j, GRanges(chr, IRanges(start, end), id=id))
+      }
+      # get target peak intersecting with excluded peak
+      # subsetOverlaps may mis-think the two sets coming from different references, so suppressWarnings here
+      suppressWarnings(bedTarget_with_bedExcluded <- subsetByOverlaps(bed_target_i, bed_excluded_j))
+      peakTarget_with_peakExcluded <- unique(as.data.frame(bedTarget_with_bedExcluded))
+      peakTarget_without_peakExcluded <- target_peak_i[which(!(target_peak_i$id %in% peakTarget_with_peakExcluded$id)), ]
+      target_peak_i <- peakTarget_without_peakExcluded
+    }
+
+    MethMotif_target <- new("MethMotif")
+    if (isTFregulome_target)
+    {
+      motif_seq_target <- read.delim(motif_seq_path_target, sep = "\t", header = F)
+      if (nrow(target_peak_i)>0)
+      {
+        #compute motif matrix
+        colnames(motif_seq_target) <- c("chr","start","end","strand","weight", "pvalue","qvalue","sequence")
+        motif_len_target <- nchar(as.character(motif_seq_target[1,"sequence"]))
+        motif_seq_target$id <- paste0(target_id_i,"_motif_sequence_", as.vector(rownames(motif_seq_target)))
+        motif_seq_target_grange <- with(motif_seq_target[,c("chr","start","end","id")], GRanges(chr, IRanges(start+1, end), id=id))
+        bed_target_done_exclusive <- with(target_peak_i[,c("chr","start","end","id")], GRanges(chr, IRanges(start-99, end+100), id=id))
+        suppressWarnings(motif_of_bed_target_done_exclusive <- subsetByOverlaps(motif_seq_target_grange, bed_target_done_exclusive))
+        motif_of_peakTarget_done_exclusive <- unique(as.data.frame(motif_of_bed_target_done_exclusive))
+        if (nrow(motif_of_peakTarget_done_exclusive)>0)
+        {
+          motif_of_peakTarget_done_exclusive_allInfo <- motif_seq_target[which(motif_seq_target$id %in% motif_of_peakTarget_done_exclusive$id),]
+          motif_matrix_of_peakTarget_done_exclusive <- formMatrixFromSeq(input_sequence = as.vector(motif_of_peakTarget_done_exclusive_allInfo$sequence),
+                                                                      motif_format = motif_type)
+          # compute beta score matrix
+          if (isMethMotifID_target)
+          {
+            # methylation file can be empty
+            meth_level_target <- tryCatch(read.delim(meth_file_path_target, sep = "\t", header = F),
+                                          error=function(e) data.frame())
+            if (nrow(meth_level_target)==0)
+            {
+              beta_score_matrix_of_peakTarget_done_exclusive <- formBetaScoreFromSeq(input_meth = data.frame(),
+                                                                                  WGBS_replicate = WGBS_replicate_target,
+                                                                                  motif_len = motif_len_target)
+            }
+            else
+            {
+              colnames(meth_level_target) <- c("chr","start","end","meth_score","C_num","T_num","seq_chr","seq_start",
+                                               "seq_end","strand","weight","pvalue","qvalue","sequence")
+              meth_level_target$id <- paste0(target_id_i,"_motif_with_CG_", as.vector(rownames(meth_level_target)))
+              meth_level_target_grange <- with(meth_level_target[,c("seq_chr","seq_start","seq_end","id")],
+                                               GRanges(seq_chr, IRanges(seq_start, seq_end), id=id))
+              suppressWarnings(meth_level_peakTarget_done_exclusive <- unique(as.data.frame(subsetByOverlaps(meth_level_target_grange,
+                                                                                                             motif_of_bed_target_done_exclusive))))
+              meth_level_peakTarget_done_exclusive_allInfo <- meth_level_target[which(meth_level_target$id %in% meth_level_peakTarget_done_exclusive$id),]
+              beta_score_matrix_of_peakTarget_done_exclusive <- formBetaScoreFromSeq(input_meth = meth_level_peakTarget_done_exclusive_allInfo,
+                                                                                  WGBS_replicate = WGBS_replicate_target,
+                                                                                  motif_len = motif_len_target)
+            }
+          }
+          else
+          {
+            beta_score_matrix_of_peakTarget_done_exclusive <- as.matrix(NA)
+          }
+
+          if (motif_type == "TRANSFAC")
+          {
+            version_target <- 0
+          }
+          else
+          {
+            version_target <- 4
+          }
+          MethMotif_target@MMmotif <- updateMMmotif(MethMotif_target@MMmotif,
+                                                    motif_format = motif_type,
+                                                    version = version_target,
+                                                    background = c("A"=0.25,"C"=0.25,"G"=0.25,"T"=0.25),
+                                                    id = paste0(target_id_i,"_exclusive_peaks"),
+                                                    alternate_name = target_id_i,
+                                                    width = motif_len_target,
+                                                    nsites=nrow(motif_of_peakTarget_done_exclusive),
+                                                    motif_matrix=motif_matrix_of_peakTarget_done_exclusive)
+          MethMotif_target@MMBetaScore <- beta_score_matrix_of_peakTarget_done_exclusive
+        }
+      }
+    }
+    new_ExclusivePeaksMM <- new("ExclusivePeaksMM")
+    new_ExclusivePeaksMM <- updateExclusivePeaksMM(theObject = new_ExclusivePeaksMM,
+                                                   id=paste0(target_id_i, "_exclusive_peaks"),
+                                                   exclusive_percentage = 100*nrow(target_peak_i)/number_of_orignal_target,
+                                                   exclusive_peak = target_peak_i,
+                                                   isTFregulomeID = isTFregulome_target,
+                                                   MethMotif = MethMotif_target)
+    exclusion_matrix[[paste0(target_id_i, "_exclusive_peaks")]] <- new_ExclusivePeaksMM
+  }
+  message("Done analysing.")
+  dim(exclusion_matrix) <- c(length(target_peak_id_all), 1)
+  rownames(exclusion_matrix) <- c(target_peak_id_all)
+  colnames(exclusion_matrix) <- c("exclusive")
+  return(exclusion_matrix)
+}

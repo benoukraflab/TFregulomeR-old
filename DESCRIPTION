@@ -1,0 +1,19 @@
+Package: TFregulomeR
+Type: Package
+Title: an API-based R package to access and analyse the data in MethMotif database.
+Version: 0.99.0
+Authors@R: c(person("Quy Xiao Xuan", "Lin", email = "linquyzju@gmail.com", role = c("aut", "cre")), person("Touati", "Benoukraf", email = "tbenoukraf@mun.ca", role = "aut"))
+Description: TFregulomeR, an effective and efficient application programming interface (API) based R package that facilitates the retrieval and exploitation of MethMotif datasets. This package comprises functions that simplify the queries in MethMotif database. In addition, TFregulomeR uses standard objects compatible with other TFBS packages such as TFBSTools, allowing users to take advantage of the tools developed by the community. Further, the functionalities implemented in our toolbox allow to better understand the mechanism of TF recruitment in a cell-specific manner. As an illustration, we are able to identify different MAFF co-binding proteins (including the known partners), which are associated with distinct DNA binding motifs and varied methyl-CpG binding abilities across cell types, and to explore the different functions associated with MAFF different binding contexts.
+Depends: R (>= 3.3.0), jsonlite (>= 1.5), ggplot2 (>= 3.0.0), ggseqlogo (>= 0.1), gridExtra (>= 2.3), GenomicRanges (>= 1.32.7), IRanges (>= 2.14.12), S4Vectors (>= 0.18.3), curl (>= 3.2)
+Imports: jsonlite (>= 1.5), ggplot2 (>= 3.0.0), ggseqlogo (>= 0.1), gridExtra (>= 2.3), GenomicRanges (>= 1.32.7), IRanges (>= 2.14.12), S4Vectors (>= 0.18.3), curl (>= 3.2)
+License: GPL (>= 2)
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
+Suggests: 
+    knitr,
+    rmarkdown,
+    rGREAT (>= 1.14.0),
+    liftOver (>= 1.4.0),
+    rbokeh (>= 0.5.0)
+VignetteBuilder: knitr

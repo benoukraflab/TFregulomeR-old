@@ -1,0 +1,211 @@
+#' intersectPeakMatrix result
+#'
+#' This function allows you to get the reuslts from the intersectPeakMatrix() output, including a matrix of the pair-wise intersecting percentages between two lists of peak sets, as well as MethMotif logos for each pair of intersections if the original peak set is loaded from MethMotif database.
+#' @param intersectPeakMatrix Required. intersectPeakMatrix() output, a marix of IntersectPeakMatrix class objects.
+#' @param return_intersection_matrix Optional. Either TRUE of FALSE (default). If TRUE, a matrix of the pair-wise intersecting percentages between two lists of peak sets
+#' @param angle_of_matrix Optional. Either "x" (default) or "y". If "x", a matrix denoting the percentages of peak sets in "peak_list_x" intersected with "peak_list_y" will be returned; if "y", a matrix denoting the percentages of peak sets in "peak_list_y" intersected with "peak_list_x" will be returned.
+#' @param save_MethMotif_logo Optional. Either TRUE of FALSE (default). If TRUE, MethMotif logos for the intersected peaks will be saved.
+#' @param angle_of_logo Optional. Either "x" (default) or "y". If "x", MethMotif logos for the peak sets in "peak_list_x" intersected with "peak_list_y" will be saved; if "y", MethMotif logos for the peak sets in "peak_list_y" intersected with "peak_list_x" will be saved.
+#' @param logo_type Optional. Logo type for the MethMotif logo to be saved, either "entropy" (default) or "frequency".
+#' @param meth_level Optional. Methylation level to be plot for the MethMotif logo, and it should be one of the values, "all" (default), "methylated", and "unmethylated".
+#' @param saving_MethMotif_logo_x_id Optional. Either "all" (default) or a subset of "peak_id_x". If a subset of "peak_id_x" is provided, only the MethMotif logos for them will be saved.
+#' @param saving_MethMotif_logo_y_id Optional. Either "all" (default) or a subset of "peak_id_y". If a subset of "peak_id_y" is provided, only the MethMotif logos for them will be saved.
+#' @return  a matrix of pair-wise intersecting percantages between two lists of peak sets, or MethMotif PDF files depending on the options
+#' @keywords intersectPeakMatrixResult
+#' @export
+#' @examples
+#' peak_list_x <- list(loadPeaks(id = "MM1_HSA_K562_CEBPB"),
+#'                     read.delim("my_own_peak1.bed", header = F))
+#' peak_id_x <- c("MM1_HSA_K562_CEBPB", "my_own_peak1")
+#' peak_list_y <- list(loadPeaks(id = "MM1_HSA_HepG2_CEBPB"),
+#'                     read.delim("my_own_peak2.bed", header = F))
+#' peak_id_y <- c("MM1_HSA_HepG2_CEBPB", "my_own_peak2")
+#' intersect_output <- intersectPeakMatrix(peak_list_x=peak_list_x,
+#'                                         peak_list_y=peak_list_y,
+#'                                         peak_id_x=peak_id_x,
+#'                                         peak_id_y=peak_id_y)
+#' intersect_matrix <- intersectPeakMatrixResult(intersectPeakMatrix=intersect_output,
+#'                                               return_intersection_matrix=T,
+#'                                               save_MethMotif_logo=T,
+#'                           saving_MethMotif_logo_x_id=c("MM1_HSA_K562_CEBPB"))
+
+intersectPeakMatrixResult <- function(intersectPeakMatrix, return_intersection_matrix = FALSE, angle_of_matrix = "x",
+                                 save_MethMotif_logo = FALSE, angle_of_logo="x", logo_type="entropy", meth_level="all",
+                                 saving_MethMotif_logo_x_id = "all", saving_MethMotif_logo_y_id = "all")
+{
+  # check input arguments
+  if (missing(intersectPeakMatrix))
+  {
+    stop("Please provide results from 'intersectPeakMatrix()' using 'intersectPeakMatrix ='!")
+  }
+  if (!is.logical(return_intersection_matrix))
+  {
+    stop("'return_intersection_matrix' should be either TRUE (T) or FALSE (F, default)!")
+  }
+  if (angle_of_matrix != "x" && angle_of_matrix != "y")
+  {
+    stop("'angle_of_matrix' should be either 'x' (default) or 'y'!")
+  }
+  if (!is.logical(save_MethMotif_logo))
+  {
+    stop("'save_MethMotif_logo' should be either TRUE (T) or FALSE (F, default)!")
+  }
+  if (angle_of_logo != "x" && angle_of_logo != "y")
+  {
+    stop("'angle_of_logo' should be either 'x' (default) or 'y'!")
+  }
+  if (logo_type != "entropy" && logo_type != "frequency")
+  {
+    stop("'logo_type' should be either 'entropy' (default) or 'frequency'!")
+  }
+  if (meth_level != "all" && meth_level != "methylated" && meth_level != "unmethylated")
+  {
+    stop("'meth_level' should be one of 'all' (default), 'methylated' and 'unmethylated'!")
+  }
+  if (length(saving_MethMotif_logo_x_id) > nrow(intersectPeakMatrix))
+  {
+    stop("number of x ids input in 'saving_MethMotif_logo_x_id' is larger than number of rows in 'intersectPeakMatrix'!!")
+  }
+  if (length(saving_MethMotif_logo_y_id) > ncol(intersectPeakMatrix))
+  {
+    stop("number of y ids input in 'saving_MethMotif_logo_y_id' is larger than number of columns in 'intersectPeakMatrix'!!")
+  }
+
+  # output the arguments
+  message("Start getting the results of intersectPeakMatrix ...")
+  if (return_intersection_matrix == TRUE)
+  {
+    message("... ... You chose to return intersection matrix;")
+    if (angle_of_matrix == "x")
+    {
+      message("... ... ... You chose x-wise intersection matrix;")
+    }
+    else
+    {
+      message("... ... ... You chose y-wise intersection matrix;")
+    }
+  }
+  else
+  {
+    message("... ... You chose NOT to return intersection matrix;")
+  }
+
+  if (save_MethMotif_logo == TRUE)
+  {
+    message("... ... You chose to save MethMotif logo in PDF if any;")
+    if (angle_of_logo == "x")
+    {
+      message("... ... ... You chose x-wise MethMotif logo;")
+    }
+    else
+    {
+      message("... ... ... You chose y-wise MethMotif logo;")
+    }
+    if (logo_type == "entropy")
+    {
+      message("... ... ... You chose entropy logo;")
+    }
+    else
+    {
+      message("... ... ... You chose frequency logo;")
+    }
+    if (meth_level == "all")
+    {
+      message("... ... ... You chose to show all methylation levels;")
+    }
+    else if (meth_level == "methylated")
+    {
+      message("... ... ... You chose to show the methylated only;")
+    }
+    else
+    {
+      message("... ... ... You chose to show the unmethylated only;")
+    }
+  }
+  else
+  {
+    message("... ... You chose NOT to save MethMotif logo in PDF if any;")
+  }
+
+
+  if (return_intersection_matrix == FALSE && save_MethMotif_logo==FALSE)
+  {
+    message("... ... You chose no action. EXIT!!")
+    return(NULL)
+  }
+  else
+  {
+    # if save methmotif logo
+    if (save_MethMotif_logo)
+    {
+      for (i in 1:nrow(intersectPeakMatrix))
+      {
+        if (saving_MethMotif_logo_x_id != "all" && !(rownames(intersectPeakMatrix)[i] %in% saving_MethMotif_logo_x_id))
+        {
+          next
+        }
+        for (j in 1:ncol(intersectPeakMatrix))
+        {
+          if (saving_MethMotif_logo_y_id != "all" && !(colnames(intersectPeakMatrix)[j] %in% saving_MethMotif_logo_y_id))
+          {
+            next
+          }
+          if (angle_of_logo == "x")
+          {
+            logo_id <- intersectPeakMatrix[i,j][[1]]@id_x
+            is_TFregulome <- intersectPeakMatrix[i,j][[1]]@isxTFregulomeID
+            nsites <- intersectPeakMatrix[i,j][[1]]@MethMotif_x@MMmotif@nsites
+            if (is_TFregulome==TRUE && nsites>0)
+            {
+              plotLogo(MM_object = intersectPeakMatrix[i,j][[1]]@MethMotif_x, logo_type = logo_type, meth_level = meth_level)
+            }
+            else
+            {
+              message(paste0("No MethMotif logo for ", logo_id, " will be generated, because its ID does match any record of existing MethMotif IDs or number of the interected motif is zero."))
+            }
+          }
+          else
+          {
+            logo_id <- intersectPeakMatrix[i,j][[1]]@id_y
+            is_TFregulome <- intersectPeakMatrix[i,j][[1]]@isyTFregulomeID
+            nsites <- intersectPeakMatrix[i,j][[1]]@MethMotif_y@MMmotif@nsites
+            if (is_TFregulome==TRUE && nsites>0)
+            {
+              plotLogo(MM_object = intersectPeakMatrix[i,j][[1]]@MethMotif_y, logo_type = logo_type, meth_level = meth_level)
+            }
+            else
+            {
+              message(paste0("No MethMotif logo for ", logo_id, " will be generated, because its ID does match any record of existing MethMotif IDs or number of the interected motif is zero."))
+            }
+          }
+        }
+      }
+    }
+    # if return intersection matrix
+    if (return_intersection_matrix)
+    {
+      intersection_matrix <- data.frame(matrix(nrow = nrow(intersectPeakMatrix), ncol = ncol(intersectPeakMatrix)))
+      rownames(intersection_matrix) <- rownames(intersectPeakMatrix)
+      colnames(intersection_matrix) <- colnames(intersectPeakMatrix)
+      for (i in 1:nrow(intersectPeakMatrix))
+      {
+        for (j in 1:ncol(intersectPeakMatrix))
+        {
+          if (angle_of_matrix == "x")
+          {
+            intersection_matrix[i,j] = intersectPeakMatrix[i,j][[1]]@overlap_percentage_x
+          }
+          else
+          {
+            intersection_matrix[i,j] = intersectPeakMatrix[i,j][[1]]@overlap_percentage_y
+          }
+        }
+      }
+      if (angle_of_matrix == "y")
+      {
+        intersection_matrix = t(intersection_matrix)
+      }
+      return(intersection_matrix)
+    }
+  }
+}
