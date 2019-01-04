@@ -26,8 +26,9 @@
 #'                                        save_MethMotif_logo=T,
 #'                                        return_summary=T)
 
-commonPeakResult <- function(commonPeaks, return_common_peak_sites = FALSE, save_MethMotif_logo = FALSE,
-                                return_summary = FALSE, logo_type="entropy", meth_level="all")
+commonPeakResult <- function(commonPeaks, return_common_peak_sites = FALSE,
+                             save_MethMotif_logo = FALSE, return_methylation_profile = FALSE,
+                             return_summary = FALSE, logo_type="entropy", meth_level="all")
 {
   # check input arguments
   if (missing(commonPeaks))
@@ -41,6 +42,10 @@ commonPeakResult <- function(commonPeaks, return_common_peak_sites = FALSE, save
   if (!is.logical(save_MethMotif_logo))
   {
     stop("'save_MethMotif_logo' should be either TRUE (T) or FALSE (F, default)!")
+  }
+  if (!is.logical(return_methylation_profile))
+  {
+    stop("'return_methylation_profile' should be either TRUE (T) or FALSE (F, default)!")
   }
   if (!is.logical(return_summary))
   {
@@ -60,28 +65,57 @@ commonPeakResult <- function(commonPeaks, return_common_peak_sites = FALSE, save
   if (return_common_peak_sites == TRUE)
   {
     message("... ... You chose to return common peak sites;")
-    if (return_summary == TRUE)
+    if (return_summary == TRUE && return_methylation_profile == FALSE)
     {
+      message("... ... You chose NOT to return methylation profile;")
       message("... ... You chose to return common peak summary;")
       message("... ... ... Both common peak sets and peak summary will be stored in a list, and named with 'common_peak_list' and 'peak_summary' in the list. Use 'names()' in the output for its detials.")
     }
+    else if (return_summary == FALSE && return_methylation_profile == TRUE)
+    {
+      message("... ... You chose to return methylation profile;")
+      message("... ... You chose NOT to return common peak summary;")
+      message("... ... ... Both common peak sets and methylation profiles will be stored in a list, and named with 'common_peak_list' and 'methylation_profile' in the list. Use 'names()' in the output for its detials.")
+    }
+    else if (return_summary == FALSE && return_methylation_profile == FALSE)
+    {
+      message("... ... You chose NOT to return methylation profile;")
+      message("... ... You chose NOT to return common peak summary;")
+      message("... ... ... Only common peak sets will be returned in a list and named with 'common_peak_list'.")
+    }
     else
     {
-      message("... ... You chose NOT to return common peak summary;")
-      message("... ... ... Only list of common peak sets will be returned in a list. Use names() in the output to see the ids of each peak set in the list.")
+      message("... ... You chose to return methylation profile;")
+      message("... ... You chose to return common peak summary;")
+      message("... ... ... ALL of common peak sets, methylation profiles and peak summary will be stored in a list, and named with 'common_peak_list', 'methylation_profile' and 'peak_summary' in the list. Use 'names()' in the output for its detials.")
     }
   }
   else
   {
     message("... ... You chose NOT to return common peak sites;")
-    if (return_summary == TRUE)
+    if (return_summary == TRUE && return_methylation_profile == FALSE)
     {
+      message("... ... You chose NOT to return methylation profile;")
       message("... ... You chose to return common peak summary;")
-      message("... ... ... Only peak summary will be returned in a matrix.")
+      message("... ... ... Only peak summary will be returned in a list and named with 'peak_summary'.")
+    }
+    else if (return_summary == FALSE && return_methylation_profile == TRUE)
+    {
+      message("... ... You chose to return methylation profile;")
+      message("... ... You chose NOT to return common peak summary;")
+      message("... ... ... Only methylation_profiles will be returned in a list, and named with 'methylation_profile'.")
+    }
+    else if (return_summary == FALSE && return_methylation_profile == FALSE)
+    {
+      message("... ... You chose NOT to return methylation profile;")
+      message("... ... You chose NOT to return common peak summary;")
+      message("... ... ... None will be returned.")
     }
     else
     {
-      message("... ... You chose NOT to return common peak summary;")
+      message("... ... You chose to return methylation profile;")
+      message("... ... You chose to return common peak summary;")
+      message("... ... ... Both methylation profiles and peak summary will be stored in a list, and named with 'methylation_profile' and 'peak_summary' in the list. Use 'names()' in the output for its detials.")
     }
   }
 
@@ -114,7 +148,7 @@ commonPeakResult <- function(commonPeaks, return_common_peak_sites = FALSE, save
     message("... ... You chose NOT to save MethMotif logo in PDF if any;")
   }
 
-  if (return_common_peak_sites == FALSE && save_MethMotif_logo == FALSE && return_summary == FALSE)
+  if (return_common_peak_sites == FALSE && save_MethMotif_logo == FALSE && return_summary == FALSE && return_methylation_profile==FALSE)
   {
     message("... ... You chose no action. EXIT!!")
     return(NULL)
@@ -139,6 +173,8 @@ commonPeakResult <- function(commonPeaks, return_common_peak_sites = FALSE, save
         }
       }
     }
+    # store all the results in the following
+    return_all <- list()
     # if return common peaks
     if (return_common_peak_sites)
     {
@@ -149,6 +185,19 @@ commonPeakResult <- function(commonPeaks, return_common_peak_sites = FALSE, save
         peak_id <- commonPeaks[i,1][[1]]@id
         common_peak_list[[peak_id]] <- common_peak_i
       }
+      return_all[["common_peak_list"]] <- common_peak_list
+    }
+    # if return methylation profile
+    if (return_methylation_profile)
+    {
+      methylation_profile <- list()
+      for (i in 1:nrow(commonPeaks))
+      {
+        meth_profile_i <- as.matrix(commonPeaks[i,1][[1]]@methylation_profile)
+        peak_id <- commonPeaks[i,1][[1]]@id
+        methylation_profile[[peak_id]] <- meth_profile_i
+      }
+      return_all[["methylation_profile"]] <- methylation_profile
     }
     # if return summary
     if (return_summary)
@@ -163,22 +212,12 @@ commonPeakResult <- function(commonPeaks, return_common_peak_sites = FALSE, save
       }
       rownames(summary_matrix) <- id_list
       colnames(summary_matrix) <- c("percentage_in_original_inputs(%)")
+      return_all[["peak_summary"]] <- summary_matrix
     }
     # return values
-    if (return_common_peak_sites == TRUE && return_summary == TRUE)
+    if (!(return_common_peak_sites == F && return_methylation_profile == F && return_summary == F))
     {
-      return_all <- list()
-      return_all[["common_peak_list"]] <- common_peak_list
-      return_all[["peak_summary"]] <- summary_matrix
       return(return_all)
-    }
-    if (return_common_peak_sites == TRUE && return_summary == FALSE)
-    {
-      return(common_peak_list)
-    }
-    if (return_common_peak_sites == FALSE && return_summary == TRUE)
-    {
-      return(summary_matrix)
     }
   }
 }

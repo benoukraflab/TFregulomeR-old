@@ -24,7 +24,7 @@
 
 commonPeaks <- function(target_peak_id, motif_only_for_target_peak = F,user_target_peak_list,
                         compared_peak_id, motif_only_for_compared_peak = F, user_compared_peak_list,
-                        motif_type = "MEME", TFregulome_url)
+                        methylation_profile_in_narrow_region = T, motif_type = "MEME", TFregulome_url)
 {
   # check the input arguments
   if(missing(target_peak_id) && missing(user_target_peak_list))
@@ -44,6 +44,10 @@ commonPeaks <- function(target_peak_id, motif_only_for_target_peak = F,user_targ
   {
    stop("motif_only_for_target_peak and motif_only_for_compared_peak should be either TRUE or FALSE (default)")
   }
+  if (class(methylation_profile_in_narrow_region) != "logical")
+  {
+    stop("methylation_profile_in_narrow_region should be either TRUE (default) or FALSE")
+  }
   if (motif_type != "MEME" && motif_type != "TRANSFAC")
   {
     stop("motif_type should be either 'MEME' (default) or 'TRANSFAC'!")
@@ -62,7 +66,14 @@ commonPeaks <- function(target_peak_id, motif_only_for_target_peak = F,user_targ
   }
 
   message("TFregulomeR::commonPeaks() starting ... ...")
-
+  if (methylation_profile_in_narrow_region)
+  {
+    message("You chose to profile the methylation levels in 200bp window around peak summits, if there is any peak loaded from TFregulome")
+  }
+  else
+  {
+    message("You chose NOT to profile the methylation levels in 200bp window around peak summits")
+  }
   # loading target peak list
   message("Loading target peak list ... ...")
   target_peak_list_all <- list()
@@ -211,6 +222,7 @@ commonPeaks <- function(target_peak_id, motif_only_for_target_peak = F,user_targ
         isMethMotifID_target <- TRUE
         motif_seq_path_target <- request_content_df[1,c("TFBS")]
         meth_file_path_target <- request_content_df[1,c("DNA_methylation_profile")]
+        meth_file_200bp_path_target <- request_content_df[1,c("DNA_methylation_profile_200bp")]
         WGBS_replicate_target <- request_content_df[1,c("WGBS_num")]
       }
       else
@@ -252,6 +264,9 @@ commonPeaks <- function(target_peak_id, motif_only_for_target_peak = F,user_targ
     }
 
     MethMotif_target <- new("MethMotif")
+    #initiate methylation profile distribution
+    meth_score_distri_target <- matrix()
+
     if (isTFregulome_target)
     {
       motif_seq_target <- read.delim(motif_seq_path_target, sep = "\t", header = F)
@@ -273,6 +288,7 @@ commonPeaks <- function(target_peak_id, motif_only_for_target_peak = F,user_targ
           # compute beta score matrix
           if (isMethMotifID_target)
           {
+            # calculate beta score matrix
             # methylation file can be empty
             meth_level_target <- tryCatch(read.delim(meth_file_path_target, sep = "\t", header = F),
                                           error=function(e) data.frame())
@@ -322,6 +338,36 @@ commonPeaks <- function(target_peak_id, motif_only_for_target_peak = F,user_targ
                                                     motif_matrix=motif_matrix_of_peakTarget_done_common)
           MethMotif_target@MMBetaScore <- beta_score_matrix_of_peakTarget_done_common
         }
+
+
+        # profile methylation level in narrow regions
+        if (methylation_profile_in_narrow_region)
+        {
+          ### if in 200bp around peaks
+          if (isMethMotifID_target)
+          {
+            meth_level_200bp_target <- tryCatch(read.delim(meth_file_200bp_path_target, sep = "\t", header = F),
+                                                error=function(e) data.frame())
+            if (nrow(meth_level_200bp_target) == 0)
+            {
+              meth_score_distri_target <- formBetaScoreDistri(input_meth = data.frame())
+            }
+            else
+            {
+              colnames(meth_level_200bp_target) <- c("chr","start","end",
+                                                     "meth_score","C_num","T_num")
+              meth_level_200bp_target$id <- paste0(target_id_i,"_200bp_CG_", as.vector(rownames(meth_level_200bp_target)))
+              meth_level_200bp_target_grange <- with(meth_level_200bp_target[,c("chr","start","end","id")],
+                                                     GRanges(chr, IRanges(start, end), id=id))
+              bed_target_i <- with(target_peak_i, GRanges(chr, IRanges(start-99, end+100), id=id))
+              suppressWarnings(meth_level_in_common_peaks_200bp <- unique(as.data.frame(subsetByOverlaps(meth_level_200bp_target_grange,
+                                                                                                         bed_target_i))))
+              meth_level_in_common_peaks_200bp_allInfo <- unique(meth_level_200bp_target[which(meth_level_200bp_target$id
+                                                                                               %in% meth_level_in_common_peaks_200bp$id),])
+              meth_score_distri_target <- formBetaScoreDistri(input_meth = as.data.frame(meth_level_in_common_peaks_200bp_allInfo$meth_score))
+            }
+          }
+        }
       }
     }
     new_CommonPeaksMM <- new("CommonPeaksMM")
@@ -330,7 +376,8 @@ commonPeaks <- function(target_peak_id, motif_only_for_target_peak = F,user_targ
                                              common_percentage = 100*nrow(target_peak_i)/number_of_orignal_target,
                                              common_peak = target_peak_i,
                                              isTFregulomeID = isTFregulome_target,
-                                             MethMotif = MethMotif_target)
+                                             MethMotif = MethMotif_target,
+                                             methylation_profile = meth_score_distri_target)
     common_peak_matrix[[paste0(target_id_i, "_common_peaks")]] <- new_CommonPeaksMM
   }
   message("Done analysing.")
@@ -339,6 +386,26 @@ commonPeaks <- function(target_peak_id, motif_only_for_target_peak = F,user_targ
   colnames(common_peak_matrix) <- c("common")
   return(common_peak_matrix)
 }
+
+
+formBetaScoreDistri <- function(input_meth)
+{
+  beta_score_distri <- c(rep(0,10))
+  names(beta_score_distri) <- c("0-10%","10-20%","20-30%","30-40%","40-50%",
+                                "50-60%","60-70%","70-80%","80-90%","90-100%")
+  if (nrow(input_meth)>0)
+  {
+    colnames(input_meth) <- c("beta_score")
+    betascore_hist <- hist(input_meth$beta_score, breaks = c(seq(0,100,10)), plot = F)
+    beta_score_distri <- c(betascore_hist$counts)
+    names(beta_score_distri) <- c("0-10%","10-20%","20-30%","30-40%","40-50%",
+                                  "50-60%","60-70%","70-80%","80-90%","90-100%")
+  }
+  beta_score_distri_matrix <- as.matrix(beta_score_distri)
+  colnames(beta_score_distri_matrix) <- "CpG_num"
+  return(beta_score_distri_matrix)
+}
+
 
 
 

@@ -29,9 +29,17 @@
 #'                                               save_MethMotif_logo=T,
 #'                           saving_MethMotif_logo_x_id=c("MM1_HSA_K562_CEBPB"))
 
-intersectPeakMatrixResult <- function(intersectPeakMatrix, return_intersection_matrix = FALSE, angle_of_matrix = "x",
-                                 save_MethMotif_logo = FALSE, angle_of_logo="x", logo_type="entropy", meth_level="all",
-                                 saving_MethMotif_logo_x_id = "all", saving_MethMotif_logo_y_id = "all")
+intersectPeakMatrixResult <- function(intersectPeakMatrix,
+                                      return_intersection_matrix = FALSE,
+                                      angle_of_matrix = "x",
+                                      return_methylation_profile = FALSE,
+                                      angle_of_methylation_profile = "x",
+                                      save_MethMotif_logo = FALSE,
+                                      angle_of_logo="x",
+                                      logo_type="entropy",
+                                      meth_level="all",
+                                      saving_MethMotif_logo_x_id = "all",
+                                      saving_MethMotif_logo_y_id = "all")
 {
   # check input arguments
   if (missing(intersectPeakMatrix))
@@ -42,9 +50,17 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix, return_intersection_m
   {
     stop("'return_intersection_matrix' should be either TRUE (T) or FALSE (F, default)!")
   }
+  if (!is.logical(return_methylation_profile))
+  {
+    stop("'return_methylation_profile' should be either TRUE (T) or FALSE (F, default)!")
+  }
   if (angle_of_matrix != "x" && angle_of_matrix != "y")
   {
     stop("'angle_of_matrix' should be either 'x' (default) or 'y'!")
+  }
+  if (angle_of_methylation_profile != "x" && angle_of_methylation_profile != "y")
+  {
+    stop("'angle_of_methylation_profile' should be either 'x' (default) or 'y'!")
   }
   if (!is.logical(save_MethMotif_logo))
   {
@@ -90,6 +106,23 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix, return_intersection_m
     message("... ... You chose NOT to return intersection matrix;")
   }
 
+  if (return_methylation_profile == TRUE)
+  {
+    message("... ... You chose to return methylation profile;")
+    if (angle_of_methylation_profile == "x")
+    {
+      message("... ... ... You chose to return methylation profile for peak list x;")
+    }
+    else
+    {
+      message("... ... ... You chose to return methylation profile for peak list y;")
+    }
+  }
+  else
+  {
+    message("... ... You chose NOT to return methylation profile;")
+  }
+
   if (save_MethMotif_logo == TRUE)
   {
     message("... ... You chose to save MethMotif logo in PDF if any;")
@@ -128,7 +161,7 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix, return_intersection_m
   }
 
 
-  if (return_intersection_matrix == FALSE && save_MethMotif_logo==FALSE)
+  if (return_intersection_matrix == FALSE && save_MethMotif_logo==FALSE && return_methylation_profile ==FALSE)
   {
     message("... ... You chose no action. EXIT!!")
     return(NULL)
@@ -181,6 +214,7 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix, return_intersection_m
         }
       }
     }
+    return_all <- list()
     # if return intersection matrix
     if (return_intersection_matrix)
     {
@@ -193,19 +227,50 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix, return_intersection_m
         {
           if (angle_of_matrix == "x")
           {
-            intersection_matrix[i,j] = intersectPeakMatrix[i,j][[1]]@overlap_percentage_x
+            intersection_matrix[i,j] <- intersectPeakMatrix[i,j][[1]]@overlap_percentage_x
           }
           else
           {
-            intersection_matrix[i,j] = intersectPeakMatrix[i,j][[1]]@overlap_percentage_y
+            intersection_matrix[i,j] <- intersectPeakMatrix[i,j][[1]]@overlap_percentage_y
           }
         }
       }
-      if (angle_of_matrix == "y")
+      return_all[["intersection_matrix"]] <- intersection_matrix
+    }
+    # if return methylation profile
+    if (return_methylation_profile)
+    {
+      methylation_profile_list <- list()
+      count = 1
+      for (i in 1:nrow(intersectPeakMatrix))
       {
-        intersection_matrix = t(intersection_matrix)
+        for (j in 1:ncol(intersectPeakMatrix))
+        {
+
+          if (angle_of_methylation_profile == "x")
+          {
+            id <- intersectPeakMatrix[i,j][[1]]@id_x
+            methylation_profile_list[[count]] <- intersectPeakMatrix[i,j][[1]]@methylation_profile_x
+            count <- count +1
+          }
+          else
+          {
+            id <- intersectPeakMatrix[i,j][[1]]@id_y
+            methylation_profile_list[[count]] <- intersectPeakMatrix[i,j][[1]]@methylation_profile_y
+            count <- count +1
+          }
+        }
       }
-      return(intersection_matrix)
+      methylation_profile_matrix <- matrix(methylation_profile_list, nrow = nrow(intersectPeakMatrix),
+                                           ncol = ncol(intersectPeakMatrix), byrow = TRUE)
+      rownames(methylation_profile_matrix) <- rownames(intersectPeakMatrix)
+      colnames(methylation_profile_matrix) <- colnames(intersectPeakMatrix)
+      return_all[["methylation_profile_matrix"]] <- methylation_profile_matrix
+    }
+    #return value
+    if (!(return_intersection_matrix==FALSE && return_methylation_profile==FALSE))
+    {
+      return(return_all)
     }
   }
 }

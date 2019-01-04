@@ -185,30 +185,39 @@ IntersectPeakMatrix <- setClass(
             overlap_percentage_x = "numeric",
             isxTFregulomeID = "logical",
             MethMotif_x = "MethMotif",
+            methylation_profile_x = "matrix",
             id_y = "character",
             overlap_percentage_y = "numeric",
             isyTFregulomeID = "logical",
-            MethMotif_y = "MethMotif"),
+            MethMotif_y = "MethMotif",
+            methylation_profile_y = "matrix"),
   prototype = list(id = "",
                    id_x = "",
                    overlap_percentage_x = 0,
                    isxTFregulomeID = FALSE,
                    MethMotif_x = new('MethMotif'),
+                   methylation_profile_x = matrix(),
                    id_y = "",
                    overlap_percentage_y = 0,
                    isyTFregulomeID = FALSE,
-                   MethMotif_y = new('MethMotif'))
+                   MethMotif_y = new('MethMotif'),
+                   methylation_profile_y = matrix())
 )
 
 setGeneric(name = "updateIntersectPeakMatrix",
-           def = function(theObject, id, id_x, overlap_percentage_x, isxTFregulomeID, MethMotif_x, id_y, overlap_percentage_y, isyTFregulomeID, MethMotif_y)
+           def = function(theObject, id, id_x, overlap_percentage_x, isxTFregulomeID,
+                          MethMotif_x, methylation_profile_x, id_y, overlap_percentage_y,
+                          isyTFregulomeID, MethMotif_y, methylation_profile_y)
            {
              standardGeneric("updateIntersectPeakMatrix")
            }
 )
 setMethod(f = "updateIntersectPeakMatrix",
           signature(theObject = "IntersectPeakMatrix"),
-          definition = function(theObject, id, id_x, overlap_percentage_x, isxTFregulomeID, MethMotif_x, id_y, overlap_percentage_y, isyTFregulomeID, MethMotif_y)
+          definition = function(theObject, id, id_x, overlap_percentage_x,
+                                isxTFregulomeID, MethMotif_x, methylation_profile_x,
+                                id_y, overlap_percentage_y, isyTFregulomeID,
+                                MethMotif_y, methylation_profile_y)
           {
             if (missing(theObject))
             {
@@ -254,6 +263,14 @@ setMethod(f = "updateIntersectPeakMatrix",
               }
               theObject@MethMotif_x <- MethMotif_x
             }
+            if (!missing(methylation_profile_x))
+            {
+              if (class(methylation_profile_x)[1]!="matrix")
+              {
+                stop("'methylation_profile_x' should be class matrix!")
+              }
+              theObject@methylation_profile_x <- methylation_profile_x
+            }
             if (!missing(id_y))
             {
               if (!is.character(id_y))
@@ -286,6 +303,14 @@ setMethod(f = "updateIntersectPeakMatrix",
               }
               theObject@MethMotif_y <- MethMotif_y
             }
+            if (!missing(methylation_profile_y))
+            {
+              if (class(methylation_profile_y)[1]!="matrix")
+              {
+                stop("'methylation_profile_y' should be class matrix!")
+              }
+              theObject@methylation_profile_y <- methylation_profile_y
+            }
             return(theObject)
           }
 )
@@ -298,22 +323,26 @@ ExclusivePeaksMM <- setClass(
             exclusive_percentage = "numeric",
             exclusive_peak = "data.frame",
             isTFregulomeID = "logical",
-            MethMotif = "MethMotif"),
+            MethMotif = "MethMotif",
+            methylation_profile = "matrix"),
   prototype = list(id = "",
                    exclusive_percentage = 0,
                    exclusive_peak = data.frame(),
                    isTFregulomeID = FALSE,
-                   MethMotif = new('MethMotif'))
+                   MethMotif = new('MethMotif'),
+                   methylation_profile = matrix())
 )
 setGeneric(name = "updateExclusivePeaksMM",
-           def = function(theObject, id, exclusive_percentage, exclusive_peak,isTFregulomeID, MethMotif)
+           def = function(theObject, id, exclusive_percentage, exclusive_peak,
+                          isTFregulomeID, MethMotif, methylation_profile)
            {
              standardGeneric("updateExclusivePeaksMM")
            }
 )
 setMethod(f = "updateExclusivePeaksMM",
           signature(theObject = "ExclusivePeaksMM"),
-          definition = function(theObject, id, exclusive_percentage, exclusive_peak,isTFregulomeID, MethMotif)
+          definition = function(theObject, id, exclusive_percentage, exclusive_peak,
+                                isTFregulomeID, MethMotif, methylation_profile)
           {
             if (missing(theObject))
             {
@@ -359,6 +388,14 @@ setMethod(f = "updateExclusivePeaksMM",
               }
               theObject@MethMotif <- MethMotif
             }
+            if (!missing(methylation_profile))
+            {
+              if (class(methylation_profile)[1]!="matrix")
+              {
+                stop("'methylation_profile' should be class matrix!")
+              }
+              theObject@methylation_profile <- methylation_profile
+            }
             return(theObject)
           }
 )
@@ -371,22 +408,26 @@ CommonPeaksMM <- setClass(
             common_percentage = "numeric",
             common_peak = "data.frame",
             isTFregulomeID = "logical",
-            MethMotif = "MethMotif"),
+            MethMotif = "MethMotif",
+            methylation_profile = "matrix"),
   prototype = list(id = "",
                    common_percentage = 0,
                    common_peak = data.frame(),
                    isTFregulomeID = FALSE,
-                   MethMotif = new('MethMotif'))
+                   MethMotif = new('MethMotif'),
+                   methylation_profile = matrix())
 )
 setGeneric(name = "updateCommonPeaksMM",
-           def = function(theObject, id, common_percentage, common_peak,isTFregulomeID, MethMotif)
+           def = function(theObject, id, common_percentage, common_peak,isTFregulomeID,
+                          MethMotif, methylation_profile)
            {
              standardGeneric("updateCommonPeaksMM")
            }
 )
 setMethod(f = "updateCommonPeaksMM",
           signature(theObject = "CommonPeaksMM"),
-          definition = function(theObject, id, common_percentage, common_peak,isTFregulomeID, MethMotif)
+          definition = function(theObject, id, common_percentage, common_peak,isTFregulomeID,
+                                MethMotif, methylation_profile)
           {
             if (missing(theObject))
             {
@@ -431,6 +472,14 @@ setMethod(f = "updateCommonPeaksMM",
                 stop("'MethMotif' should be class MethMotif!")
               }
               theObject@MethMotif <- MethMotif
+            }
+            if (!missing(methylation_profile))
+            {
+              if (class(methylation_profile)[1]!="matrix")
+              {
+                stop("'methylation_profile' should be class matrix!")
+              }
+              theObject@methylation_profile <- methylation_profile
             }
             return(theObject)
           }

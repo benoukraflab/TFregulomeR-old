@@ -24,6 +24,7 @@
 
 intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_list_x,
                                 peak_id_y, motif_only_for_id_y = F, user_peak_list_y,
+                                methylation_profile_in_narrow_region = F,
                                 motif_type = "MEME", TFregulome_url)
 {
   # check the input argument
@@ -44,6 +45,10 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
   {
     stop("motif_only_for_id_x and motif_only_for_id_y should be either TRUE or FALSE (default)")
   }
+  if (class(methylation_profile_in_narrow_region) != "logical")
+  {
+    stop("methylation_profile_in_narrow_region should be either TRUE or FALSE (default)")
+  }
   if (motif_type != "MEME" && motif_type != "TRANSFAC")
   {
     stop("motif_type should be either 'MEME' (default) or 'TRANSFAC'!")
@@ -62,6 +67,14 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
   }
 
   message("TFregulomeR::intersectPeakMatrix() starting ... ...")
+  if (methylation_profile_in_narrow_region)
+  {
+    message("You chose to profile the methylation levels in 200bp window around peak summits, if there is any peak loaded from TFregulome. It will make the program slow. Disable it if you want a speedy analysis and do not care about methylation")
+  }
+  else
+  {
+    message("You chose NOT to profile the methylation levels in 200bp window around peak summits")
+  }
   # loading peak list x
   message("Loading peak list x ... ...")
   peak_list_x_all <- list()
@@ -221,6 +234,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
         isMethMotifID_x <- TRUE
         motif_seq_path_x <- request_content_df[1,c("TFBS")]
         meth_file_path_x <- request_content_df[1,c("DNA_methylation_profile")]
+        meth_file_200bp_path_x <- request_content_df[1,c("DNA_methylation_profile_200bp")]
         WGBS_replicate_x <- request_content_df[1,c("WGBS_num")]
       }
       else
@@ -239,7 +253,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
       id_y <- peak_id_y_all[j]
       message(paste0("... ... Start analysing list y:", id_y))
       peak_y <- peak_list_y_all[[j]]
-      if (i <= length(TFregulome_peak_y_id))
+      if (j <= length(TFregulome_peak_y_id))
       {
         isTFregulome_y <- TRUE
         query_url <- paste0("listTFBS.php?AllTable=F&id=",id_y)
@@ -263,6 +277,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
           isMethMotifID_y <- TRUE
           motif_seq_path_y <- request_content_df[1,c("TFBS")]
           meth_file_path_y <- request_content_df[1,c("DNA_methylation_profile")]
+          meth_file_200bp_path_y <- request_content_df[1,c("DNA_methylation_profile_200bp")]
           WGBS_replicate_y <- request_content_df[1,c("WGBS_num")]
         }
         else
@@ -301,6 +316,11 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
       peakx_with_peaky <- unique(as.data.frame(bedx_with_bedy))
       x_interect_percentage <- 100*nrow(peakx_with_peaky)/nrow(peak_x)
       MethMotif_x <- new('MethMotif')
+      # collecting all CpG meth scores in the defined methylation profile area
+      meth_score_collection_x <- data.frame()
+      # methylation distribution only meaningful if we have WGBS and peaks
+      is_methProfile_meaningful_x <- F
+
       # form MethMotif object if the id is TFregulome id
       if (isTFregulome_x)
       {
@@ -370,7 +390,49 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
                                                  motif_matrix=motif_matrix_of_peakx_with_y)
             MethMotif_x@MMBetaScore <- beta_score_matrix_of_peakx_with_y
           }
+
+          # collecting CpG in x peaks that overlap with y peaks
+          if (methylation_profile_in_narrow_region)
+          {
+            ### if in 200bp around peaks
+            if (isMethMotifID_x)
+            {
+              is_methProfile_meaningful_x <- T
+              meth_level_200bp_x <- tryCatch(read.delim(meth_file_200bp_path_x, sep = "\t", header = F),
+                                                  error=function(e) data.frame())
+              if (nrow(meth_level_200bp_x) > 0)
+              {
+                colnames(meth_level_200bp_x) <- c("chr","start","end",
+                                                       "meth_score","C_num","T_num")
+                meth_level_200bp_x$id <- paste0("200bp_CG_", as.vector(rownames(meth_level_200bp_x)))
+                meth_level_200bp_x_grange <- with(meth_level_200bp_x[,c("chr","start","end","id")],
+                                                       GRanges(chr, IRanges(start, end), id=id))
+                suppressWarnings(meth_level_in_peakx_200bp <- unique(as.data.frame(subsetByOverlaps(meth_level_200bp_x_grange,
+                                                                                                    bedx_with_bedy))))
+                meth_level_in_peakx_200bp_allInfo <- unique(meth_level_200bp_x[which(meth_level_200bp_x$id
+                                                                                     %in% meth_level_in_peakx_200bp$id),])
+                meth_score_collection_x <- rbind(meth_score_collection_x,
+                                               meth_level_in_peakx_200bp_allInfo[,c("chr","start","end","meth_score","C_num","T_num")])
+              }
+            }
+          }
         }
+      }
+      # form methylation score profile - distribution for peak x
+      if (is_methProfile_meaningful_x)
+      {
+        if (nrow(meth_score_collection_x)>0)
+        {
+          meth_score_distri_target_x <- formBetaScoreDistri(input_meth = as.data.frame(meth_score_collection_x$meth_score))
+        }
+        else
+        {
+          meth_score_distri_target_x <- formBetaScoreDistri(input_meth = data.frame())
+        }
+      }
+      else
+      {
+        meth_score_distri_target_x <- matrix()
       }
 
       # get peak y which intersect with x
@@ -378,6 +440,10 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
       peaky_with_peakx <- unique(as.data.frame(bedy_with_bedx))
       y_interect_percentage <- 100*nrow(peaky_with_peakx)/nrow(peak_y)
       MethMotif_y <- new('MethMotif')
+      # collecting all CpG meth scores in the defined methylation profile area
+      meth_score_collection_y <- data.frame()
+      # methylation distribution only meaningful if we have WGBS and peaks
+      is_methProfile_meaningful_y <- F
       # form MethMotif object if the id is TFregulome id
       if (isTFregulome_y)
       {
@@ -447,7 +513,49 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
                                                  motif_matrix=motif_matrix_of_peaky_with_x)
             MethMotif_y@MMBetaScore <- beta_score_matrix_of_peaky_with_x
           }
+
+          # collecting CpG in y peaks that overlap with x peaks
+          if (methylation_profile_in_narrow_region)
+          {
+            ### if in 200bp around peaks
+            if (isMethMotifID_y)
+            {
+              is_methProfile_meaningful_y <- T
+              meth_level_200bp_y <- tryCatch(read.delim(meth_file_200bp_path_y, sep = "\t", header = F),
+                                             error=function(e) data.frame())
+              if (nrow(meth_level_200bp_y) > 0)
+              {
+                colnames(meth_level_200bp_y) <- c("chr","start","end",
+                                                  "meth_score","C_num","T_num")
+                meth_level_200bp_y$id <- paste0("200bp_CG_", as.vector(rownames(meth_level_200bp_y)))
+                meth_level_200bp_y_grange <- with(meth_level_200bp_y[,c("chr","start","end","id")],
+                                                  GRanges(chr, IRanges(start, end), id=id))
+                suppressWarnings(meth_level_in_peaky_200bp <- unique(as.data.frame(subsetByOverlaps(meth_level_200bp_y_grange,
+                                                                                                    bedy_with_bedx))))
+                meth_level_in_peaky_200bp_allInfo <- unique(meth_level_200bp_y[which(meth_level_200bp_y$id
+                                                                                     %in% meth_level_in_peaky_200bp$id),])
+                meth_score_collection_y <- rbind(meth_score_collection_y,
+                                               meth_level_in_peaky_200bp_allInfo[,c("chr","start","end","meth_score","C_num","T_num")])
+              }
+            }
+          }
         }
+      }
+      # form methylation score profile - distribution
+      if (is_methProfile_meaningful_y)
+      {
+        if (nrow(meth_score_collection_y)>0)
+        {
+          meth_score_distri_target_y <- formBetaScoreDistri(input_meth = as.data.frame(meth_score_collection_y$meth_score))
+        }
+        else
+        {
+          meth_score_distri_target_y <- formBetaScoreDistri(input_meth = data.frame())
+        }
+      }
+      else
+      {
+        meth_score_distri_target_y <- matrix()
       }
 
       #form an IntersectPeakMatrix object
@@ -458,10 +566,12 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
                                                            overlap_percentage_x = x_interect_percentage,
                                                            isxTFregulomeID = isTFregulome_x,
                                                            MethMotif_x = MethMotif_x,
+                                                           methylation_profile_x = meth_score_distri_target_x,
                                                            id_y = id_y,
                                                            overlap_percentage_y = y_interect_percentage,
                                                            isyTFregulomeID = isTFregulome_y,
-                                                           MethMotif_y = MethMotif_y)
+                                                           MethMotif_y = MethMotif_y,
+                                                           methylation_profile_y = meth_score_distri_target_y)
       intersection_matrix[[paste0(id_x,"_[AND]_",id_y)]] <- new_IntersectPeakMatrix
     }
   }
