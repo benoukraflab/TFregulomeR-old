@@ -23,8 +23,9 @@
 #'                                         excluded_peak_id=excluded_id)
 
 exclusivePeaks <- function(target_peak_id, motif_only_for_target_peak = F,
-                           user_target_peak_list, excluded_peak_id,
-                           motif_only_for_excluded_peak = F, user_excluded_peak_list,
+                           user_target_peak_list, user_target_peak_id,
+                           excluded_peak_id, motif_only_for_excluded_peak = F,
+                           user_excluded_peak_list, user_excluded_peak_id,
                            methylation_profile_in_narrow_region = T, motif_type = "MEME",
                            TFregulome_url)
 {
@@ -81,6 +82,7 @@ exclusivePeaks <- function(target_peak_id, motif_only_for_target_peak = F,
   target_peak_list_all <- list()
   # loading from TFregulome server
   TFregulome_target_peak_id <- c()
+  is_taregt_TFregulome <- c()
   target_list_count <- 0
   if (!missing(target_peak_id) && length(target_peak_id)>0)
   {
@@ -96,7 +98,7 @@ exclusivePeaks <- function(target_peak_id, motif_only_for_target_peak = F,
     message("... loading TFBS(s) from TFregulome now")
     for (i in target_peak_id)
     {
-      peak_i <- suppressMessages(loadPeaks(id = i, includeMotifOnly = motif_only_for_target_peak))
+      peak_i <- suppressMessages(loadPeaks(id = i, includeMotifOnly = motif_only_for_target_peak, TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
       if (is.null(peak_i))
       {
         message(paste0("... ... NO peak file for your id '", i,"'."))
@@ -106,25 +108,21 @@ exclusivePeaks <- function(target_peak_id, motif_only_for_target_peak = F,
         target_list_count <- target_list_count + 1
         target_peak_list_all[[target_list_count]] <- peak_i
         TFregulome_target_peak_id <- c(TFregulome_target_peak_id, i)
+        is_taregt_TFregulome <- c(is_taregt_TFregulome, T)
         message(paste0(".. ... peak file loaded successfully for id '", i,"'"))
       }
     }
     message("... Done loading TFBS(s) from TFregulome")
   }
   # users' peaks
-  user_target_peak_id <- c()
   if (!missing(user_target_peak_list) && length(user_target_peak_list)>0)
   {
     message(paste0("... You have ",length(user_target_peak_list)," customised peak set(s)"))
-    if (is.null(names(user_target_peak_list)) ||
-        length(unique(names(user_target_peak_list)))!=length(names(user_target_peak_list)))
+    if (missing(user_target_peak_id) || length(user_target_peak_id)!=length(user_target_peak_list) ||
+        length(unique(user_target_peak_id))!=length(user_target_peak_list))
     {
-      message("... ... You didn't provide the name for each customised peak set or your names are not unique. Instead we will use 'user_target_peak1', 'user_target_peak2'..." )
+      message("... ... You didn't provide the ID for each customised peak set or your ID number does not uniquely equal to the input user peak number. Instead we will use 'user_target_peak1', 'user_target_peak2'..." )
       user_target_peak_id <- paste0("user_target_peak", seq(1,length(user_target_peak_list), 1))
-    }
-    else
-    {
-      user_target_peak_id <- names(user_target_peak_list)
     }
     for (i in 1:length(user_target_peak_list))
     {
@@ -135,7 +133,21 @@ exclusivePeaks <- function(target_peak_id, motif_only_for_target_peak = F,
       peak_i_sub <- peak_i_sub[,c("chr","start","end","id")]
       target_list_count <- target_list_count + 1
       target_peak_list_all[[target_list_count]] <- peak_i_sub
+      # test if user input id i match any TFregulome database ID
+      motif_matrix_i <- suppressMessages(searchMotif(id = user_target_peak_id[i], TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
+      if (is.null(motif_matrix_i))
+      {
+        is_taregt_TFregulome <- c(is_taregt_TFregulome, F)
+      }
+      else
+      {
+        is_taregt_TFregulome <- c(is_taregt_TFregulome, T)
+      }
     }
+  }
+  else
+  {
+    user_target_peak_id <- c()
   }
   # combine TFregulome ID and user ID
   target_peak_id_all <- c(TFregulome_target_peak_id, user_target_peak_id)
@@ -143,6 +155,7 @@ exclusivePeaks <- function(target_peak_id, motif_only_for_target_peak = F,
   # loading excluded peak list
   message("Loading excluded peak list ... ...")
   excluded_peak_list_all <- list()
+  is_excluded_TFregulome <- c()
   # loading from TFregulome server
   excluded_list_count <- 0
   TFregulome_excluded_peak_id <- c()
@@ -160,7 +173,7 @@ exclusivePeaks <- function(target_peak_id, motif_only_for_target_peak = F,
     message("... loading TFBS(s) from TFregulome now")
     for (i in excluded_peak_id)
     {
-      peak_i <- suppressMessages(loadPeaks(id = i, includeMotifOnly = motif_only_for_excluded_peak))
+      peak_i <- suppressMessages(loadPeaks(id = i, includeMotifOnly = motif_only_for_excluded_peak, TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
       if (is.null(peak_i))
       {
         message(paste0("... ... NO peak file for your id '", i,"'."))
@@ -169,6 +182,7 @@ exclusivePeaks <- function(target_peak_id, motif_only_for_target_peak = F,
       {
         excluded_list_count <- excluded_list_count + 1
         excluded_peak_list_all[[excluded_list_count]] <- peak_i
+        is_excluded_TFregulome <- c(is_excluded_TFregulome, T)
         TFregulome_excluded_peak_id <- c(TFregulome_excluded_peak_id, i)
         message(paste0(".. ... peak file loaded successfully for id '", i,"'"))
       }
@@ -179,6 +193,12 @@ exclusivePeaks <- function(target_peak_id, motif_only_for_target_peak = F,
   if (!missing(user_excluded_peak_list) && length(user_excluded_peak_list)>0)
   {
     message(paste0("... You have ",length(user_excluded_peak_list)," customised peak set(s)"))
+    if (missing(user_excluded_peak_id) || length(user_excluded_peak_id)!=length(user_excluded_peak_list) ||
+        length(unique(user_excluded_peak_id))!=length(user_excluded_peak_list))
+    {
+      message("... ... You didn't provide the ID for each customised peak set or your ID number does not uniquely equal to the input user peak number. Instead we will use 'user_excluded_peak1', 'user_excluded_peak2'..." )
+      user_excluded_peak_id <- paste0("user_excluded_peak", seq(1,length(user_excluded_peak_list), 1))
+    }
     for (i in 1:length(user_excluded_peak_list))
     {
       peak_i <- user_excluded_peak_list[[i]]
@@ -188,6 +208,16 @@ exclusivePeaks <- function(target_peak_id, motif_only_for_target_peak = F,
       peak_i_sub <- peak_i_sub[,c("chr","start","end","id")]
       excluded_list_count <- excluded_list_count + 1
       excluded_peak_list_all[[excluded_list_count]] <- peak_i_sub
+      # test if user input id i match any TFregulome database ID
+      motif_matrix_i <- suppressMessages(searchMotif(id = user_excluded_peak_id[i], TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
+      if (is.null(motif_matrix_i))
+      {
+        is_excluded_TFregulome <- c(is_excluded_TFregulome, F)
+      }
+      else
+      {
+        is_excluded_TFregulome <- c(is_excluded_TFregulome, T)
+      }
     }
   }
   # start analysing
@@ -200,7 +230,7 @@ exclusivePeaks <- function(target_peak_id, motif_only_for_target_peak = F,
     message(paste0("Start analysing: ", target_id_i, "... ..."))
 
     ## if it is from TFregulome
-    if (i <= length(TFregulome_target_peak_id))
+    if (is_taregt_TFregulome[i])
     {
       isTFregulome_target <- TRUE
       query_url <- paste0("listTFBS.php?AllTable=F&id=",target_id_i)
@@ -249,7 +279,7 @@ exclusivePeaks <- function(target_peak_id, motif_only_for_target_peak = F,
       {
         bed_target_i <- with(target_peak_i, GRanges(chr, IRanges(start, end), id=id))
       }
-      if (j <= length(TFregulome_excluded_peak_id))
+      if (is_excluded_TFregulome[j])
       {
         bed_excluded_j <- with(excluded_peak_j, GRanges(chr, IRanges(start-99, end+100), id=id))
       }

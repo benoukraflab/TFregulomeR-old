@@ -22,8 +22,8 @@
 #'                                                   peak_id_x=peak_id_x,
 #'                                                   peak_id_y=peak_id_y)
 
-intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_list_x,
-                                peak_id_y, motif_only_for_id_y = F, user_peak_list_y,
+intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_list_x, user_peak_x_id,
+                                peak_id_y, motif_only_for_id_y = F, user_peak_list_y, user_peak_y_id,
                                 methylation_profile_in_narrow_region = F,
                                 motif_type = "MEME", TFregulome_url)
 {
@@ -80,6 +80,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
   peak_list_x_all <- list()
   # loading from TFregulome server
   TFregulome_peak_x_id <- c()
+  is_x_TFregulome <- c()
   peak_list_x_count <- 0
   if (!missing(peak_id_x) && length(peak_id_x)>0)
   {
@@ -95,7 +96,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
     message("... loading TFBS(s) from TFregulome now")
     for (i in peak_id_x)
     {
-      peak_i <- suppressMessages(loadPeaks(id = i, includeMotifOnly = motif_only_for_id_x))
+      peak_i <- suppressMessages(loadPeaks(id = i, includeMotifOnly = motif_only_for_id_x, TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
       if (is.null(peak_i))
       {
         message(paste0("... ... NO peak file for your id '", i,"'."))
@@ -104,6 +105,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
       {
         peak_list_x_count <- peak_list_x_count + 1
         peak_list_x_all[[peak_list_x_count]] <- peak_i
+        is_x_TFregulome <- c(is_x_TFregulome, T)
         TFregulome_peak_x_id <- c(TFregulome_peak_x_id, i)
         message(paste0(".. ... peak file loaded successfully for id '", i,"'"))
       }
@@ -111,19 +113,14 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
     message("... Done loading TFBS(s) from TFregulome")
   }
   # users' peaks
-  user_peak_x_id <- c()
   if (!missing(user_peak_list_x) && length(user_peak_list_x)>0)
   {
     message(paste0("... You have ",length(user_peak_list_x)," customised peak set(s)"))
-    if (is.null(names(user_peak_list_x)) ||
-        length(unique(names(user_peak_list_x)))!=length(names(user_peak_list_x)))
+    if (missing(user_peak_x_id) || length(user_peak_x_id)!=length(user_peak_list_x) ||
+        length(unique(user_peak_x_id))!=length(user_peak_list_x))
     {
-      message("... ... You didn't provide the name for each customised peak set or your names are not unique. Instead we will use 'user_peak_x1', 'user_peak_x2'..." )
+      message("... ... You didn't provide the ID for each customised peak set or your ID number does not uniquely equal to the input user peak number. Instead we will use 'user_peak_x1', 'user_peak_x2'..." )
       user_peak_x_id <- paste0("user_peak_x", seq(1,length(user_peak_list_x), 1))
-    }
-    else
-    {
-      user_peak_x_id <- names(user_peak_list_x)
     }
     for (i in 1:length(user_peak_list_x))
     {
@@ -134,7 +131,21 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
       peak_i_sub <- peak_i_sub[,c("chr","start","end","id")]
       peak_list_x_count <- peak_list_x_count + 1
       peak_list_x_all[[peak_list_x_count]] <- peak_i_sub
+      # test if user input id i match any TFregulome database ID
+      motif_matrix_i <- suppressMessages(searchMotif(id = user_peak_x_id[i], TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
+      if (is.null(motif_matrix_i))
+      {
+        is_x_TFregulome <- c(is_x_TFregulome, F)
+      }
+      else
+      {
+        is_x_TFregulome <- c(is_x_TFregulome, T)
+      }
     }
+  }
+  else
+  {
+    user_peak_x_id <- c()
   }
   # combine TFregulome ID and user ID
   peak_id_x_all <- c(TFregulome_peak_x_id, user_peak_x_id)
@@ -144,6 +155,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
   peak_list_y_all <- list()
   # loading from TFregulome server
   TFregulome_peak_y_id <- c()
+  is_y_TFregulome <- c()
   peak_list_y_count <- 0
   if (!missing(peak_id_y) && length(peak_id_y)>0)
   {
@@ -159,7 +171,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
     message("... loading TFBS(s) from TFregulome now")
     for (i in peak_id_y)
     {
-      peak_i <- suppressMessages(loadPeaks(id = i, includeMotifOnly = motif_only_for_id_y))
+      peak_i <- suppressMessages(loadPeaks(id = i, includeMotifOnly = motif_only_for_id_y, TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
       if (is.null(peak_i))
       {
         message(paste0("... ... NO peak file for your id '", i,"'."))
@@ -168,6 +180,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
       {
         peak_list_y_count <- peak_list_y_count + 1
         peak_list_y_all[[peak_list_y_count]] <- peak_i
+        is_y_TFregulome <- c(is_y_TFregulome, T)
         TFregulome_peak_y_id <- c(TFregulome_peak_y_id, i)
         message(paste0(".. ... peak file loaded successfully for id '", i,"'"))
       }
@@ -175,19 +188,14 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
     message("... Done loading TFBS(s) from TFregulome")
   }
   # users' peaks
-  user_peak_y_id <- c()
   if (!missing(user_peak_list_y) && length(user_peak_list_y)>0)
   {
     message(paste0("... You have ",length(user_peak_list_y)," customised peak set(s)"))
-    if (is.null(names(user_peak_list_y)) ||
-        length(unique(names(user_peak_list_y)))!=length(names(user_peak_list_y)))
+    if (missing(user_peak_y_id) || length(user_peak_y_id)!=length(user_peak_list_y) ||
+        length(unique(user_peak_y_id))!=length(user_peak_list_y))
     {
-      message("... ... You didn't provide the name for each customised peak set or your names are not unique. Instead we will use 'user_peak_y1', 'user_peak_y2'..." )
-      user_peak_y_id <- paste0("user_peak_y", seq(1,length(user_peak_list_x), 1))
-    }
-    else
-    {
-      user_peak_y_id <- names(user_peak_list_y)
+      message("... ... You didn't provide the ID for each customised peak set or your ID number does not uniquely equal to the input user peak number. Instead we will use 'user_peak_y1', 'user_peak_y2'..." )
+      user_peak_y_id <- paste0("user_peak_y", seq(1,length(user_peak_list_y), 1))
     }
     for (i in 1:length(user_peak_list_y))
     {
@@ -198,7 +206,21 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
       peak_i_sub <- peak_i_sub[,c("chr","start","end","id")]
       peak_list_y_count <- peak_list_y_count + 1
       peak_list_y_all[[peak_list_y_count]] <- peak_i_sub
+      # test if user input id i match any TFregulome database ID
+      motif_matrix_i <- suppressMessages(searchMotif(id = user_peak_y_id[i], TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
+      if (is.null(motif_matrix_i))
+      {
+        is_y_TFregulome <- c(is_y_TFregulome, F)
+      }
+      else
+      {
+        is_y_TFregulome <- c(is_y_TFregulome, T)
+      }
     }
+  }
+  else
+  {
+    user_peak_y_id <- c()
   }
   # combine TFregulome ID and user ID
   peak_id_y_all <- c(TFregulome_peak_y_id, user_peak_y_id)
@@ -210,7 +232,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
     id_x <- peak_id_x_all[i]
     message(paste0("Start analysing list x:", id_x, "... ..."))
     peak_x <- peak_list_x_all[[i]]
-    if (i <= length(TFregulome_peak_x_id))
+    if (is_x_TFregulome[i])
     {
       isTFregulome_x <- TRUE
       query_url <- paste0("listTFBS.php?AllTable=F&id=",id_x)
@@ -253,7 +275,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
       id_y <- peak_id_y_all[j]
       message(paste0("... ... Start analysing list y:", id_y))
       peak_y <- peak_list_y_all[[j]]
-      if (j <= length(TFregulome_peak_y_id))
+      if (is_y_TFregulome[j])
       {
         isTFregulome_y <- TRUE
         query_url <- paste0("listTFBS.php?AllTable=F&id=",id_y)
