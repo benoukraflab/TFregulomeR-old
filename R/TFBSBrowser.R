@@ -1,19 +1,19 @@
 #' browse existing TFBSs available in TFregulome server
 #'
-#' This function allows you to get existing TFBSs in TFregulome server.
-#' @param species Optional. The species of interset
-#' @param organ Optional. The organ of interset
-#' @param sample_type Optional. The sample type of interset
-#' @param cell_tissue_name Optional. The name of tissue or cell of interset
-#' @param tf Optional. The TF of interset
-#' @param disease_state Optional. The disease state of interset
-#' @param source Optional. The source of interset
-#' @param TFregulome_url Optional. TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
+#' This function allows you to get existing TFBSs in TFregulome database
+#' @param species The species of interset
+#' @param organ The organ of interset
+#' @param sample_type The sample type of interset
+#' @param cell_tissue_name The name of tissue or cell of interset
+#' @param tf The TF of interset
+#' @param disease_state The disease state of interset
+#' @param source The source of interset
+#' @param TFregulome_url TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
 #' @return  data.frame giving the existing TFBSs in MethMotif database for a given cell type
 #' @keywords TFBS
 #' @export
 #' @examples
-#' listTF(cell_type = "K562")
+#' TFBS_brain <- TFBSBrowser(organ = "brain")
 
 TFBSBrowser <- function(species, organ, sample_type, cell_tissue_name,
                         tf, disease_state, source, TFregulome_url)

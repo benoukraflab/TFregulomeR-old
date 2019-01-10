@@ -1,9 +1,9 @@
 #' load peaks from MethMotif database
 #'
-#' This function allows you to obtain the peaks of a specified transcrition factor in a given cell type.
-#' @param id Required. MethMotif ID
-#' @param includeMotifOnly Optional. Either TRUE or FALSE (default). If TRUE, only peaks with motif will be returned
-#' @param TFregulome_url Optional. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
+#' This function allows you to obtain the peaks using TFregulome ID.
+#' @param id Required. TFregulome ID
+#' @param includeMotifOnly Either TRUE or FALSE (default). If TRUE, only peaks with motif will be returned
+#' @param TFregulome_url TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
 #' @return  a data.frame containing peak coordinates
 #' @keywords loadPeaks
 #' @export

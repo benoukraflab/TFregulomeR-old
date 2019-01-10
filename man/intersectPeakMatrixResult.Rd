@@ -6,49 +6,52 @@
 \usage{
 intersectPeakMatrixResult(intersectPeakMatrix,
   return_intersection_matrix = FALSE, angle_of_matrix = "x",
-  save_MethMotif_logo = FALSE, angle_of_logo = "x",
-  logo_type = "entropy", meth_level = "all",
+  return_methylation_profile = FALSE,
+  angle_of_methylation_profile = "x", save_MethMotif_logo = FALSE,
+  angle_of_logo = "x", logo_type = "entropy", meth_level = "all",
   saving_MethMotif_logo_x_id = "all",
   saving_MethMotif_logo_y_id = "all")
 }
 \arguments{
 \item{intersectPeakMatrix}{Required. intersectPeakMatrix() output, a marix of IntersectPeakMatrix class objects.}
 
-\item{return_intersection_matrix}{Optional. Either TRUE of FALSE (default). If TRUE, a matrix of the pair-wise intersecting percentages between two lists of peak sets}
+\item{return_intersection_matrix}{Either TRUE of FALSE (default). If TRUE, a matrix of the pair-wise intersecting percentages between two lists of peak sets will be returned.}
 
-\item{angle_of_matrix}{Optional. Either "x" (default) or "y". If "x", a matrix denoting the percentages of peak sets in "peak_list_x" intersected with "peak_list_y" will be returned; if "y", a matrix denoting the percentages of peak sets in "peak_list_y" intersected with "peak_list_x" will be returned.}
+\item{angle_of_matrix}{Either "x" (default) or "y". If "x", a matrix denoting the percentages of peak sets in "peak_list_x" intersected with "peak_list_y" will be returned; if "y", a matrix denoting the percentages of peak sets in "peak_list_y" intersected with "peak_list_x" will be returned.}
 
-\item{save_MethMotif_logo}{Optional. Either TRUE of FALSE (default). If TRUE, MethMotif logos for the intersected peaks will be saved.}
+\item{return_methylation_profile}{Either TRUE of FALSE (default). If TRUE, a matrix of DNA methylation state data in the intersected regions will be returned.}
 
-\item{angle_of_logo}{Optional. Either "x" (default) or "y". If "x", MethMotif logos for the peak sets in "peak_list_x" intersected with "peak_list_y" will be saved; if "y", MethMotif logos for the peak sets in "peak_list_y" intersected with "peak_list_x" will be saved.}
+\item{angle_of_methylation_profile}{Either "x" (default) or "y". If "x", a matrix denoting DNA methylation state data in "peak_list_x" intersected with "peak_list_y" will be returned; if "y", a matrix denoting DNA methylation state data in "peak_list_y" intersected with "peak_list_x" will be returned.}
 
-\item{logo_type}{Optional. Logo type for the MethMotif logo to be saved, either "entropy" (default) or "frequency".}
+\item{save_MethMotif_logo}{Either TRUE of FALSE (default). If TRUE, (Meth)Motif logos for the intersected peaks will be saved.}
 
-\item{meth_level}{Optional. Methylation level to be plot for the MethMotif logo, and it should be one of the values, "all" (default), "methylated", and "unmethylated".}
+\item{angle_of_logo}{Either "x" (default) or "y". If "x", (Meth)Motif logos for the peak sets in "peak_list_x" intersected with "peak_list_y" will be saved; if "y", (Meth)Motif logos for the peak sets in "peak_list_y" intersected with "peak_list_x" will be saved.}
 
-\item{saving_MethMotif_logo_x_id}{Optional. Either "all" (default) or a subset of "peak_id_x". If a subset of "peak_id_x" is provided, only the MethMotif logos for them will be saved.}
+\item{logo_type}{Logo type for the (Meth)Motif logo to be saved, either "entropy" (default) or "frequency".}
 
-\item{saving_MethMotif_logo_y_id}{Optional. Either "all" (default) or a subset of "peak_id_y". If a subset of "peak_id_y" is provided, only the MethMotif logos for them will be saved.}
+\item{meth_level}{Methylation level to be plot for the (Meth)Motif logo, and it should be one of the values, "all" (default), "methylated", and "unmethylated".}
+
+\item{saving_MethMotif_logo_x_id}{Either "all" (default) or a subset of "peak_id_x". If a subset of "peak_id_x" is provided, only the (Meth)Motif logos for them will be saved.}
+
+\item{saving_MethMotif_logo_y_id}{Either "all" (default) or a subset of "peak_id_y". If a subset of "peak_id_y" is provided, only the (Meth)Motif logos for them will be saved.}
 }
 \value{
-a matrix of pair-wise intersecting percantages between two lists of peak sets, or MethMotif PDF files depending on the options
+a matrix of pair-wise intersecting percantages between two lists of peak sets, a matrix of DNA methylation data in the intersected regions or (Meth)Motif PDF files depending on the options
 }
 \description{
-This function allows you to get the reuslts from the intersectPeakMatrix() output, including a matrix of the pair-wise intersecting percentages between two lists of peak sets, as well as MethMotif logos for each pair of intersections if the original peak set is loaded from MethMotif database.
+This function allows you to get the reuslts from the intersectPeakMatrix() output, including a matrix of the pair-wise intersecting percentages between two lists of peak sets, DNA methylation profiles in the intersected regions (for peaks from TFregulome database) and (Meth)Motif logos for each pair of intersections (for peaks from TFregulome database).
 }
 \examples{
-peak_list_x <- list(loadPeaks(id = "MM1_HSA_K562_CEBPB"),
-                    read.delim("my_own_peak1.bed", header = F))
-peak_id_x <- c("MM1_HSA_K562_CEBPB", "my_own_peak1")
-peak_list_y <- list(loadPeaks(id = "MM1_HSA_HepG2_CEBPB"),
-                    read.delim("my_own_peak2.bed", header = F))
-peak_id_y <- c("MM1_HSA_HepG2_CEBPB", "my_own_peak2")
-intersect_output <- intersectPeakMatrix(peak_list_x=peak_list_x,
-                                        peak_list_y=peak_list_y,
-                                        peak_id_x=peak_id_x,
-                                        peak_id_y=peak_id_y)
+peak_id_x <- c("MM1_HSA_K562_CEBPB", "MM1_HSA_HCT116_CEBPB")
+peak_id_y <- c("MM1_HSA_HepG2_CEBPB", "MM1_HSA_HCT116_CEBPB")
+intersect_output <- intersectPeakMatrix(peak_id_x=peak_id_x,
+                                                  motif_only_for_id_x=T,
+                                                  peak_id_y=peak_id_y,
+                                                  motif_only_for_id_y=T,
+                                                  methylation_profile_in_narrow_region=T)
 intersect_matrix <- intersectPeakMatrixResult(intersectPeakMatrix=intersect_output,
                                               return_intersection_matrix=T,
+                                              return_methylation_profile=T,
                                               save_MethMotif_logo=T,
                           saving_MethMotif_logo_x_id=c("MM1_HSA_K562_CEBPB"))
 }

@@ -4,38 +4,47 @@
 \alias{intersectPeakMatrix}
 \title{intersectPeakMatrix}
 \usage{
-intersectPeakMatrix(peak_list_x, peak_list_y, peak_id_x, peak_id_y,
-  motif_type = "MEME", methmotif_url)
+intersectPeakMatrix(peak_id_x, motif_only_for_id_x = F, user_peak_list_x,
+  user_peak_x_id, peak_id_y, motif_only_for_id_y = F, user_peak_list_y,
+  user_peak_y_id, methylation_profile_in_narrow_region = F,
+  motif_type = "MEME", TFregulome_url)
 }
 \arguments{
-\item{peak_list_x}{Required. List of data.frames, each of which contains bed-format peak regions. They are the peak sets you want to intersect with each of "peak_list_y", and can be loaded from MethMotif database or self-provided.}
+\item{peak_id_x}{Character of vector, each of which is a unique TFregulome ID.}
 
-\item{peak_list_y}{Required. List of data.frames, each of which contains bed-format peak regions. They are the peak sets you want to intersect with each of "peak_list_x", and can be loaded from MethMotif database or self-provided.}
+\item{motif_only_for_id_x}{Either TRUE of FALSE (default). If TRUE, only peaks with motif will be loaded for each TFregulome ID in peak_id_x.}
 
-\item{peak_id_x}{Required. Character of vector, each of which is a unique ID corresponding to the element in "peak_list_x". If a peak set is from MethMotif Database, its MethMotif ID should be used here.}
+\item{user_peak_list_x}{A list of data.frames, each of which contains user's own bed-format peak regions for peak list x.}
 
-\item{peak_id_y}{Required. Character of vector, each of which is a unique ID corresponding to the element in "peak_list_y". If a peak set is from MethMotif Database, its MethMotif ID should be used here.}
+\item{user_peak_x_id}{Character of vector, each of which is a unique ID corresponding to each peak set in the list user_peak_list_x. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulome database, its TFregulome ID should be used here correspondingly.}
 
-\item{motif_type}{Required. Motif PFM format, either in MEME by default or TRANSFAC.}
+\item{peak_id_y}{Character of vector, each of which is a unique TFregulome ID.}
 
-\item{methmotif_url}{Optional. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{motif_only_for_id_y}{Either TRUE of FALSE (default). If TRUE, only peaks with motif will be loaded for each TFregulome ID in peak_id_y.}
+
+\item{user_peak_list_y}{A list of data.frames, each of which contains user's own bed-format peak regions for peak list y.}
+
+\item{user_peak_y_id}{Character of vector, each of which is a unique ID corresponding to each peak set in the list user_peak_list_y. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulome database, its TFregulome ID should be used here correspondingly.}
+
+\item{methylation_profile_in_narrow_region}{Either TRUE (default) of FALSE. If TRUE, methylation states in 200bp window surrounding peak summits for each intersected peak pair from peak_id_x (peak_id_y) and user_peak_list_x (user_peak_list_y) with TFregulome ID.}
+
+\item{motif_type}{Motif PFM format, either in MEME by default or TRANSFAC.}
+
+\item{TFregulome_url}{TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
 }
 \value{
 matrix of IntersectPeakMatrix class objects
 }
 \description{
-This function allows you to obtain a numeric matrix denoting the pair-wise intersecting percentages between two lists of peak sets, as well as MethMotif logos for each pair of intersections if the original peak set is loaded from MethMotif database.
+This function allows you to obtain the pair-wise intersected regions, along with the DNA methylation profiles, between two lists of peak sets, as well as (Meth)Motif logos
 }
 \examples{
-peak_list_x <- list(loadPeaks(id = "MM1_HSA_K562_CEBPB"),
-                    read.delim("my_own_peak1.bed", header = F))
-peak_id_x <- c("MM1_HSA_K562_CEBPB", "my_own_peak1")
-peak_list_y <- list(loadPeaks(id = "MM1_HSA_HepG2_CEBPB"),
-                    read.delim("my_own_peak2.bed", header = F))
-peak_id_y <- c("MM1_HSA_HepG2_CEBPB", "my_own_peak2")
-intersectPeakMatrix_output <- intersectPeakMatrix(peak_list_x=peak_list_x,
-                                                  peak_list_y=peak_list_y,
-                                                  peak_id_x=peak_id_x,
-                                                  peak_id_y=peak_id_y)
+peak_id_x <- c("MM1_HSA_K562_CEBPB", "MM1_HSA_HCT116_CEBPB")
+peak_id_y <- c("MM1_HSA_HepG2_CEBPB", "MM1_HSA_HCT116_CEBPB")
+intersectPeakMatrix_output <- intersectPeakMatrix(peak_id_x=peak_id_x,
+                                                  motif_only_for_id_x=T,
+                                                  peak_id_y=peak_id_y,
+                                                  motif_only_for_id_y=T,
+                                                  methylation_profile_in_narrow_region=T)
 }
 \keyword{intersectPeakMatrix}

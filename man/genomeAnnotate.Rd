@@ -6,22 +6,22 @@
 \usage{
 genomeAnnotate(peaks, assembly = "hg38", return_annotation = FALSE,
   return_html_report = FALSE, promoter_range = c(-1000, 100),
-  TTS_range = c(-100, 1000), methmotif_url)
+  TTS_range = c(-100, 1000), TFregulome_url)
 }
 \arguments{
 \item{peaks}{Required. A bed-format genomic regions in data frame.}
 
-\item{assembly}{Optional. The assembly the input regions are using, currently supporting 'hg19', 'hg38' (default), 'mm9' and 'mm10'.}
+\item{assembly}{The genome assembly of the input regions, currently supporting 'hg19', 'hg38' (default), 'mm9' and 'mm10'.}
 
-\item{return_annotation}{Optional. Either TRUE of FALSE (default). If TRUE, a data.frame containing annotation results will be returned.}
+\item{return_annotation}{Either TRUE of FALSE (default). If TRUE, a data.frame containing annotation results will be returned.}
 
-\item{return_html_report}{Optional. Either TRUE of FALSE (default). If TRUE, a dynamic HTML report will be saved.}
+\item{return_html_report}{Either TRUE of FALSE (default). If TRUE, a dynamic HTML report will be saved.}
 
-\item{promoter_range}{Optional. A numeric vector to define promoter range. By default, c(-1000, 100) defines promoters as 1000bp upstream and 100bp downstream of TSS.}
+\item{promoter_range}{A numeric vector to define promoter range. By default, c(-1000, 100) defines promoters as 1000bp upstream and 100bp downstream of TSS.}
 
-\item{TTS_range}{Optional. A numeric vector to define TTS range. By default, c(-100, 1000) defines promoters as 100bp upstream and 1000bp downstream of real TTS.}
+\item{TTS_range}{A numeric vector to define TTS range. By default, c(-100, 1000) defines promoters as 100bp upstream and 1000bp downstream of real TTS.}
 
-\item{methmotif_url}{Optional. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{TFregulome_url}{TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
 }
 \value{
 a data.frame, or an HTML report depending on the options.
@@ -32,6 +32,6 @@ This function allows you to annotate genomic locations of cis-regulatory regions
 \examples{
 K562_CEBPB_regions <- loadPeaks(id = "MM1_HSA_K562_CEBPB")
 K562_CEBPB_regions_annotation <- genomeAnnotate(peaks = K562_CEBPB_regions,
-return_annotation = T, return_html_report = T)
+                              return_annotation = T, return_html_report = T)
 }
 \keyword{genomeAnnotate}

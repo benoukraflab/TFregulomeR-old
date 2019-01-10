@@ -1,19 +1,19 @@
 #' export MethMotif motif position frequency matrix and beta score matrix
 #'
 #' This function allows you to export motif position frequency matrix and beta score matrix from the output of "searchMethMotif", "commonPeaks", "exclusivePeaks" or "intersectPeakMatrix".
-#' @param fun_output Required. Output from "searchMethMotif", "commonPeaks", "exclusivePeaks" or "intersectPeakMatrix".
-#' @param fun Required. The function that was used to get the output and should be one of the options, 'searchMethMotif', 'commonPeaks', 'exclusivePeaks' and 'intersectPeakMatrix'.
-#' @param save_motif_PFM Required. Either TRUE or FALSE (default). If "TRUE", the motif position frequency matrix will be saved.
-#' @param save_betaScore_matrix Required. Either TRUE or FALSE (default). If "TRUE", the beta score matrix will be saved.
-#' @param angle_of_matrix_for_intersectPeakMatrix Optional when "fun='intersectPeakMatrix'". Either "x" (default) or "y". If "x", motif PFM for the peak sets in "peak_list_x" intersected with "peak_list_y" will be saved; if "y", motif PFM for the peak sets in "peak_list_y" intersected with "peak_list_x" will be saved.
-#' @param saving_id_x_for_intersectPeakMatrix Optional when "fun='intersectPeakMatrix'". Either "all" (default) or a subset of "peak_id_x". If a subset of "peak_id_x" is provided, only the MethMotif logos for them will be saved.
-#' @param saving_id_y_for_intersectPeakMatrix Optional when "fun='intersectPeakMatrix'". Either "all" (default) or a subset of "peak_id_y". If a subset of "peak_id_y" is provided, only the MethMotif logos for them will be saved.
+#' @param fun_output Required. Output from "searchMotif", "commonPeaks", "exclusivePeaks" or "intersectPeakMatrix".
+#' @param fun Required. The function that was used to get the output and should be one of the options, 'searchMotif', 'commonPeaks', 'exclusivePeaks' and 'intersectPeakMatrix'.
+#' @param save_motif_PFM Either TRUE or FALSE (default). If "TRUE", the motif position frequency matrix will be saved.
+#' @param save_betaScore_matrix Either TRUE or FALSE (default). If "TRUE", the beta score matrix will be saved.
+#' @param angle_of_matrix_for_intersectPeakMatrix Only applicable when "fun='intersectPeakMatrix'". Either "x" (default) or "y". If "x", motif PFM for the peak sets in "peak_list_x" intersected with "peak_list_y" will be saved; if "y", motif PFM for the peak sets in "peak_list_y" intersected with "peak_list_x" will be saved.
+#' @param saving_id_x_for_intersectPeakMatrix Only applicable when "fun='intersectPeakMatrix'". Either "all" (default) or a subset of "peak_id_x". If a subset of "peak_id_x" is provided, only the MethMotif logos for them will be saved.
+#' @param saving_id_y_for_intersectPeakMatrix Only applicable when "fun='intersectPeakMatrix'". Either "all" (default) or a subset of "peak_id_y". If a subset of "peak_id_y" is provided, only the MethMotif logos for them will be saved.
 #' @return  motif position frequency matrix file and beta score matrix file
 #' @keywords exportMMPFM
 #' @export
 #' @examples
-#' methmotif_cebpb <- searchMethMotif(id = "MM1_HSA_K562_CEBPB")
-#' exportMMPFM(fun_output = methmotif_cebpb, fun = "searchMethMotif",
+#' methmotif_cebpb <- searchMotif(id = "MM1_HSA_K562_CEBPB")
+#' exportMMPFM(fun_output = methmotif_cebpb, fun = "searchMotif",
 #'             save_motif_PFM = T, save_betaScore_matrix = T)
 
 exportMMPFM <- function(fun_output, fun, save_motif_PFM = FALSE,

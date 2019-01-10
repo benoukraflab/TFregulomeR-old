@@ -4,20 +4,20 @@
 \alias{loadPeaks}
 \title{load peaks from MethMotif database}
 \usage{
-loadPeaks(id, includeMotifOnly = F, methmotif_url)
+loadPeaks(id, includeMotifOnly = F, TFregulome_url)
 }
 \arguments{
-\item{id}{Required. MethMotif ID}
+\item{id}{Required. TFregulome ID}
 
-\item{includeMotifOnly}{Optional. Either TRUE or FALSE (default). If TRUE, only peaks with motif will be returned}
+\item{includeMotifOnly}{Either TRUE or FALSE (default). If TRUE, only peaks with motif will be returned}
 
-\item{methmotif_url}{Optional. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{TFregulome_url}{TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
 }
 \value{
 a data.frame containing peak coordinates
 }
 \description{
-This function allows you to obtain the peaks of a specified transcrition factor in a given cell type.
+This function allows you to obtain the peaks using TFregulome ID.
 }
 \examples{
 CEBPB_peaks <- loadPeaks(id = "MM1_HSA_K562_CEBPB")

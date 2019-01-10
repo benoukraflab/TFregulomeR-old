@@ -1,29 +1,28 @@
 #' commonPeaks result
 #'
-#' This function allows you to get the reuslts from the commonPeaks() output, including a list of common peak sets, MethMotif logos, and common peak summary.
+#' This function allows you to get the reuslts from the commonPeaks() output, including a list of common peak sets, (Meth)Motif logos, methylation profile in common peak and common peak summary.
 #' @param commonPeaks Required. commonPeaks() output, a matrix of CommonPeaksMM class objects.
-#' @param return_common_peak_sites Optional. Either TRUE of FALSE (default). If TRUE, a list of data.frames containing common peak sets derived from "target_peak_list" will be returned. If "return_summary" is also TRUE, both will be returned in a list().
-#' @param save_MethMotif_logo Optional. Either TRUE of FALSE (default). If TRUE, MethMotif logos for the common peak sets will be saved.
-#' @param return_summary Optional. Either TRUE of FALSE (default). If TRUE, a numeric matrix containing the percentage of peaks in "target_peak_list" as common will be returned. If "return_common_peak_sites" is also TRUE, both will be returned in a list().
-#' @param logo_type Optional. Logo type for the MethMotif logo to be saved, either "entropy" (default) or "frequency",
-#' @param meth_level Optional. Methylation level to be plot for the MethMotif logo, and it should be one of the values, "all" (default), "methylated", and "unmethylated".
-#' @return  a list of data.frames, a numeric matrix or MethMotif logo PDF files depending on the options.
+#' @param return_common_peak_sites Either TRUE of FALSE (default). If TRUE, a list of data.frames containing common peak sets.
+#' @param save_MethMotif_logo Either TRUE of FALSE (default). If TRUE, MethMotif logos for the common peak sets will be saved.
+#' @param return_methylation_profile Either TRUE of FALSE (default). If TRUE, methylation profile in common peak sets will be returned.
+#' @param return_summary Either TRUE of FALSE (default). If TRUE, a numeric matrix containing the percentage of peaks as common will be returned.
+#' @param logo_type Logo type for the MethMotif logo to be saved, either "entropy" (default) or "frequency",
+#' @param meth_level Methylation level to be plotted for the (Meth)Motif logo, and it should be one of the values, "all" (default), "methylated", and "unmethylated".
+#' @return  a list of data.frames, a numeric matrix or (Meth)Motif logo PDF files depending on the options.
 #' @keywords commonPeakResult
 #' @export
 #' @examples
-#' target_peaks <- list(loadPeaks(id = "MM1_HSA_K562_CEBPB"),
-#'                      read.delim("my_own_peaks.bed", header = F))
-#' target_id <- c("MM1_HSA_K562_CEBPB", "my_own_peaks")
-#' compared_peaks <- list(loadPeaks(id = "MM1_HSA_HepG2_CEBPB"),
-#'                       read.delim("peaks_to_common_with.bed", header = F))
-#' compared_id <- c("MM1_HSA_HepG2_CEBPB", "peaks_to_common_with")
-#' commonPeaks_output <- commonPeaks(target_peak_list=target_peaks,
-#'                                   target_peak_id=target_id,
-#'                                   compared_peak_list=compared_peaks,
-#'                                   compared_peak_id=compared_id)
+#' target_id <- c("MM1_HSA_K562_CEBPB")
+#' compared_id <- c("MM1_HSA_HepG2_CEBPB")
+#' commonPeaks_output <- commonPeaks(target_peak_id=target_id,
+#'                                   motif_only_for_target_peak=T,
+#'                                   compared_peak_id=compared_id,
+#'                                   motif_only_for_compared_peak=T,
+#'                                   methylation_profile_in_narrow_region=T)
 #' commonPeaks_result <- commonPeakResult(commonPeaks=commonPeaks_output,
-#'                                        return_exclusive_peak_sites=T,
+#'                                        return_common_peak_sites=T,
 #'                                        save_MethMotif_logo=T,
+#'                                        return_methylation_profile=T,
 #'                                        return_summary=T)
 
 commonPeakResult <- function(commonPeaks, return_common_peak_sites = FALSE,

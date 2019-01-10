@@ -2,25 +2,25 @@
 % Please edit documentation in R/plotLogo.R
 \name{plotLogo}
 \alias{plotLogo}
-\title{plot MethMotif logo}
+\title{plot (Meth)Motif logo}
 \usage{
 plotLogo(MM_object, logo_type = "entropy", meth_level = "all")
 }
 \arguments{
 \item{MM_object}{Required. MethMotif class object}
 
-\item{logo_type}{Optional. Logo type for the MethMotif logo to be saved, either "entropy" (default) or "frequency".}
+\item{logo_type}{Logo type for the (Meth)Motif logo to be saved, either "entropy" (default) or "frequency".}
 
-\item{meth_level}{Optional. Methylation level to be plot for the MethMotif logo, and it should be one of the values, "all" (default), "methylated", and "unmethylated".}
+\item{meth_level}{Methylation level to be plot for the (Meth)Motif logo, and it should be one of the values, "all" (default), "methylated", and "unmethylated".}
 }
 \value{
 MethMotif logo pdf file
 }
 \description{
-This function allows you to plot MethMotif logo.
+This function allows you to plot (Meth)Motif logo.
 }
 \examples{
-CEBPB_all <- searchMethMotif(tf = "CEBPB")
+CEBPB_all <- searchMotif(tf = "CEBPB")
 for (i in CEBPB_all){plotLogo(MM_object = i)}
 }
 \keyword{plotLogo}

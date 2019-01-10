@@ -4,19 +4,19 @@
 \alias{motifDistrib}
 \title{profile TFBS distribution}
 \usage{
-motifDistrib(id, peak_list, peak_id, plot_of_each_side = 100,
-  methmotif_url)
+motifDistrib(id, peak_list, peak_id, plot_at_each_side = 100,
+  TFregulome_url)
 }
 \arguments{
-\item{id}{Required. MethMotif ID}
+\item{id}{Required. TFregulome ID}
 
-\item{peak_list}{Required. List of data.frames, each of which contains bed-format peak regions. They are the peak sets you want to profile TFBS distributions in, and can be loaded from MethMotif database or self-provided.}
+\item{peak_list}{Required. List of data.frames, each of which contains bed-format peak regions. They are the peak sets you want to profile TFBS distributions in, and can be loaded from TFregulome database or self-provided.}
 
-\item{peak_id}{Required. Character of vector, each of which is a unique ID corresponding to the element in "peak_list". If a peak set is directly loaded from MethMotif Database, its MethMotif ID should be used here.}
+\item{peak_id}{Required. Character of vector, each of which is a unique ID corresponding to the element in "peak_list". If a peak set is directly loaded from TFregulome Database, its TFregulome ID should be used here.}
 
-\item{plot_of_each_side}{Optional. By default 100bp, and motif occurrences in a window of +/- 100bp around peak centres will be returned.}
+\item{plot_at_each_side}{By default 100bp, and motif occurrences in a window of +/- 100bp around peak centres will be returned.}
 
-\item{methmotif_url}{Optional. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{TFregulome_url}{TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
 }
 \value{
 a list containing the numbers of input peaks and peaks with motif, as well as motif occurrences in the plot window.
@@ -28,6 +28,6 @@ This function allows you to profile TFBS distributions in a given list of peak s
 CEBPB_peaks <- loadPeaks(id = "MM1_HSA_K562_CEBPB")
 motifDistrib_output <- motifDistrib(id = "MM1_HSA_K562_CEBPB",
                                     peak_list = list(CEBPB_peaks),
-peak_id = c("MM1_HSA_K562_CEBPB"))
+                                    peak_id = "MM1_HSA_K562_CEBPB")
 }
 \keyword{motifDistrib}

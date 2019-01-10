@@ -2,20 +2,20 @@
 % Please edit documentation in R/toTFBSTools.R
 \name{toTFBSTools}
 \alias{toTFBSTools}
-\title{convert motif PFM in MethMotif database into PFMatrix class object in TFBSTools package}
+\title{convert motif PFM in TFregulome database into PFMatrix class object in TFBSTools package}
 \usage{
-toTFBSTools(id, methmotif_url)
+toTFBSTools(id, TFregulome_url)
 }
 \arguments{
-\item{id}{Required. MethMotif ID.}
+\item{id}{Required. TFregulome ID.}
 
-\item{methmotif_url}{Optional. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{TFregulome_url}{TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
 }
 \value{
 An object of class PFMatrix
 }
 \description{
-This function allows you to retrieve and convert motif PFM in MethMotif database into PFMatrix class object, which can be used in TFBSTools package.
+This function allows you to retrieve and convert motif PFM in TFregulome database into PFMatrix class object, which can be used in TFBSTools package.
 }
 \examples{
 CEBPB_pfm <- toTFBSTools(id = "MM1_HSA_K562_CEBPB")

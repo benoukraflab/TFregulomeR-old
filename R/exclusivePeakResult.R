@@ -1,25 +1,24 @@
 #' exclusivePeaks result
 #'
-#' This function allows you to get the reuslts from the exclusivePeaks() output, including a list of exclusive peak sets, MethMotif logo, and exclsive peak summary.
+#' This function allows you to get the reuslts from the exclusivePeaks() output, including a list of exclusive peak sets, (Meth)Motif logo, methylation profile in exclsive peak and exclsive peak summary.
 #' @param exclusivePeaks Required. exclusivePeaks() output, a matrix of ExclusivePeaksMM class objects.
-#' @param return_exclusive_peak_sites Optional. Either TRUE of FALSE (default). If TRUE, a list of data.frames containing exclusive peak sets derived from "target_peak_list" will be returned. If "return_summary" is also TRUE, both will be returned in a list().
-#' @param save_MethMotif_logo Optional. Either TRUE of FALSE (default). If TRUE, MethMotif logos for the exclusive peak sets will be saved.
-#' @param return_summary Optional. Either TRUE of FALSE (default). If TRUE, a numeric matrix containing the percentage of peaks in "target_peak_list" as exclusive will be returned. If "return_exclusive_peak_sites" is also TRUE, both will be returned in a list().
-#' @param logo_type Optional. Logo type for the MethMotif logo to be saved, either "entropy" (default) or "frequency".
-#' @param meth_level Optional. Methylation level to be plot for the MethMotif logo, and it should be one of the values, "all" (default), "methylated", and "unmethylated".
-#' @return  a list of data.frames, a numeric matrix or MethMotif logo PDF files depending on the options.
+#' @param return_exclusive_peak_sites Either TRUE of FALSE (default). If TRUE, a list of data.frames containing exclusive peak sets will be returned.
+#' @param save_MethMotif_logo Either TRUE of FALSE (default). If TRUE, MethMotif logos for the exclusive peak sets will be saved.
+#' @param return_methylation_profile Either TRUE of FALSE (default). If TRUE, methylation profile in exclusive peak sets will be returned.
+#' @param return_summary Either TRUE of FALSE (default). If TRUE, a numeric matrix containing the percentage of peaks as exclusive will be returned.
+#' @param logo_type Logo type for the (Meth)Motif logo to be saved, either "entropy" (default) or "frequency".
+#' @param meth_level Methylation level to be plotted for the (Meth)Motif logo, and it should be one of the values, "all" (default), "methylated", and "unmethylated".
+#' @return  a list of data.frames, a numeric matrix or (Meth)Motif logo PDF files depending on the options.
 #' @keywords exclusivePeakResult
 #' @export
 #' @examples
-#' target_peaks <- list(loadPeaks(id = "MM1_HSA_K562_CEBPB"),
-#'                      read.delim("my_own_peaks.bed", header = F))
-#' target_id <- c("MM1_HSA_K562_CEBPB", "my_own_peaks")
-#' excluded_peaks <- list(loadPeaks(id = "MM1_HSA_HepG2_CEBPB"),
-#'                        read.delim("peaks_to_exclude.bed", header = F))
-#' excluded_id <- c("MM1_HSA_HepG2_CEBPB", "peaks_to_exclude")
-#' excluPeak_output <- exclusivePeaks(target_peak_list=target_peaks,
-#'                                         target_peak_id=target_id,
-#' excluded_peak_list=excluded_peaks, excluded_peak_id=excluded_id)
+#' target_id <- "MM1_HSA_K562_CEBPB"
+#' excluded_id <- c("MM1_HSA_HepG2_CEBPB", "MM1_HSA_HCT116_CEBPB")
+#' excluPeak_output <- exclusivePeaks(target_peak_id=target_id,
+#'                                    motif_only_for_target_peak=T,
+#'                                    excluded_peak_id=excluded_id,
+#'                                    motif_only_for_excluded_peak=T,
+#'                                    methylation_profile_in_narrow_region=T)
 #' exclusivePeaks_result <- exclusivePeakResult(exclusivePeaks=excluPeak_output,
 #'                                              return_exclusive_peak_sites=T,
 #'                                              save_MethMotif_logo=T,

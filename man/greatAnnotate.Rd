@@ -14,31 +14,31 @@ greatAnnotate(peaks, assembly = "hg38", return_annotation = FALSE,
 \arguments{
 \item{peaks}{Required. A bed-format genomic regions in data frame.}
 
-\item{assembly}{Optional. The assembly the input regions are using, currently supporting 'hg19', 'hg38' (default), 'mm9' and 'mm10'.}
+\item{assembly}{The genome assembly of the input regions, currently supporting 'hg19', 'hg38' (default), 'mm9' and 'mm10'.}
 
-\item{return_annotation}{Optional. Either TRUE of FALSE (default). If TRUE, a data.frame containing annotation results will be returned.}
+\item{return_annotation}{Either TRUE of FALSE (default). If TRUE, a data.frame containing annotation results will be returned.}
 
-\item{return_html_report}{Optional. Either TRUE of FALSE (default). If TRUE, a dynamic HTML report will be saved.}
+\item{return_html_report}{Either TRUE of FALSE (default). If TRUE, a dynamic HTML report will be saved.}
 
-\item{pvalue}{Optional. The adjusted p-value which is applied to filter the results, by default 0.01.}
+\item{pvalue}{The adjusted p-value which is applied to filter the results, by default 0.01.}
 
-\item{test}{Optional. The statistical test used in GREAT analysis, either 'binomial' (default) or 'hypergeometric'.}
+\item{test}{The statistical test used in GREAT analysis, either 'binomial' (default) or 'hypergeometric'.}
 
-\item{great_rule}{Optional. Equivalent to the rGREAT input 'rule', 'basalPlusExt' (default, basal plus extension), 'twoClosest' (two nearest genes), or 'oneClosest' (single nearest gene).}
+\item{great_rule}{Equivalent to the rGREAT input 'rule', 'basalPlusExt' (default, basal plus extension), 'twoClosest' (two nearest genes), or 'oneClosest' (single nearest gene).}
 
-\item{great_adv_upstream}{Optional. Equivalent to the rGREAT input 'adv_upstream' (upstream extension, kb). Only applicable when 'great_rule' is  'basalPlusExt', by default 5.0 (kb).}
+\item{great_adv_upstream}{Equivalent to the rGREAT input 'adv_upstream' (upstream extension, kb). Only applicable when 'great_rule' is  'basalPlusExt', by default 5.0 (kb).}
 
-\item{great_adv_downstream}{Optional. Equivalent to the rGREAT input 'adv_downstream' (downstream extension, kb). Only applicable when 'great_rule' is  'basalPlusExt', by default 1.0 (kb).}
+\item{great_adv_span}{Equivalent to the rGREAT input 'adv_span' (maximal distal region). Only applicable when 'great_rule' is  'basalPlusExt', by default 1000.0 (kb).}
 
-\item{great_adv_span}{Optional. Equivalent to the rGREAT input 'adv_span' (maximal distal region). Only applicable when 'great_rule' is  'basalPlusExt', by default 1000.0 (kb).}
+\item{great_adv_twoDistance}{Equivalent to the rGREAT input 'adv_twoDistance' (region range to be considered). Only applicable when 'great_rule' is  'twoClosest', by default 1000.0 (kb).}
 
-\item{great_adv_twoDistance}{Optional. Equivalent to the rGREAT input 'adv_twoDistance' (region range to be considered). Only applicable when 'great_rule' is  'twoClosest', by default 1000.0 (kb).}
+\item{great_adv_oneDistance}{Equivalent to the rGREAT input 'adv_oneDistance' (region range to be considered). Only applicable when 'great_rule' is  'oneClosest', by default 1000.0 (kb).}
 
-\item{great_adv_oneDistance}{Optional. Equivalent to the rGREAT input 'adv_oneDistance' (region range to be considered). Only applicable when 'great_rule' is  'oneClosest', by default 1000.0 (kb).}
+\item{request_interval}{The minimal gap time between two requests using greatAnnotate, by default 60 (s).}
 
-\item{request_interval}{Optional. The minimal gap time between two requests using greatAnnotate, by default 60 (s).}
+\item{great_version}{Equivalent to the rGREAT input 'version', by default 3.0.}
 
-\item{great_version}{Optional. Equivalent to the rGREAT input 'version', by default 3.0.}
+\item{great_adv_downstreams}{Equivalent to the rGREAT input 'adv_downstream' (downstream extension, kb). Only applicable when 'great_rule' is  'basalPlusExt', by default 1.0 (kb).}
 }
 \value{
 a data.frame, or an HTML report depending on the options.
@@ -49,6 +49,6 @@ This function allows you to analyse the gene ontologies of targeting genes by ci
 \examples{
 K562_CEBPB_regions <- loadPeaks(id = "MM1_HSA_K562_CEBPB")
 K562_CEBPB_regions_annotation <- greatAnnotate(peaks = K562_CEBPB_regions,
-return_annotation = T, return_html_report = T)
+                             return_annotation = T, return_html_report = T)
 }
 \keyword{greatAnnotate}

@@ -4,38 +4,48 @@
 \alias{exclusivePeaks}
 \title{exclusivePeaks}
 \usage{
-exclusivePeaks(target_peak_list, target_peak_id, excluded_peak_list,
-  excluded_peak_id, motif_type = "MEME", methmotif_url)
+exclusivePeaks(target_peak_id, motif_only_for_target_peak = F,
+  user_target_peak_list, user_target_peak_id, excluded_peak_id,
+  motif_only_for_excluded_peak = F, user_excluded_peak_list,
+  user_excluded_peak_id, methylation_profile_in_narrow_region = T,
+  motif_type = "MEME", TFregulome_url)
 }
 \arguments{
-\item{target_peak_list}{Required. List of data.frames, each of which contains bed-format peak regions. They are the peak sets you want to get the exclusive subsets from, and can be loaded from MethMotif database or self-provided.}
+\item{target_peak_id}{Character of vector, each of which is a TFregulome ID. Each of target peak will be compared with all "excluded peaks" to get its exclusive subset.}
 
-\item{target_peak_id}{Required. Character of vector, each of which is a unique ID corresponding to the element in "target_peak_list". If a peak set is from MethMotif Database, its MethMotif ID should be used here.}
+\item{motif_only_for_target_peak}{Either TRUE of FALSE (default). If TRUE, only peaks with motif will be loaded for each TFregulome ID in target_peak_id.}
 
-\item{excluded_peak_list}{Required. List of data.frames, each of which contains bed-format peak regions. They are the peak sets you want to exclude from the "target_peak_list", and can be loaded from MethMotif database or self-provided.}
+\item{user_target_peak_list}{A list of data.frames, each of which contains user's own bed-format target peak regions.}
 
-\item{excluded_peak_id}{Required. Character of vector, each of which is a unique ID corresponding to the element in "excluded_peak_list". If a peak set is from MethMotif Database, its MethMotif ID should be used here.}
+\item{user_target_peak_id}{Character of vector, each of which is a unique ID corresponding to each peak set in the list user_target_peak_list. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulome database, its TFregulome ID should be used here correspondingly.}
 
-\item{methmotif_url}{Optional. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{excluded_peak_id}{Character of vector, each of which is a TFregulome ID.}
 
-\item{motif_format}{Required. Motif PFM format, either in MEME by default or TRANSFAC.}
+\item{motif_only_for_excluded_peak}{Either TRUE of FALSE (default). If TRUE, only peaks with motif will be loaded for each TFregulome ID in excluded_peak_id.}
+
+\item{user_excluded_peak_list}{A list of data.frames, each of which contains user's own bed-format excluded peak regions.}
+
+\item{user_excluded_peak_id}{Character of vector, each of which is a unique ID corresponding to each peak set in the list user_excluded_peak_list. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulome database, its TFregulome ID should be used here correspondingly.}
+
+\item{methylation_profile_in_narrow_region}{Either TRUE (default) of FALSE. If TRUE, methylation states in 200bp window surrounding peak summits for each exclusive peak from target_peak_id and user_target_peak_list with TFregulome ID.}
+
+\item{TFregulome_url}{TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+
+\item{motif_format}{Motif PFM format, either in MEME by default or TRANSFAC.}
 }
 \value{
 matrix of ExclusivePeaksMM class objects
 }
 \description{
-This function allows you to obtain the subsets of a list of peak sets unique to another list of peak sets (either from MethMotif database or the self-provided).
+This function allows you to obtain a list of exclusive peak subsets along with the DNA methylation profiles.
 }
 \examples{
-target_peaks <- list(loadPeaks(id = "MM1_HSA_K562_CEBPB"),
-                     read.delim("my_own_peaks.bed", header = F))
-target_id <- c("MM1_HSA_K562_CEBPB", "my_own_peaks")
-excluded_peaks <- list(loadPeaks(id = "MM1_HSA_HepG2_CEBPB"),
-                       read.delim("peaks_to_exclude.bed", header = F))
-excluded_id <- c("MM1_HSA_HepG2_CEBPB", "peaks_to_exclude")
-exclusivePeaks_output <- exclusivePeaks(target_peak_list=target_peaks,
-                                        target_peak_id=target_id,
-                                        excluded_peak_list=excluded_peaks,
-                                        excluded_peak_id=excluded_id)
+target_id <- "MM1_HSA_K562_CEBPB"
+excluded_id <- c("MM1_HSA_HepG2_CEBPB", "MM1_HSA_HCT116_CEBPB")
+excluPeak_output <- exclusivePeaks(target_peak_id=target_id,
+                                   motif_only_for_target_peak=T,
+                                   excluded_peak_id=excluded_id,
+                                   motif_only_for_excluded_peak=T,
+                                   methylation_profile_in_narrow_region=T)
 }
 \keyword{exclusivePeaks}

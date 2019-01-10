@@ -1,20 +1,16 @@
-#' Motif PFM and beta score matrix for a given MethMotif ID or transcription factor
+#' Motif PFM (and beta score matrix) for a given TFregulome ID
 #'
-#' This function allows you to obtain motif PFM matrix and beta score matrix for a given MethMotif ID or transcription factor.
-#' @param tf Required either this or "id". Transcription factor name, case insensitive.
-#' @param id Required either this or "tf". MethMotif ID, case insensitive. If "id" is provided, other inputs, namely "tf" and/or "cell", will be ignored.
-#' @param cell Optional. Cell type of interest which will be combined with tf, case insensitive.
-#' @param motif_format Required. Motif PFM format, either in MEME by default or TRANSFAC.
-#' @param TFregulome_url Optional. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
-#' @return  vector of MethMotif class objects with each element named with a MethMotif ID
+#' This function allows you to obtain motif PFM matrix (and beta score matrix if the source is 'MethMotif') for a given TFregulome ID.
+#' @param id Required. TFregulome ID.
+#' @param motif_format Motif PFM format, either in MEME by default or TRANSFAC.
+#' @param TFregulome_url TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
+#' @return MethMotif class object
 #' @keywords MethMotif
 #' @export
 #' @examples
 #' K562_CEBPB <- searchMethMotif(id = "MM1_HSA_K562_CEBPB")
-#' K562_CEBPB <- searchMethMotif(tf = "cebpb", cell = "k562")
-#' K562_CEBPB_transfac <- searchMethMotif(id = "MM1_HSA_K562_CEBPB",
-#'                                        motif_format = "TRANSFAC")
-#' CEBPB <- searchMethMotif(tf = "MM1_HSA_K562_CEBPB")
+#' K562_CEBPB_transfac <- searchMotif(id = "MM1_HSA_K562_CEBPB",
+#'                                    motif_format = "TRANSFAC")
 
 searchMotif <- function(id, motif_format = "MEME", TFregulome_url)
 {
