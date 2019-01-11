@@ -32,6 +32,6 @@ plotDistrib <- function(motifDistrib)
          xlab="Position relative to center (bp)", ylab="Motif percentage (%)",
          main=plot_title, cex.main=0.8)
     dev.off()
-    message(paste0("Distribution of motif", target_id," in peak set ", peak_id, "has been saved!"))
+    message(paste0("Distribution of motif ", target_id," in peak set ", peak_id, " has been saved!"))
   }
 }
