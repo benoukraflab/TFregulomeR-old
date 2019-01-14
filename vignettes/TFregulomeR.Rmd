@@ -738,30 +738,42 @@ intersectMatrix_exclusive <- intersectPeakMatrix(user_peak_list_x = list(K562_CE
 #> ... ... Start analysing list y:MM1_HSA_K562_ZSCAN29
 ```
 
-We have implemented `intersectPeakMatrixResult` in TFregulomeR package, allowing an easy extraction and interpretation of `intersectPeakMatrix` output. It is worth noting that there are two ways of interpretations in intersection between set A and B, that is, 1) the percentage of A overlapped with B, and 2) the percentage of B intersected with A. The option is usually up to which study object should be focused on. Same principle is applicable for the output of `intersectPeakMatrix`. When users opt to return intersection matrix using `return_intersection_matrix = T` in `intersectPeakMatrixResult`, if s/he wants to know the co-binding profiles in `peak_list_x`, then he/she needs to choose `angle_of_matrix = "x"` and `intersectPeakMatrixResult` will report the percentages of each TF peaks in `peak_list_x` overlapped with each peaks in `peak_list_y`. If methylation level profiling in +/-100bp around intersected peak x is needed, `return_methylation_profile` and angle_of_methylation_profile should be `TRUE` and `"x"` respectively. Similarly, when `save_MethMotif_logo` option is wanted and `angle_of_logo = "x"`, the function will plot and save the (Meth)Motif logos for the intersected TFBSs in `peak_list_x` (if any is originally from TFregulome database). Indeed, it's not necessary to plot all (Met)hMotif logos for every pair of intersection at the same time. One can focus only on some subsets of `peak_list_x` and `peak_list_y`, using `saving_MethMotif_logo_x_id` and `saving_MethMotif_logo_y_id` respectively.
+We have implemented `intersectPeakMatrixResult` in TFregulomeR package, allowing an easy extraction and interpretation of `intersectPeakMatrix` output. It is worth noting that there are two ways of interpretations in intersection between set A and B, that is, 1) the percentage of A overlapped with B, and 2) the percentage of B intersected with A. The option is usually up to which study object should be focused on. Same principle is applicable for the output of `intersectPeakMatrix`. 
+
+When users opt to return intersection matrix using `return_intersection_matrix = T` in `intersectPeakMatrixResult`, if s/he wants to know the co-binding profiles in `peak_list_x`, then he/she needs to choose `angle_of_matrix = "x"` and `intersectPeakMatrixResult` will report the percentages of each TF peaks in `peak_list_x` overlapped with each peaks in `peak_list_y`. 
+
+If methylation level profiling in +/-100bp around intersected peak x is needed, `return_methylation_profile` and angle_of_methylation_profile should be `TRUE` and `"x"` respectively. To be noted, the methylation profile output in `intersectPeakMatrixResult` is different from `commonPeakResult` and `exclusivePeakResult`; instead, a DNA methylation matrix will be returned, and in this matrix, each row is a peak x while each column is a peak y, and each cell in the matrix is a list of CpG beta score distributions in a specified peak x intersected with a peak y. 
+
+Similarly, when `save_MethMotif_logo` option is wanted and `angle_of_logo = "x"`, the function will plot and save the (Meth)Motif logos for the intersected TFBSs in `peak_list_x` (if any is originally from TFregulome database). Indeed, it's not necessary to plot all (Met)hMotif logos for every pair of intersection at the same time. One can focus only on some subsets of `peak_list_x` and `peak_list_y`, using `saving_MethMotif_logo_x_id` and `saving_MethMotif_logo_y_id` respectively.
 
 ```{r eval=FALSE}
 # get the intersection matrix for K562 common peaks
 IM_K562_common_result <- intersectPeakMatrixResult(intersectPeakMatrix = intersectMatrix_common, 
                                                    return_intersection_matrix = T, 
-                                                   angle_of_matrix = "x")
+                                                   angle_of_matrix = "x", 
+                                                   return_methylation_profile = T, 
+                                                   angle_of_methylation_profile = "x")
 #> Start getting the results of intersectPeakMatrix ...
 #> ... ... You chose to return intersection matrix;
 #> ... ... ... You chose x-wise intersection matrix;
-#> ... ... You chose NOT to return methylation profile;
+#> ... ... You chose to return methylation profile;
+#> ... ... ... You chose to return methylation profile for peak list x;
 #> ... ... You chose NOT to save MethMotif logo in PDF if any;
 
 names(IM_K562_common_result)
-#> [1] "intersection_matrix"
-# the output of IM_K562_common_result, e.g. 1.111111%, 3.333333% and  1.111111% 
-# of K562 common peaks overlapped with MM1_HSA_K562_AFF1, MM1_HSA_K562_ARID2 and 
-# MM1_HSA_K562_ARID3A respectively.
-IM_K562_common_result$intersection_matrix[1,1:3]
+#> [1] "intersection_matrix"        "methylation_profile_matrix"
+# the intersect matrix output of intersection_matrix, 
+IM_K562_common_intersect_matrix <- IM_K562_common_result$intersection_matrix
+dim(IM_K562_common_intersect_matrix)
+#> [1]   1 108 # 1 row represents the 1 input peak x, 108 columns represent the 108 peak y
+
+# e.g. 1.111111%, 3.333333% and  1.111111% of K562 common peaks overlapped with MM1_HSA_K562_AFF1, MM1_HSA_K562_ARID2 and MM1_HSA_K562_ARID3A respectively.
+IM_K562_common_intersect_matrix[1,1:3]
 #>                    MM1_HSA_K562_AFF1 MM1_HSA_K562_ARID2 MM1_HSA_K562_ARID3A
 #> MM1_HSA_K562_CEBPB          1.111111           3.333333            1.111111
 
 # find the top 10 TFs co-binding in K562 common results
-IM_K562_common_result_t <- as.data.frame(t(IM_K562_common_result$intersection_matrix))
+IM_K562_common_result_t <- as.data.frame(t(IM_K562_common_intersect_matrix))
 attach(IM_K562_common_result_t)
 IM_K562_common_result_order <- as.data.frame(IM_K562_common_result_t[order(-MM1_HSA_K562_CEBPB),,drop = FALSE])
 detach(IM_K562_common_result_t)
@@ -794,27 +806,68 @@ intersectPeakMatrixResult(intersectPeakMatrix = intersectMatrix_common,
 #> Success: a PDF named 'MM1_HSA_K562_CEBPB_overlapped_with_MM1_HSA_K562_CEBPD-logo-entropy.pdf' 
 #> has been saved!
 
+# methylation profile of intersected regions between x and y
+IM_K562_common_methylation <- IM_K562_common_result$methylation_profile_matrix
+dim(IM_K562_common_methylation)
+#> [1]   1 108 # 1 row represents the 1 input peak x, 108 columns represent the 108 peak y
+rownames(IM_K562_common_methylation)
+#> [1] "MM1_HSA_K562_CEBPB"
+colnames(IM_K562_common_methylation)[1:5]
+#> [1] "MM1_HSA_K562_AFF1"   "MM1_HSA_K562_ARID2"  "MM1_HSA_K562_ARID3A"
+#> [4] "MM1_HSA_K562_ATF1"   "MM1_HSA_K562_ATF2"  
+# each cell in the matrix is a list()
+IM_K562_common_methylation[1,1][[1]]
+#>         CpG_num
+#> 0-10%         2 #2 CpG methylation scores are less than 0.1 in +/-100bp window around exclusive peak summits
+#> 10-20%        0
+#> 20-30%        0
+#> 30-40%        0
+#> 40-50%        0
+#> 50-60%        0
+#> 60-70%        0
+#> 70-80%        0
+#> 80-90%        0
+#> 90-100%       0
+
+# the methylation level in the intersected regions between CEBPB and CEBPBD in K562
+IM_K562_common_methylation["MM1_HSA_K562_CEBPB","MM1_HSA_K562_CEBPD"][[1]]
+#>         CpG_num
+#> 0-10%        64 #64 CpG methylation scores are less than 0.1 in +/-100bp window around exclusive peak summits
+#> 10-20%        8
+#> 20-30%        7
+#> 30-40%        2
+#> 40-50%        1
+#> 50-60%        1
+#> 60-70%        8
+#> 70-80%        3
+#> 80-90%       10
+#> 90-100%      16 #16 CpG methylation scores are more than 0.9 in +/-100bp window around exclusive peak summits
+
+
 # get the intersection matrix for K562 exclusive peaks
 IM_K562_exclusive_result <- intersectPeakMatrixResult(intersectPeakMatrix = intersectMatrix_exclusive, 
                                                       return_intersection_matrix = T, 
-                                                      angle_of_matrix = "x")
+                                                      angle_of_matrix = "x", 
+                                                      return_methylation_profile = T, 
+                                                      angle_of_methylation_profile = "x")
 #> Start getting the results of intersectPeakMatrix ...
 #> ... ... You chose to return intersection matrix;
 #> ... ... ... You chose x-wise intersection matrix;
-#> ... ... You chose NOT to return methylation profile;
+#> ... ... You chose to return methylation profile;
+#> ... ... ... You chose to return methylation profile for peak list x;
 #> ... ... You chose NOT to save MethMotif logo in PDF if any;
 
 names(IM_K562_exclusive_result)
-#> [1] "intersection_matrix"
-# the output of IM_K562_exclusive_result, e.g. 0.4160888%, 0% and  0.554785% 
-# of K562 exclusive peaks overlapped with MM1_HSA_K562_AFF1, MM1_HSA_K562_ARID2 and 
-# MM1_HSA_K562_ARID3A respectively.
-IM_K562_exclusive_result$intersection_matrix[1,1:3]
+#> [1] "intersection_matrix"        "methylation_profile_matrix"
+# the intersect matrix output of IM_K562_exclusive_result
+IM_K562_exclusive_intersect_matrix <- IM_K562_exclusive_result$intersection_matrix
+# e.g. 0.4160888%, 0% and  0.554785% of K562 exclusive peaks overlapped with MM1_HSA_K562_AFF1, MM1_HSA_K562_ARID2 and MM1_HSA_K562_ARID3A respectively.
+IM_K562_exclusive_intersect_matrix[1,1:3]
 #>                    MM1_HSA_K562_AFF1 MM1_HSA_K562_ARID2 MM1_HSA_K562_ARID3A
 #> MM1_HSA_K562_CEBPB         0.4160888                  0            0.554785
 
 # find the top 10 TFs co-binding in K562 exclusive results
-IM_K562_exclusive_result_t <- as.data.frame(t(IM_K562_exclusive_result$intersection_matrix))
+IM_K562_exclusive_result_t <- as.data.frame(t(IM_K562_exclusive_intersect_matrix))
 attach(IM_K562_exclusive_result_t)
 IM_K562_exclusive_result_order <- as.data.frame(IM_K562_exclusive_result_t[order(-MM1_HSA_K562_CEBPB),,drop = FALSE])
 detach(IM_K562_exclusive_result_t)
@@ -846,6 +899,21 @@ intersectPeakMatrixResult(intersectPeakMatrix = intersectMatrix_exclusive,
 #> ... ... ... You chose to show all methylation levels;
 #> Success: a PDF named 'MM1_HSA_K562_CEBPB_overlapped_with_MM1_HSA_K562_ATF4-logo-entropy.pdf' 
 #> has been saved!
+
+# the methylation levels in the intersected regions between CEBPB and ATF4
+IM_K562_exclusive_methylation <- IM_K562_exclusive_result$methylation_profile_matrix
+IM_K562_exclusive_methylation["MM1_HSA_K562_CEBPB","MM1_HSA_K562_ATF4"]
+#>         CpG_num
+#> 0-10%       303
+#> 10-20%       44
+#> 20-30%       22
+#> 30-40%       19
+#> 40-50%       12
+#> 50-60%       11
+#> 60-70%        8
+#> 70-80%       14
+#> 80-90%       12
+#> 90-100%       8
 ```
 
 ```{r echo=FALSE, fig.cap="Figure 4. MethMotif logo of K562 CEBPB common peaks intersected with K562 CEBPD peaks", out.width = '40%', fig.align="center"}
@@ -1076,7 +1144,7 @@ Here we are going to use MAFF as an example to provide the evidence that 1) diff
 
 ```{r eval=FALSE}
 # browser MAFF TFBS in TFregulome
-MAFF <- TFBSBrowser(tf = "MAFF")
+MAFF_TFBS <- TFBSBrowser(tf = "MAFF")
 #> 3 TFBS(s) founded: ...
 #> ... covering 1 TF(s)
 #> ... from 1 species:
@@ -1091,9 +1159,9 @@ MAFF <- TFBSBrowser(tf = "MAFF")
 #> ... from the source(s): MethMotif
 
 # plot and save the (Meth)Motif logos
-for (i in MAFF$ID){
-  methmotif <- searchMotif(id = i)
-  plotLogo(methmotif)
+for (i in MAFF_TFBS$ID){
+  maff_motif <- searchMotif(id = i)
+  plotLogo(maff_motif)
 }
 #> There are a matched record exported in a MethMotif object.
 #> Success: a PDF named 'MM1_HSA_HeLa-S3_MAFF-logo-entropy.pdf' has been saved!
@@ -1113,55 +1181,60 @@ Next, we want to extract the MAFF binding sites conserved in the three cell type
 # MAFF common peaks in three cell types
 
 # commonPeaks
-MAFF_common_output <- commonPeaks(target_peak_list = list(K562_MAFF_peaks,
-                                                          HeLa_MAFF_peaks, 
-                                                          HepG2_MAFF_peaks), 
-                                  target_peak_id = c("MM1_HSA_K562_MAFF", 
-                                                     "MM1_HSA_HeLa-S3_MAFF", 
-                                                     "MM1_HSA_HepG2_MAFF"),
-                                  compared_peak_list = list(K562_MAFF_peaks,
-                                                            HeLa_MAFF_peaks,
-                                                            HepG2_MAFF_peaks), 
-                                  compared_peak_id = c("MM1_HSA_K562_MAFF",
-                                                       "MM1_HSA_HeLa-S3_MAFF",
-                                                       "MM1_HSA_HepG2_MAFF"))
-#> Start analysing: MM1_HSA_K562_MAFF... ...
-#> ... ... Start analysing: MM1_HSA_K562_MAFF
-#> ... ... Start analysing: MM1_HSA_HeLa-S3_MAFF
-#> ... ... Start analysing: MM1_HSA_HepG2_MAFF
+MAFF_common_output <- commonPeaks(target_peak_id = MAFF_TFBS$ID, 
+                                  motif_only_for_target_peak = T, 
+                                  compared_peak_id = MAFF_TFBS$ID, 
+                                  motif_only_for_compared_peak = T, 
+                                  methylation_profile_in_narrow_region = T)
+#> TFregulomeR::commonPeaks() starting ... ...
+#> You chose to profile the methylation levels in 200bp window around peak summits, 
+#> if there is any peak loaded from TFregulome
+#> Loading target peak list ... ...
+#> ... You have 3 TFBS(s) requested to be loaded from TFregulome server
+#> ... You chose to load TF peaks with motif only. Using 'motif_only_for_target_peak' tunes your options
+#> ... loading TFBS(s) from TFregulome now
+#> .. ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_MAFF'
+#> .. ... peak file loaded successfully for id 'MM1_HSA_HepG2_MAFF'
+#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_MAFF'
+#> ... Done loading TFBS(s) from TFregulome
+#> Loading compared peak list ... ...
+#> ... You have 3 TFBS(s) requested to be loaded from TFregulome server
+#> ... You chose to load TF peaks with motif only. Using 'motif_only_for_compared_peak' tunes your options
+#> ... loading TFBS(s) from TFregulome now
+#> .. ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_MAFF'
+#> .. ... peak file loaded successfully for id 'MM1_HSA_HepG2_MAFF'
+#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_MAFF'
+#> ... Done loading TFBS(s) from TFregulome
 #> Start analysing: MM1_HSA_HeLa-S3_MAFF... ...
-#> ... ... Start analysing: MM1_HSA_K562_MAFF
-#> ... ... Start analysing: MM1_HSA_HeLa-S3_MAFF
-#> ... ... Start analysing: MM1_HSA_HepG2_MAFF
 #> Start analysing: MM1_HSA_HepG2_MAFF... ...
-#> ... ... Start analysing: MM1_HSA_K562_MAFF
-#> ... ... Start analysing: MM1_HSA_HeLa-S3_MAFF
-#> ... ... Start analysing: MM1_HSA_HepG2_MAFF
+#> Start analysing: MM1_HSA_K562_MAFF... ...
+#> Done analysing.
 
 # commonPeaks output extraction
-MAFF_common_peaks <- commonPeakResult(commonPeaks = MAFF_common_output, 
-                                      return_common_peak_sites = T, 
-                                      save_MethMotif_logo = T)
+MAFF_common_result <- commonPeakResult(commonPeaks = MAFF_common_output, 
+                                      return_common_peak_sites = T,
+                                      save_MethMotif_logo = T, 
+                                      return_methylation_profile = T)
 #> Start getting the results of commonPeakResult ...
 #> ... ... You chose to return common peak sites;
+#> ... ... You chose to return methylation profile;
 #> ... ... You chose NOT to return common peak summary;
-#> ... ... ... Only list of common peak sets will be returned in a list. Use names() in the output to see the ids of each peak set in the list.
+#> ... ... ... Both common peak sets and methylation profiles will be stored in a list, and named with 
+#> 'common_peak_list' and 'methylation_profile' in the list. Use 'names()' in the output for its detials.
 #> ... ... You chose to save MethMotif logo in PDF if any;
 #> ... ... ... You chose entropy logo;
 #> ... ... ... You chose to show all methylation levels;
-#> Success: a PDF named 'MM1_HSA_K562_MAFF_common_peaks-logo-entropy.pdf' has been saved!
 #> Success: a PDF named 'MM1_HSA_HeLa-S3_MAFF_common_peaks-logo-entropy.pdf' has been saved!
 #> Success: a PDF named 'MM1_HSA_HepG2_MAFF_common_peaks-logo-entropy.pdf' has been saved!
+#> Success: a PDF named 'MM1_HSA_K562_MAFF_common_peaks-logo-entropy.pdf' has been saved!
 
-names(MAFF_common_peaks)
-#> [1] "MM1_HSA_K562_MAFF_common_peaks"    "MM1_HSA_HeLa-S3_MAFF_common_peaks"
-#> [3] "MM1_HSA_HepG2_MAFF_common_peaks"  
-K562_MAFF_commonPeaks <- MAFF_common_peaks$MM1_HSA_K562_MAFF_common_peaks
-HeLa_MAFF_commonPeaks <- MAFF_common_peaks$`MM1_HSA_HeLa-S3_MAFF_common_peaks`
-HepG2_MAFF_commonPeaks <- MAFF_common_peaks$MM1_HSA_HepG2_MAFF_common_peaks
+# MAFF common peaks in three cell types
+K562_MAFF_commonPeaks <- MAFF_common_result$common_peak_list$MM1_HSA_K562_MAFF_common_peaks
+HeLa_MAFF_commonPeaks <- MAFF_common_result$common_peak_list$`MM1_HSA_HeLa-S3_MAFF_common_peaks`
+HepG2_MAFF_commonPeaks <- MAFF_common_result$common_peak_list$MM1_HSA_HepG2_MAFF_common_peaks
 ```
 
-```{r echo=FALSE, fig.cap="Figure 9. MethMotif logos of MAFF common peaks in three cell types", out.width = '100%', fig.align="center"}
+```{r echo=FALSE, fig.cap="Figure 10. MethMotif logos of MAFF common peaks in three cell types", out.width = '100%', fig.align="center"}
 knitr::include_graphics("../inst/extdata/MethMotif_logos_of_MAFF_common.png")
 ```
 
@@ -1170,33 +1243,74 @@ Further, we analysed the motif and DNA methylation characteristics in MAFF cell 
 ```{r eval=FALSE}
 # MAFF exclusive peaks in three cell types
 # exclusivePeaks
-K562_MAFF_exclusive_output <- exclusivePeaks(target_peak_list = list(K562_MAFF_peaks),
-                                             target_peak_id = c("MM1_HSA_K562_MAFF"),
-                                             excluded_peak_list = list(HeLa_MAFF_peaks,
-                                                                       HepG2_MAFF_peaks),
+K562_MAFF_exclusive_output <- exclusivePeaks(target_peak_id = c("MM1_HSA_K562_MAFF"),
+                                             motif_only_for_target_peak = T,
                                              excluded_peak_id = c("MM1_HSA_HeLa-S3_MAFF",
-                                                                  "MM1_HSA_HepG2_MAFF"))
+                                                                  "MM1_HSA_HepG2_MAFF"),
+                                             motif_only_for_excluded_peak = T)
+#> TFregulomeR::exclusivePeaks() starting ... ...
+#> You chose to profile the methylation levels in 200bp window around peak summits, if there is any peak loaded from TFregulome
+#> Loading target peak list ... ...
+#> ... You have 1 TFBS(s) requested to be loaded from TFregulome server
+#> ... You chose to load TF peaks with motif only. Using 'motif_only_for_target_peak' tunes your options
+#> ... loading TFBS(s) from TFregulome now
+#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_MAFF'
+#> ... Done loading TFBS(s) from TFregulome
+#> Loading excluded peak list ... ...
+#> ... You have 2 TFBS(s) requested to be loaded from TFregulome server
+#> ... You chose to load TF peaks with motif only. Using 'motif_only_for_excluded_peak' tunes your options
+#> ... loading TFBS(s) from TFregulome now
+#> .. ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_MAFF'
+#> .. ... peak file loaded successfully for id 'MM1_HSA_HepG2_MAFF'
+#> ... Done loading TFBS(s) from TFregulome
 #> Start analysing: MM1_HSA_K562_MAFF... ...
-#> ... ... Start analysing: MM1_HSA_HeLa-S3_MAFF
-#> ... ... Start analysing: MM1_HSA_HepG2_MAFF
-HeLa_MAFF_exclusive_output <- exclusivePeaks(target_peak_list = list(HeLa_MAFF_peaks),
-                                             target_peak_id = c("MM1_HSA_HeLa-S3_MAFF"),
-                                             excluded_peak_list = list(K562_MAFF_peaks,
-                                                                       HepG2_MAFF_peaks),
+#> Done analysing.
+
+HeLa_MAFF_exclusive_output <- exclusivePeaks(target_peak_id = c("MM1_HSA_HeLa-S3_MAFF"),
+                                             motif_only_for_target_peak = T,
                                              excluded_peak_id = c("MM1_HSA_K562_MAFF",
-                                                                  "MM1_HSA_HepG2_MAFF"))
+                                                                  "MM1_HSA_HepG2_MAFF"),
+                                             motif_only_for_excluded_peak = T)
+#> TFregulomeR::exclusivePeaks() starting ... ...
+#> You chose to profile the methylation levels in 200bp window around peak summits, if there is any peak loaded from TFregulome
+#> Loading target peak list ... ...
+#> ... You have 1 TFBS(s) requested to be loaded from TFregulome server
+#> ... You chose to load TF peaks with motif only. Using 'motif_only_for_target_peak' tunes your options
+#> ... loading TFBS(s) from TFregulome now
+#> .. ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_MAFF'
+#> ... Done loading TFBS(s) from TFregulome
+#> Loading excluded peak list ... ...
+#> ... You have 2 TFBS(s) requested to be loaded from TFregulome server
+#> ... You chose to load TF peaks with motif only. Using 'motif_only_for_excluded_peak' tunes your options
+#> ... loading TFBS(s) from TFregulome now
+#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_MAFF'
+#> .. ... peak file loaded successfully for id 'MM1_HSA_HepG2_MAFF'
+#> ... Done loading TFBS(s) from TFregulome
 #> Start analysing: MM1_HSA_HeLa-S3_MAFF... ...
-#> ... ... Start analysing: MM1_HSA_K562_MAFF
-#> ... ... Start analysing: MM1_HSA_HepG2_MAFF
-HepG2_MAFF_exclusive_output <- exclusivePeaks(target_peak_list = list(HepG2_MAFF_peaks),
-                                              target_peak_id = c("MM1_HSA_HepG2_MAFF"),
-                                              excluded_peak_list = list(K562_MAFF_peaks,
-                                                                        HeLa_MAFF_peaks),
-                                              excluded_peak_id = c("MM1_HSA_K562_MAFF",
-                                                                   "MM1_HSA_HeLa-S3_MAFF"))
+#> Done analysing.
+
+HepG2_MAFF_exclusive_output <- exclusivePeaks(target_peak_id = c("MM1_HSA_HepG2_MAFF"),
+                                             motif_only_for_target_peak = T,
+                                             excluded_peak_id = c("MM1_HSA_K562_MAFF",
+                                                                  "MM1_HSA_HeLa-S3_MAFF"),
+                                             motif_only_for_excluded_peak = T)
+#> TFregulomeR::exclusivePeaks() starting ... ...
+#> You chose to profile the methylation levels in 200bp window around peak summits, if there is any peak loaded from TFregulome
+#> Loading target peak list ... ...
+#> ... You have 1 TFBS(s) requested to be loaded from TFregulome server
+#> ... You chose to load TF peaks with motif only. Using 'motif_only_for_target_peak' tunes your options
+#> ... loading TFBS(s) from TFregulome now
+#> .. ... peak file loaded successfully for id 'MM1_HSA_HepG2_MAFF'
+#> ... Done loading TFBS(s) from TFregulome
+#> Loading excluded peak list ... ...
+#> ... You have 2 TFBS(s) requested to be loaded from TFregulome server
+#> ... You chose to load TF peaks with motif only. Using 'motif_only_for_excluded_peak' tunes your options
+#> ... loading TFBS(s) from TFregulome now
+#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_MAFF'
+#> .. ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_MAFF'
+#> ... Done loading TFBS(s) from TFregulome
 #> Start analysing: MM1_HSA_HepG2_MAFF... ...
-#> ... ... Start analysing: MM1_HSA_K562_MAFF
-#> ... ... Start analysing: MM1_HSA_HeLa-S3_MAFF
+#> Done analysing.
 
 
 # exclusivePeaks output extraction
@@ -1211,7 +1325,7 @@ K562_MAFF_exclusive_result <- exclusivePeakResult(exclusivePeaks = K562_MAFF_exc
 #> ... ... ... You chose entropy logo;
 #> ... ... ... You chose to show all methylation levels;
 #> Success: a PDF named 'MM1_HSA_K562_MAFF_exclusive_peaks-logo-entropy.pdf' has been saved!
-K562_MAFF_exclusivePeaks <- K562_MAFF_exclusive_result$MM1_HSA_K562_MAFF_exclusive_peaks
+K562_MAFF_exclusivePeaks <- K562_MAFF_exclusive_result$exclusive_peak_list$MM1_HSA_K562_MAFF_exclusive_peaks
 
 HeLa_MAFF_exclusive_result <- exclusivePeakResult(exclusivePeaks = HeLa_MAFF_exclusive_output,
                                                   return_exclusive_peak_sites = T,
@@ -1224,7 +1338,7 @@ HeLa_MAFF_exclusive_result <- exclusivePeakResult(exclusivePeaks = HeLa_MAFF_exc
 #> ... ... ... You chose entropy logo;
 #> ... ... ... You chose to show all methylation levels;
 #> Success: a PDF named 'MM1_HSA_HeLa-S3_MAFF_exclusive_peaks-logo-entropy.pdf' has been saved!
-HeLa_MAFF_exclusivePeaks <- HeLa_MAFF_exclusive_result$`MM1_HSA_HeLa-S3_MAFF_exclusive_peaks`
+HeLa_MAFF_exclusivePeaks <- HeLa_MAFF_exclusive_result$exclusive_peak_list$`MM1_HSA_HeLa-S3_MAFF_exclusive_peaks`
 
 HepG2_MAFF_exclusive_result <- exclusivePeakResult(exclusivePeaks = HepG2_MAFF_exclusive_output,
                                                    return_exclusive_peak_sites = T,
@@ -1237,14 +1351,14 @@ HepG2_MAFF_exclusive_result <- exclusivePeakResult(exclusivePeaks = HepG2_MAFF_e
 #> ... ... ... You chose entropy logo;
 #> ... ... ... You chose to show all methylation levels;
 #> Success: a PDF named 'MM1_HSA_HepG2_MAFF_exclusive_peaks-logo-entropy.pdf' has been saved!
-HepG2_MAFF_exclusivePeaks <- HepG2_MAFF_exclusive_result$MM1_HSA_HepG2_MAFF_exclusive_peaks
+HepG2_MAFF_exclusivePeaks <- HepG2_MAFF_exclusive_result$exclusive_peak_list$MM1_HSA_HepG2_MAFF_exclusive_peaks
 ```
 
-```{r echo=FALSE, fig.cap="Figure 10. MethMotif logos of MAFF exclusive peaks in three cell types", out.width = '100%', fig.align="center"}
+```{r echo=FALSE, fig.cap="Figure 11. MethMotif logos of MAFF exclusive peaks in three cell types", out.width = '100%', fig.align="center"}
 knitr::include_graphics("../inst/extdata/MethMotif_logos_of_MAFF_exclusive.png")
 ```
 
-We observed distinct MAFF motifs in MAFF exclusive peaks across three cell types (Figure 10). In K562, sequence TGA is highly enriched adjacent to TCAGCA, while in HepG2 the MAFF motif in the cell speccific regions is only TCAGCA. The MAFF motif in HeLa-S3 is between K562 and HepG2. Notably, distinct MAFF motifs are associated with different DNA methylation profiles across cell types. In K562 MAFF exclusive binding sites, the CpG is hypomethylated, while it can be methylated or unmethylated in HepG2 MAFF exclusive binding sites. Further, we noticed that different cell-specific MAFF target regions lead to distinct gene ontology enrichments analysed as below.
+We observed distinct MAFF motifs in MAFF exclusive peaks across three cell types (Figure 11). In K562, sequence TGA is highly enriched adjacent to TCAGCA, while in HepG2 the MAFF motif in the cell speccific regions is only TCAGCA. The MAFF motif in HeLa-S3 is between K562 and HepG2. Notably, distinct MAFF motifs are associated with different DNA methylation profiles across cell types. In K562 MAFF exclusive binding sites, the CpG is hypomethylated, while it can be methylated or unmethylated in HepG2 MAFF exclusive binding sites. Further, we noticed that different cell-specific MAFF target regions lead to distinct gene ontology enrichments analysed as below.
 
 ```{r eval=FALSE}
 # annotating function of genes targeted by K562 MAFF exclusive peaks
@@ -1342,142 +1456,189 @@ The differences of MAFF binding propensities in cell specific loci acrosss cell 
 
 ```{r eval=FALSE}
 # profile the co-binding landscapes of MAFF exclusive binding loci in three cell types
-
-# load all TF peaks in K562 from MethMotif database
-K562_tfs_all <- listTF(cell_type = "K562")
-K562_peaks_all <- list()
-K562_peaks_all_id <- c()
-for (i in K562_tfs_all$ID){
-  peak_i <- loadPeaks(id = i)
-  K562_peaks_all[[i]] <- peak_i
-  K562_peaks_all_id <- c(K562_peaks_all_id, i)
-}
+K562_TFBS <- TFBSBrowser(cell_tissue_name = "K562")
+#> 108 TFBS(s) founded: ...
+#> ... covering 108 TF(s)
+#> ... from 1 species:
+#> ... ...human
+#> ... from 1 organ(s):
+#> ... ... blood_and_lymph
+#> ... in 1 sample type(s):
+#> ... ... cell_line
+#> ... in  1  different cell(s) or tissue(s)
+#> ... in 1 type(s) of disease state(s):
+#> ... ... tumor
+#> ... from the source(s): MethMotif
 
 # co-binding profiles in K562 using intersectPeaekMatrix
-K562_MAFF_excl_IPM_output <- intersectPeakMatrix(peak_list_x = list(K562_MAFF_exclusivePeaks), 
-                                                 peak_list_y = K562_peaks_all, 
-                                                 peak_id_x = c("MM1_HSA_K562_MAFF"), 
-                                                 peak_id_y = K562_peaks_all_id)
+K562_MAFF_excl_IPM_output <- intersectPeakMatrix(user_peak_list_x = list(K562_MAFF_exclusivePeaks),
+                                                 user_peak_x_id = "MM1_HSA_K562_MAFF", 
+                                                 peak_id_y = K562_TFBS$ID)
+#> TFregulomeR::intersectPeakMatrix() starting ... ...
+#> You chose NOT to profile the methylation levels in 200bp window around peak summits
+#> Loading peak list x ... ...
+#> ... You have 1 customised peak set(s)
+#> Loading peak list y ... ...
+#> ... You have 108 TFBS(s) requested to be loaded from TFregulome server
+#> ... You chose to load TF peaks regardless of presence of motif. Using 'motif_only_for_id_y' tunes your options
+#> ... loading TFBS(s) from TFregulome now
+#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_AFF1'
+#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_ARID2'
+#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_ARID3A'
+#>        ... ...
+#> ... Done loading TFBS(s) from TFregulome
 #> Start analysing list x:MM1_HSA_K562_MAFF... ...
 #> ... ... Start analysing list y:MM1_HSA_K562_AFF1
 #> ... ... Start analysing list y:MM1_HSA_K562_ARID2
 #> ... ... Start analysing list y:MM1_HSA_K562_ARID3A
-#>           ... ...
-#> ... ... Start analysing list y:MM1_HSA_K562_ZSCAN29
+#>        ... ...
+
 K562_MAFF_excl_IPM_result <- intersectPeakMatrixResult(intersectPeakMatrix = K562_MAFF_excl_IPM_output, 
                                                        return_intersection_matrix = T, 
                                                        angle_of_matrix = "x")
 #> Start getting the results of intersectPeakMatrix ...
 #> ... ... You chose to return intersection matrix;
 #> ... ... ... You chose x-wise intersection matrix;
+#> ... ... You chose NOT to return methylation profile;
 #> ... ... You chose NOT to save MethMotif logo in PDF if any;
 
-# load all TF peaks in HeLa-S3 from MethMotif database
-HeLa_tfs_all <- listTF(cell_type = "HeLa-S3")
-HeLa_peaks_all <- list()
-HeLa_peaks_all_id <- c()
-for (i in HeLa_tfs_all$ID){
-  peak_i <- loadPeaks(id = i)
-  HeLa_peaks_all[[i]] <- peak_i
-  HeLa_peaks_all_id <- c(HeLa_peaks_all_id, i)
-}
+HeLa_TFBS <- TFBSBrowser(cell_tissue_name = "HeLa-S3")
+#> 31 TFBS(s) founded: ...
+#> ... covering 31 TF(s)
+#> ... from 1 species:
+#> ... ...human
+#> ... from 1 organ(s):
+#> ... ... cervix
+#> ... in 1 sample type(s):
+#> ... ... cell_line
+#> ... in  1  different cell(s) or tissue(s)
+#> ... in 1 type(s) of disease state(s):
+#> ... ... tumor
+#> ... from the source(s): MethMotif
 
 # co-binding profiles in HeLa-S3 using intersectPeaekMatrix
-HeLa_MAFF_excl_IPM_output <- intersectPeakMatrix(peak_list_x = list(HeLa_MAFF_exclusivePeaks), 
-                                                 peak_list_y = HeLa_peaks_all, 
-                                                 peak_id_x = c("MM1_HSA_HeLa-S3_MAFF"), 
-                                                 peak_id_y = HeLa_peaks_all_id)
+HeLa_MAFF_excl_IPM_output <- intersectPeakMatrix(user_peak_list_x = list(HeLa_MAFF_exclusivePeaks), 
+                                                 user_peak_x_id = c("MM1_HSA_HeLa-S3_MAFF"),
+                                                 peak_id_y = HeLa_TFBS$ID)
+#> TFregulomeR::intersectPeakMatrix() starting ... ...
+#> You chose NOT to profile the methylation levels in 200bp window around peak summits
+#> Loading peak list x ... ...
+#> ... You have 1 customised peak set(s)
+#> Loading peak list y ... ...
+#> ... You have 31 TFBS(s) requested to be loaded from TFregulome server
+#> ... You chose to load TF peaks regardless of presence of motif. Using 'motif_only_for_id_y' tunes your options
+#> ... loading TFBS(s) from TFregulome now
+#> .. ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_CEBPB'
+#> .. ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_CTCF'
+#>        ... ...
+#> ... Done loading TFBS(s) from TFregulome
 #> Start analysing list x:MM1_HSA_HeLa-S3_MAFF... ...
 #> ... ... Start analysing list y:MM1_HSA_HeLa-S3_CEBPB
 #> ... ... Start analysing list y:MM1_HSA_HeLa-S3_CTCF
-#> ... ... Start analysing list y:MM1_HSA_HeLa-S3_E2F4
-#>           ... ...
-#> ... ... Start analysing list y:MM1_HSA_HeLa-S3_ZNF274
+#>        ... ...
 HeLa_MAFF_excl_IPM_result <- intersectPeakMatrixResult(intersectPeakMatrix = HeLa_MAFF_excl_IPM_output, 
                                                        return_intersection_matrix = T, 
                                                        angle_of_matrix = "x")
 #> Start getting the results of intersectPeakMatrix ...
 #> ... ... You chose to return intersection matrix;
 #> ... ... ... You chose x-wise intersection matrix;
+#> ... ... You chose NOT to return methylation profile;
 #> ... ... You chose NOT to save MethMotif logo in PDF if any;
 
-# load all TF peaks in HepG2 from MethMotif database
-HepG2_tfs_all <- listTF(cell_type = "HepG2")
-HepG2_peaks_all <- list()
-HepG2_peaks_all_id <- c()
-for (i in HepG2_tfs_all$ID){
-  peak_i <- loadPeaks(id = i)
-  HepG2_peaks_all[[i]] <- peak_i
-  HepG2_peaks_all_id <- c(HepG2_peaks_all_id, i)
-}
+HepG2_TFBS <- TFBSBrowser(cell_tissue_name = "HepG2")
+#> 66 TFBS(s) founded: ...
+#> ... covering 66 TF(s)
+#> ... from 1 species:
+#> ... ...human
+#> ... from 1 organ(s):
+#> ... ... liver
+#> ... in 1 sample type(s):
+#> ... ... cell_line
+#> ... in  1  different cell(s) or tissue(s)
+#> ... in 1 type(s) of disease state(s):
+#> ... ... tumor
+#> ... from the source(s): MethMotif
 
 # co-binding profiles in HepG2 using intersectPeaekMatrix
-HepG2_MAFF_excl_IPM_output <- intersectPeakMatrix(peak_list_x = list(HepG2_MAFF_exclusivePeaks), 
-                                                  peak_list_y = HepG2_peaks_all, 
-                                                  peak_id_x = c("MM1_HSA_HepG2_MAFF"), 
-                                                  peak_id_y = HepG2_peaks_all_id)
+HepG2_MAFF_excl_IPM_output <- intersectPeakMatrix(user_peak_list_x = list(HepG2_MAFF_exclusivePeaks), 
+                                                  user_peak_x_id = c("MM1_HSA_HepG2_MAFF"), 
+                                                  peak_id_y = HepG2_TFBS$ID)
+#> TFregulomeR::intersectPeakMatrix() starting ... ...
+#> You chose NOT to profile the methylation levels in 200bp window around peak summits
+#> Loading peak list x ... ...
+#> ... You have 1 customised peak set(s)
+#> Loading peak list y ... ...
+#> ... You have 66 TFBS(s) requested to be loaded from TFregulome server
+#> ... You chose to load TF peaks regardless of presence of motif. Using 'motif_only_for_id_y' tunes your options
+#> ... loading TFBS(s) from TFregulome now
+#> .. ... peak file loaded successfully for id 'MM1_HSA_HepG2_ARID3A'
+#> .. ... peak file loaded successfully for id 'MM1_HSA_HepG2_ATF2'
+#>        ... ...
+#> ... Done loading TFBS(s) from TFregulome
 #> Start analysing list x:MM1_HSA_HepG2_MAFF... ...
 #> ... ... Start analysing list y:MM1_HSA_HepG2_ARID3A
 #> ... ... Start analysing list y:MM1_HSA_HepG2_ATF2
-#> ... ... Start analysing list y:MM1_HSA_HepG2_ATF3
-#>           ... ...
-#> ... ... Start analysing list y:MM1_HSA_HepG2_ZNF24
+#>        ... ...
 HepG2_MAFF_excl_IPM_result <- intersectPeakMatrixResult(intersectPeakMatrix = HepG2_MAFF_excl_IPM_output, 
                                                         return_intersection_matrix = T, 
                                                         angle_of_matrix = "x")
 #> Start getting the results of intersectPeakMatrix ...
 #> ... ... You chose to return intersection matrix;
 #> ... ... ... You chose x-wise intersection matrix;
+#> ... ... You chose NOT to return methylation profile;
 #> ... ... You chose NOT to save MethMotif logo in PDF if any;
 
 # heatmap
 library(gplots)
 color = colorRampPalette(c("white", "#00B2D3", "#012694"))
 # heatmap for K562 MAFF excluisve loci
-K562_MAFF_excl_IPM_result_t <- as.data.frame(t(K562_MAFF_excl_IPM_result))
+K562_MAFF_excl_IPM_result_t <- as.data.frame(t(K562_MAFF_excl_IPM_result$intersection_matrix))
 K562_MAFF_excl_IPM_order <- as.data.frame(K562_MAFF_excl_IPM_result_t[order(-K562_MAFF_excl_IPM_result_t$MM1_HSA_K562_MAFF),,drop = FALSE])
 pdf("co-binding_heatmap_of_K562_MAFF_exclusive_loci.pdf")
 heatmap.2(as.matrix(cbind(K562_MAFF_excl_IPM_order, K562_MAFF_excl_IPM_order)), col=color(100), trace = "none", Colv = NULL, Rowv = NULL,dendrogram = "none", density.info = "none",key.xlab = "co-binding percentage (%)", keysize = 1.2, cexRow = 0.4,  key.title = "", labCol = NA,  mar=c(2,25))
 dev.off()
 
 # heatmap for HeLa-S3 MAFF excluisve loci
-HeLa_MAFF_excl_IPM_result_t <- as.data.frame(t(HeLa_MAFF_excl_IPM_result))
+HeLa_MAFF_excl_IPM_result_t <- as.data.frame(t(HeLa_MAFF_excl_IPM_result$intersection_matrix))
 HeLa_MAFF_excl_IPM_order <- as.data.frame(HeLa_MAFF_excl_IPM_result_t[order(-HeLa_MAFF_excl_IPM_result_t$`MM1_HSA_HeLa-S3_MAFF`),,drop = FALSE])
 pdf("co-binding_heatmap_of_HeLa-S3_MAFF_exclusive_loci.pdf")
 heatmap.2(as.matrix(cbind(HeLa_MAFF_excl_IPM_order, HeLa_MAFF_excl_IPM_order)), col=color(100), trace = "none", Colv = NULL, Rowv = NULL,dendrogram = "none", density.info = "none",key.xlab = "co-binding percentage (%)", keysize = 1.2 , cexRow = 1, key.title = "",labCol = NA,  mar=c(2,25))
 dev.off()
 
 # heatmap for HepG2 MAFF excluisve loci
-HepG2_MAFF_excl_IPM_result_t <- as.data.frame(t(HepG2_MAFF_excl_IPM_result))
+HepG2_MAFF_excl_IPM_result_t <- as.data.frame(t(HepG2_MAFF_excl_IPM_result$intersection_matrix))
 HepG2_MAFF_excl_IPM_order <- as.data.frame(HepG2_MAFF_excl_IPM_result_t[order(-HepG2_MAFF_excl_IPM_result_t$MM1_HSA_HepG2_MAFF),,drop = FALSE])
 pdf("co-binding_heatmap_of_HepG2_MAFF_exclusive_loci.pdf")
 heatmap.2(as.matrix(cbind(HepG2_MAFF_excl_IPM_order, HepG2_MAFF_excl_IPM_order)), col=color(100), trace = "none", Colv = NULL, Rowv = NULL,dendrogram = "none", density.info = "none",key.xlab = "co-binding percentage (%)", keysize = 1.2 , cexRow = .6, key.title = "",labCol = NA,  mar=c(2,25))
 dev.off()
 ```
 
-```{r echo=FALSE, fig.cap="Figure 11. TF co-binding profiles around MAFF exclusive peaks in three cell types", out.width = '100%', fig.align="center"}
+```{r echo=FALSE, fig.cap="Figure 12. TF co-binding profiles around MAFF exclusive peaks in three cell types", out.width = '100%', fig.align="center"}
 knitr::include_graphics("../inst/extdata/co-binding_of_MAFF_exclusive_peaks.png")
 ```
 
-Interestingly, we observed several TFs co-binding with MAFF in MAFF cell specific loci in K562, not only incluing small maf protein MAFK, but also many Jun-related factors such as NFE2, NFE2L2 and JUND (Figure 11). However, in HepG2, only MAFK shows a high co-occupancy. We hypothesise the high enrichment of sequence TGA in the motif of K562 MAFF exclusive peaks is contributed by the Jun-related factors. To validate it, we further focused on the subset of K562 MAFF exclusive peaks which are bound by two very high co-binding Jun-related factors, NFE2 and NFE2L2, using `exclusivePeaks`.
+Interestingly, we observed several TFs co-binding with MAFF in MAFF cell specific loci in K562, not only incluing small maf protein MAFK, but also many Jun-related factors such as NFE2, NFE2L2 and JUND (Figure 12). However, in HepG2, only MAFK shows a high co-occupancy. We hypothesise the high enrichment of sequence TGA in the motif of K562 MAFF exclusive peaks is contributed by the Jun-related factors. To validate it, we further focused on the subset of K562 MAFF exclusive peaks which are bound by two very high co-binding Jun-related factors, NFE2 and NFE2L2, using `exclusivePeaks`.
 
 ```{r eval=FALSE}
 # exclude the co-binding regions with NFE2 and NFE2L2 from K562 MAFF exclusive peaks 
-# load K562 NFE2 and NFE2L2 peaks
-K562_NFE2_peaks <- loadPeaks(id = "MM1_HSA_K562_NFE2")
-#> Success: peak file has been returned in a data frame!
-K562_NFE2L2_peaks <- loadPeaks(id = "MM1_HSA_K562_NFE2L2")
-#> Success: peak file has been returned in a data frame!
 
-K562_MAFF_exclPeaks_NoNFE_output <- exclusivePeaks(target_peak_list = list(K562_MAFF_exclusivePeaks), 
-                                                   target_peak_id = c("MM1_HSA_K562_MAFF"), 
-                                                   excluded_peak_list = list(K562_NFE2_peaks, 
-                                                                             K562_NFE2L2_peaks), 
+K562_MAFF_exclPeaks_NoNFE_output <- exclusivePeaks(user_target_peak_list = list(K562_MAFF_exclusivePeaks), 
+                                                   user_target_peak_id = c("MM1_HSA_K562_MAFF"),
                                                    excluded_peak_id = c("MM1_HSA_K562_NFE2",
                                                                         "MM1_HSA_K562_NFE2L2"))
+#> TFregulomeR::exclusivePeaks() starting ... ...
+#> You chose to profile the methylation levels in 200bp window around peak summits, if there is any peak loaded from TFregulome
+#> Loading target peak list ... ...
+#> ... You have 1 customised peak set(s)
+#> Loading excluded peak list ... ...
+#> ... You have 2 TFBS(s) requested to be loaded from TFregulome server
+#> ... You chose to load TF peaks regardless of presence of motif. Using 'motif_only_for_excluded_peak' tunes your options
+#> ... loading TFBS(s) from TFregulome now
+#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_NFE2'
+#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_NFE2L2'
+#> ... Done loading TFBS(s) from TFregulome
 #> Start analysing: MM1_HSA_K562_MAFF... ...
-#> ... ... Start analysing: MM1_HSA_K562_NFE2
-#> ... ... Start analysing: MM1_HSA_K562_NFE2L2
+#> Done analysing.
 
 # extract K562 MAFF exclusive peak subset, no overlapping with NFE2 or NFE2L2
 K562_MAFF_exclPeaks_NoNFE_result <- exclusivePeakResult(exclusivePeaks = K562_MAFF_exclPeaks_NoNFE_output, 
@@ -1485,48 +1646,57 @@ K562_MAFF_exclPeaks_NoNFE_result <- exclusivePeakResult(exclusivePeaks = K562_MA
                                                         save_MethMotif_logo = T)
 #> Start getting the results of exclusivePeaks ...
 #> ... ... You chose to return exclusive peak sites;
+#> ... ... You chose NOT to return methylation profile;
 #> ... ... You chose NOT to return exclusive peak summary;
-#> ... ... ... Only list of exclusive peak sets will be returned in a list. Use names() in the output to see the ids of each peak set in the list.
+#> ... ... ... Only exclusive peak sets will be returned in a list and named with 'exclusive_peak_list'.
 #> ... ... You chose to save MethMotif logo in PDF if any;
 #> ... ... ... You chose entropy logo;
 #> ... ... ... You chose to show all methylation levels;
 #> Success: a PDF named 'MM1_HSA_K562_MAFF_exclusive_peaks-logo-entropy.pdf' has been saved!
-K562_MAFF_exclPeaks_NoNFE_peaks <- K562_MAFF_exclPeaks_NoNFE_result$MM1_HSA_K562_MAFF_exclusive_peaks
+K562_MAFF_exclPeaks_NoNFE_peaks <- K562_MAFF_exclPeaks_NoNFE_result$exclusive_peak_list$MM1_HSA_K562_MAFF_exclusive_peaks
 # number of K562 MAFF exclusive peak subset, no overlapping with NFE2 or NFE2L2
 nrow(K562_MAFF_exclPeaks_NoNFE_peaks)
 #> [1] 371
 
 # profile co-binding factors in K562 MAFF exclusive peak subset, no overlapping with NFE2 or NFE2L2
-K562_MAFF_excl_NoNFE_IPM_output <- intersectPeakMatrix(peak_list_x = list(K562_MAFF_exclPeaks_NoNFE_peaks), 
-                                                       peak_list_y = K562_peaks_all, 
-                                                       peak_id_x = c("MM1_HSA_K562_MAFF"), 
-                                                       peak_id_y = K562_peaks_all_id)
+K562_MAFF_excl_NoNFE_IPM_output <- intersectPeakMatrix(user_peak_list_x = list(K562_MAFF_exclPeaks_NoNFE_peaks), 
+                                                       user_peak_x_id = c("MM1_HSA_K562_MAFF"), 
+                                                       peak_id_y = K562_TFBS$ID)
+#> You chose NOT to profile the methylation levels in 200bp window around peak summits
+#> Loading peak list x ... ...
+#> ... You have 1 customised peak set(s)
+#> Loading peak list y ... ...
+#> ... You have 108 TFBS(s) requested to be loaded from TFregulome server
+#> ... You chose to load TF peaks regardless of presence of motif. Using 'motif_only_for_id_y' tunes your options
+#> ... loading TFBS(s) from TFregulome now
+#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_AFF1'
+#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_ARID2'
+#>        ... ...
+#> ... Done loading TFBS(s) from TFregulome
 #> Start analysing list x:MM1_HSA_K562_MAFF... ...
 #> ... ... Start analysing list y:MM1_HSA_K562_AFF1
 #> ... ... Start analysing list y:MM1_HSA_K562_ARID2
-#> ... ... Start analysing list y:MM1_HSA_K562_ARID3A
-#>           ... ...
-#> ... ... Start analysing list y:MM1_HSA_K562_ZSCAN29
 K562_MAFF_excl_NoNFE_IPM_result <- intersectPeakMatrixResult(intersectPeakMatrix = K562_MAFF_excl_NoNFE_IPM_output,
                                                              return_intersection_matrix = T, 
                                                              angle_of_matrix = "x")
 #> Start getting the results of intersectPeakMatrix ...
 #> ... ... You chose to return intersection matrix;
 #> ... ... ... You chose x-wise intersection matrix;
+#> ... ... You chose NOT to return methylation profile;
 #> ... ... You chose NOT to save MethMotif logo in PDF if any;
 
 # heatmap for K562 MAFF exclusive peak subset, no overlapping with NFE2 or NFE2L2
-K562_MAFF_excl_NoNFE_IPM_result_t <- as.data.frame(t(K562_MAFF_excl_NoNFE_IPM_result))
+K562_MAFF_excl_NoNFE_IPM_result_t <- as.data.frame(t(K562_MAFF_excl_NoNFE_IPM_result$intersection_matrix))
 K562_MAFF_excl_NoNFE_IPM_result_order <- as.data.frame(K562_MAFF_excl_NoNFE_IPM_result_t[order(-K562_MAFF_excl_NoNFE_IPM_result_t$MM1_HSA_K562_MAFF),,drop = FALSE])
 pdf("co-binding_heatmap_of_K562_MAFF_exclusive_loci_no_NFE2_or_NFE2L2.pdf")
 heatmap.2(as.matrix(cbind(K562_MAFF_excl_NoNFE_IPM_result_order, K562_MAFF_excl_NoNFE_IPM_result_order)), col=color(100), trace = "none", Colv = NULL, Rowv = NULL,dendrogram = "none", density.info = "none",key.xlab = "co-binding percentage (%)", keysize = 1.2, cexRow = 0.4,  key.title = "", labCol = NA,  mar=c(2,25))
 dev.off()
 ```
 
-```{r echo=FALSE, fig.cap="Figure 12. TF co-binding profiles around K562 MAFF exclusive peaks excluded NFE2 and NFE2L2 peaks", out.width = '100%', fig.align="center"}
+```{r echo=FALSE, fig.cap="Figure 13. TF co-binding profiles around K562 MAFF exclusive peaks excluded NFE2 and NFE2L2 peaks", out.width = '100%', fig.align="center"}
 knitr::include_graphics("../inst/extdata/co-binding_of_K562_MAFF_exclusive_peaks_no_NFE2_NFE2L2.png")
 ```
 
-After removing co-binding regions with NFE2 and NFE2L2, a significant decrease in enrichment of sequence TGA in the motif of K562-specific MAFF binding sites (Figure 12). Indeed, the distinct MAFF co-binding partners result in the varied motifs enriched in MAFF peaks across different cell types. In addition, the DNA sequences can be hypermethylated in the HepG2 MAFF exclusive peaks, in which only small maf proteins are co-occupying, while the K562 specific MAFF binding loci are co-bound by many Jun-related factors and hypomethylated (Figure 9). Therefore, it is appealing to hypothesise that different DNA methylation levels in MAFF binding sites are associated with different binding partners.
+After removing co-binding regions with NFE2 and NFE2L2, a significant decrease in enrichment of sequence TGA in the motif of K562-specific MAFF binding sites (Figure 13). Indeed, the distinct MAFF co-binding partners result in the varied motifs enriched in MAFF peaks across different cell types. In addition, the DNA sequences can be hypermethylated in the HepG2 MAFF exclusive peaks, in which only small maf proteins are co-occupying, while the K562 specific MAFF binding loci are co-bound by many Jun-related factors and hypomethylated (Figure 11). Therefore, it is appealing to hypothesise that different DNA methylation levels in MAFF binding sites are associated with different binding partners.
 
 
