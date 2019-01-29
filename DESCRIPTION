@@ -1,12 +1,24 @@
 Package: TFregulomeR
 Type: Package
 Title: TFRegulomeR: Flexible characterization of transcription factor binding partners and binding motifs using cell specificity and DNA methylation profiles
-Version: 1.0.0
-Author: c(person("Quy Xiao Xuan", "Lin", email = "linquyzju@gmail.com", role = c("aut", "cre")), person("Touati", "Benoukraf", email = "tbenoukraf@mun.ca", role = "aut"))
-Maintainer: person("Quy Xiao Xuan", "Lin", email = "linquyzju@gmail.com", role = c("aut", "cre"))
+Version: 0.99.0
 Description: TFregulomeR is an effective and efficient application programming interface (API) based R package that facilitates the retrieval and exploitation of TFregulome datasets. This package comprises functions that simplify the queries in TFregulome database. In addition, TFregulomeR uses standard objects compatible with other TFBS packages such as TFBSTools, allowing users to take advantage of the tools developed by the community. Further, the functionalities implemented in our toolbox allow to better understand the mechanism of TF recruitment in a cell-specific manner. As an illustration, we are able to identify different MAFF co-binding proteins (including the known partners), which are associated with distinct DNA binding motifs and varied methyl-CpG binding abilities across cell types, and to explore the different functions associated with MAFF different binding contexts.
+Authors@R: c(person("Quy Xiao Xuan", "Lin", email = "linquyzju@gmail.com", role = c("aut", "cre")), 
+             person("Sudhakar", "Jha", email = "csisjha@nus.edu.sg", role = "ctb"),
+              person("Touati", "Benoukraf", email = "tbenoukraf@mun.ca", role = "aut"))
+Author: Quy Xiao Xuan Lin [aut, cre],
+        Sudhakar Jha [ctb]
+        Touati Benoukraf [aut]
+Maintainer: Quy Xiao Xuan Lin <linquyzju@gmail.com>
 Depends: R (>= 3.3.0)
-Imports: jsonlite (>= 1.5), ggplot2 (>= 3.0.0), ggseqlogo (>= 0.1), gridExtra (>= 2.3), GenomicRanges (>= 1.32.7), IRanges (>= 2.14.12), S4Vectors (>= 0.18.3), curl (>= 3.2)
+Imports: jsonlite (>= 1.5), 
+         ggplot2 (>= 3.0.0), 
+         ggseqlogo (>= 0.1), 
+         gridExtra (>= 2.3), 
+         GenomicRanges (>= 1.32.7), 
+         IRanges (>= 2.14.12), 
+         S4Vectors (>= 0.18.3), 
+         curl (>= 3.2)
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
