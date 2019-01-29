@@ -10,7 +10,7 @@
 #' @param user_compared_peak_list A list of data.frames, each of which contains user's own bed-format compared peak regions.
 #' @param user_compared_peak_id Character of vector, each of which is a unique ID corresponding to each peak set in the list user_compared_peak_list. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulome database, its TFregulome ID should be used here correspondingly.
 #' @param methylation_profile_in_narrow_region Either TRUE (default) of FALSE. If TRUE, methylation states in 200bp window surrounding peak summits for each common peak from target_peak_id and user_target_peak_list with TFregulome ID.
-#' @param motif_format Motif PFM format, either in MEME by default or TRANSFAC.
+#' @param motif_type Motif PFM format, either in MEME by default or TRANSFAC.
 #' @param TFregulome_url TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
 #' @return  matrix of CommonPeaksMM class objects
 #' @keywords commonPeaks
@@ -19,10 +19,10 @@
 #' target_id <- c("MM1_HSA_K562_CEBPB")
 #' compared_id <- c("MM1_HSA_HepG2_CEBPB")
 #' commonPeaks_output <- commonPeaks(target_peak_id=target_id,
-#'                                   motif_only_for_target_peak=T,
+#'                                   motif_only_for_target_peak=TRUE,
 #'                                   compared_peak_id=compared_id,
-#'                                   motif_only_for_compared_peak=T,
-#'                                   methylation_profile_in_narrow_region=T)
+#'                                   motif_only_for_compared_peak=TRUE,
+#'                                   methylation_profile_in_narrow_region=TRUE)
 
 commonPeaks <- function(target_peak_id, motif_only_for_target_peak = F,user_target_peak_list, user_target_peak_id,
                         compared_peak_id, motif_only_for_compared_peak = F, user_compared_peak_list, user_compared_peak_id,
@@ -31,11 +31,11 @@ commonPeaks <- function(target_peak_id, motif_only_for_target_peak = F,user_targ
   # check the input arguments
   if(missing(target_peak_id) && missing(user_target_peak_list))
   {
-    stop("No target peak input. Please EITHER input TFregulome peaks using TFregulome ID(s) by 'target_peak_id = ' OR your own peak list using a list of data.frame(s) containing bed-format regions by 'user_target_peak_list = '")
+    stop("No target peak input. Please input TFregulome peaks using TFregulome ID(s) by 'target_peak_id = ' OR your own peak list using a list of data.frame(s) containing bed-format regions by 'user_target_peak_list = '")
   }
   if(missing(compared_peak_id) && missing(user_compared_peak_list))
   {
-    stop("No compared peak input. Please EITHER input TFregulome peaks using TFregulome ID(s) by 'compared_peak_id = ' OR your own peak list using a list of data.frame(s) containing bed-format regions by 'user_compared_peak_list = '")
+    stop("No compared peak input. Please input TFregulome peaks using TFregulome ID(s) by 'compared_peak_id = ' OR your own peak list using a list of data.frame(s) containing bed-format regions by 'user_compared_peak_list = '")
   }
   if ((!missing(user_target_peak_list) && class(user_target_peak_list) != "list") ||
       (!missing(user_compared_peak_list) && class(user_compared_peak_list) != "list"))
@@ -57,7 +57,7 @@ commonPeaks <- function(target_peak_id, motif_only_for_target_peak = F,user_targ
 
   # make an appropriate API url
   if (missing(TFregulome_url)){
-    TFregulome_url <- "http://localhost:8888/api/table_query/"
+    TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
   } else if (endsWith(TFregulome_url, suffix = "/index.php")==TRUE){
     TFregulome_url <- gsub("index.php", "", TFregulome_url)
     TFregulome_url <- paste0(TFregulome_url, "api/table_query/")
@@ -70,7 +70,7 @@ commonPeaks <- function(target_peak_id, motif_only_for_target_peak = F,user_targ
   message("TFregulomeR::commonPeaks() starting ... ...")
   if (methylation_profile_in_narrow_region)
   {
-    message("You chose to profile the methylation levels in 200bp window around peak summits, if there is any peak loaded from TFregulome")
+    message("You chose to profile the methylation levels in 200bp window around peak summits, if there is any peak set loaded from TFregulome")
   }
   else
   {
@@ -108,7 +108,7 @@ commonPeaks <- function(target_peak_id, motif_only_for_target_peak = F,user_targ
         target_peak_list_all[[target_list_count]] <- peak_i
         TFregulome_target_peak_id <- c(TFregulome_target_peak_id, i)
         is_taregt_TFregulome <- c(is_taregt_TFregulome, T)
-        message(paste0(".. ... peak file loaded successfully for id '", i,"'"))
+        message(paste0("... ... peak file loaded successfully for id '", i,"'"))
       }
     }
     message("... Done loading TFBS(s) from TFregulome")
@@ -183,7 +183,7 @@ commonPeaks <- function(target_peak_id, motif_only_for_target_peak = F,user_targ
         compared_peak_list_all[[compared_list_count]] <- peak_i
         is_compared_TFregulome <- c(is_compared_TFregulome, T)
         TFregulome_compared_peak_id <- c(TFregulome_compared_peak_id, i)
-        message(paste0(".. ... peak file loaded successfully for id '", i,"'"))
+        message(paste0("... ... peak file loaded successfully for id '", i,"'"))
       }
     }
     message("... Done loading TFBS(s) from TFregulome")

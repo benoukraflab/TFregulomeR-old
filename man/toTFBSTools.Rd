@@ -18,6 +18,7 @@ An object of class PFMatrix
 This function allows you to retrieve and convert motif PFM in TFregulome database into PFMatrix class object, which can be used in TFBSTools package.
 }
 \examples{
+require(TFBSTools)
 CEBPB_pfm <- toTFBSTools(id = "MM1_HSA_K562_CEBPB")
 }
 \keyword{toTFBSTools}

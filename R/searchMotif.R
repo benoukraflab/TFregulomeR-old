@@ -1,6 +1,6 @@
-#' Motif PFM (and beta score matrix) for a given TFregulome ID
+#' Search motif PFM and beta score matrix (if source is MethMotif) for a given TFregulome ID in TFregulome database
 #'
-#' This function allows you to obtain motif PFM matrix (and beta score matrix if the source is 'MethMotif') for a given TFregulome ID.
+#' This function allows you to obtain motif PFM matrix and beta score matrix (if source is MethMotif) for a given TFregulome ID in TFregulome database.
 #' @param id Required. TFregulome ID.
 #' @param motif_format Motif PFM format, either in MEME by default or TRANSFAC.
 #' @param TFregulome_url TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
@@ -8,7 +8,7 @@
 #' @keywords MethMotif
 #' @export
 #' @examples
-#' K562_CEBPB <- searchMethMotif(id = "MM1_HSA_K562_CEBPB")
+#' K562_CEBPB <- searchMotif(id = "MM1_HSA_K562_CEBPB")
 #' K562_CEBPB_transfac <- searchMotif(id = "MM1_HSA_K562_CEBPB",
 #'                                    motif_format = "TRANSFAC")
 
@@ -18,11 +18,11 @@ searchMotif <- function(id, motif_format = "MEME", TFregulome_url)
   motif_format = toupper(motif_format)
   if (motif_format != "MEME" & motif_format != "TRANSFAC")
   {
-    stop("Please check motif_format! Currently we only support MEME and TRANSFAC formats!")
+    stop("Please check motif_format! Currently we only support MEME (default) and TRANSFAC formats!")
   }
   # make an appropriate API url
   if (missing(TFregulome_url)){
-    TFregulome_url <- "http://localhost:8888/api/table_query/"
+    TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
   } else if (endsWith(TFregulome_url, suffix = "/index.php")==TRUE){
     TFregulome_url <- gsub("index.php", "", TFregulome_url)
     TFregulome_url <- paste0(TFregulome_url, "api/table_query/")

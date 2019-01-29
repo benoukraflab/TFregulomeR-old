@@ -12,9 +12,10 @@
 #' @keywords genomeAnnotate
 #' @export
 #' @examples
-#' K562_CEBPB_regions <- loadPeaks(id = "MM1_HSA_K562_CEBPB")
-#' K562_CEBPB_regions_annotation <- genomeAnnotate(peaks = K562_CEBPB_regions,
-#'                               return_annotation = T, return_html_report = T)
+#' require(TxDb.Hsapiens.UCSC.hg38.knownGene)
+#' HCT116_CEBPB_regions <- loadPeaks(id = "MM1_HSA_HCT116_CEBPB", includeMotifOnly=TRUE)
+#' HCT116_CEBPB_regions_annotation <- genomeAnnotate(peaks = HCT116_CEBPB_regions,
+#'                               return_annotation = TRUE, return_html_report = TRUE)
 
 genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
                           return_html_report = FALSE, promoter_range = c(-1000,100),
@@ -93,14 +94,14 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
 
   # make an appropriate API url
   if (missing(TFregulome_url)){
-    TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/methmotifR/genomeAnnotate/"
+    TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/TFregulomeR/genomeAnnotate/"
   } else if (endsWith(TFregulome_url, suffix = "/index.php")==TRUE){
     TFregulome_url <- gsub("index.php", "", TFregulome_url)
-    TFregulome_url <- paste0(TFregulome_url, "api/methmotifR/genomeAnnotate/")
+    TFregulome_url <- paste0(TFregulome_url, "api/TFregulomeR/genomeAnnotate/")
   } else if (endsWith(TFregulome_url, suffix = "/")==TRUE){
-    TFregulome_url <- paste0(TFregulome_url, "api/methmotifR/genomeAnnotate/")
+    TFregulome_url <- paste0(TFregulome_url, "api/TFregulomeR/genomeAnnotate/")
   } else {
-    TFregulome_url <- paste0(TFregulome_url, "/api/methmotifR/genomeAnnotate/")
+    TFregulome_url <- paste0(TFregulome_url, "/api/TFregulomeR/genomeAnnotate/")
   }
 
   #check existence of geneName conversion file in methmotif server
@@ -112,7 +113,7 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
     message("There is a warning to connect MethMotif API!")
     message("Advice:")
     message("1) Check internet access;")
-    message("2) Current default MethMotif homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
+    message("2) Current TFregulome server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
     message(paste0("warning: ",cond))
     return(NULL)
   }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/loadPeaks.R
 \name{loadPeaks}
 \alias{loadPeaks}
-\title{load peaks from MethMotif database}
+\title{load peaks from TFregulome database}
 \usage{
 loadPeaks(id, includeMotifOnly = F, TFregulome_url)
 }
@@ -17,7 +17,7 @@ loadPeaks(id, includeMotifOnly = F, TFregulome_url)
 a data.frame containing peak coordinates
 }
 \description{
-This function allows you to obtain the peaks using TFregulome ID.
+This function allows you to obtain the peaks from TFregulome database using TFregulome ID.
 }
 \examples{
 CEBPB_peaks <- loadPeaks(id = "MM1_HSA_K562_CEBPB")

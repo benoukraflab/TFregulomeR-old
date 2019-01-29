@@ -42,9 +42,9 @@ This function allows you to obtain the pair-wise intersected regions, along with
 peak_id_x <- c("MM1_HSA_K562_CEBPB", "MM1_HSA_HCT116_CEBPB")
 peak_id_y <- c("MM1_HSA_HepG2_CEBPB", "MM1_HSA_HCT116_CEBPB")
 intersectPeakMatrix_output <- intersectPeakMatrix(peak_id_x=peak_id_x,
-                                                  motif_only_for_id_x=T,
+                                                  motif_only_for_id_x=TRUE,
                                                   peak_id_y=peak_id_y,
-                                                  motif_only_for_id_y=T,
-                                                  methylation_profile_in_narrow_region=T)
+                                                  motif_only_for_id_y=TRUE,
+                                                  methylation_profile_in_narrow_region=TRUE)
 }
 \keyword{intersectPeakMatrix}

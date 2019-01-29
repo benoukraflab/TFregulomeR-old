@@ -1,6 +1,6 @@
-#' browse existing TFBSs available in TFregulome server
+#' Browse the current TFBSs available in TFregulome database
 #'
-#' This function allows you to get existing TFBSs in TFregulome database
+#' This function allows you to get the current TFBSs in TFregulome database
 #' @param species The species of interset
 #' @param organ The organ of interset
 #' @param sample_type The sample type of interset
@@ -9,7 +9,7 @@
 #' @param disease_state The disease state of interset
 #' @param source The source of interset
 #' @param TFregulome_url TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
-#' @return  data.frame giving the existing TFBSs in MethMotif database for a given cell type
+#' @return  data.frame containing the information of the queried TFBSs in TFregulome database
 #' @keywords TFBS
 #' @export
 #' @examples
@@ -20,7 +20,7 @@ TFBSBrowser <- function(species, organ, sample_type, cell_tissue_name,
 {
   # make an appropriate API url
   if (missing(TFregulome_url)){
-    TFregulome_url <- "http://localhost:8888/api/table_query/"
+    TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
   } else if (endsWith(TFregulome_url, suffix = "/index.php")==TRUE){
     TFregulome_url <- gsub("index.php", "", TFregulome_url)
     TFregulome_url <- paste0(TFregulome_url, "api/table_query/")

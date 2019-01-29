@@ -4,17 +4,17 @@
 #' @param MM_object Required. MethMotif class object
 #' @param logo_type Logo type for the (Meth)Motif logo to be saved, either "entropy" (default) or "frequency".
 #' @param meth_level Methylation level to be plot for the (Meth)Motif logo, and it should be one of the values, "all" (default), "methylated", and "unmethylated".
-#' @return  MethMotif logo pdf file
+#' @return  (Meth)Motif logo pdf file. If the TFregulome peak source is from MethMotif, MethMotif logo will be saved; if the source is GTRD, only motif logo will be saved.
 #' @keywords plotLogo
 #' @export
 #' @examples
-#' CEBPB_all <- searchMotif(tf = "CEBPB")
-#' for (i in CEBPB_all){plotLogo(MM_object = i)}
+#' K562_CEBPB <- searchMotif(id = "MM1_HSA_K562_CEBPB")
+#' plotLogo(MM_object = K562_CEBPB)
 
 plotLogo <- function(MM_object, logo_type="entropy", meth_level="all")
 {
   # check logo_type
-  if (logo_type != "entropy" & logo_type != "frequency")
+  if (logo_type != "entropy" && logo_type != "frequency")
   {
     stop("Please check your input argument 'logo_type'! Please choose either 'entropy' (default) or 'frequency'!")
   }
@@ -28,7 +28,7 @@ plotLogo <- function(MM_object, logo_type="entropy", meth_level="all")
   }
 
   # check logo_type
-  if (meth_level != "all" & meth_level != "methylated" & meth_level != "unmethylated")
+  if (meth_level != "all" && meth_level != "methylated" && meth_level != "unmethylated")
   {
     stop("Please check your input argument 'meth_level'! Please choose one of 'all' (default), 'methylated' or 'unmethylated'!")
   }
@@ -40,7 +40,7 @@ plotLogo <- function(MM_object, logo_type="entropy", meth_level="all")
   }
   else if (class(MM_object)[1] != "MethMotif")
   {
-    stop("Your input is not a MethMotif obejct. Try to use searchMotif() function to return a list of MethMotif objects for the TFBS of interest!")
+    stop("Your input is not a MethMotif obejct. Try to use searchMotif() function to return a MethMotif object for the TFBS of interest!")
   }
   else
   {

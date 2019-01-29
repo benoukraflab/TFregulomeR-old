@@ -7,6 +7,7 @@
 #' @keywords toTFBSTools
 #' @export
 #' @examples
+#' require(TFBSTools)
 #' CEBPB_pfm <- toTFBSTools(id = "MM1_HSA_K562_CEBPB")
 
 toTFBSTools <- function(id, TFregulome_url)
@@ -17,9 +18,9 @@ toTFBSTools <- function(id, TFregulome_url)
   }
   # make an appropriate API url
   if (missing(TFregulome_url)){
-    TFregulome_url <- "http://localhost:8888/api/table_query/"
+    TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
     # store TFregulome_url as TFregulome_url_bk for searchMotif() later
-    TFregulome_url_bk <- "http://localhost:8888"
+    TFregulome_url_bk <- "http://bioinfo-csi.nus.edu.sg/methmotif"
   } else if (endsWith(TFregulome_url, suffix = "/index.php")==TRUE){
     # store TFregulome_url as TFregulome_url_bk for searchMotif() later
     TFregulome_url_bk <- TFregulome_url

@@ -8,11 +8,11 @@ motifDistrib(id, peak_list, peak_id, plot_at_each_side = 100,
   TFregulome_url)
 }
 \arguments{
-\item{id}{Required. TFregulome ID}
+\item{id}{Required. TFregulome ID. The TFBS of interest to be profiled.}
 
-\item{peak_list}{Required. List of data.frames, each of which contains bed-format peak regions. They are the peak sets you want to profile TFBS distributions in, and can be loaded from TFregulome database or self-provided.}
+\item{peak_list}{Required. List of data.frames, each of which contains bed-format peak regions. They are the peak sets in which you want to profile the TFBS distributions, and can be loaded from TFregulome database or self-provided.}
 
-\item{peak_id}{Required. Character of vector, each of which is a unique ID corresponding to the element in "peak_list". If a peak set is directly loaded from TFregulome Database, its TFregulome ID should be used here.}
+\item{peak_id}{Required. Character of vector, each of which is a unique ID corresponding to the element in "peak_list". If a peak set is orignally from TFregulome Database, its TFregulome ID should be used here.}
 
 \item{plot_at_each_side}{By default 100bp, and motif occurrences in a window of +/- 100bp around peak centres will be returned.}
 

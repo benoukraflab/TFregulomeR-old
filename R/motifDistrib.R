@@ -1,9 +1,9 @@
 #' profile TFBS distribution
 #'
 #' This function allows you to profile TFBS distributions in a given list of peak sets.
-#' @param id Required. TFregulome ID
-#' @param peak_list Required. List of data.frames, each of which contains bed-format peak regions. They are the peak sets you want to profile TFBS distributions in, and can be loaded from TFregulome database or self-provided.
-#' @param peak_id Required. Character of vector, each of which is a unique ID corresponding to the element in "peak_list". If a peak set is directly loaded from TFregulome Database, its TFregulome ID should be used here.
+#' @param id Required. TFregulome ID. The TFBS of interest to be profiled.
+#' @param peak_list Required. List of data.frames, each of which contains bed-format peak regions. They are the peak sets in which you want to profile the TFBS distributions, and can be loaded from TFregulome database or self-provided.
+#' @param peak_id Required. Character of vector, each of which is a unique ID corresponding to the element in "peak_list". If a peak set is orignally from TFregulome Database, its TFregulome ID should be used here.
 #' @param plot_at_each_side By default 100bp, and motif occurrences in a window of +/- 100bp around peak centres will be returned.
 #' @param TFregulome_url TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
 #' @return  a list containing the numbers of input peaks and peaks with motif, as well as motif occurrences in the plot window.
@@ -15,7 +15,7 @@
 #'                                     peak_list = list(CEBPB_peaks),
 #'                                     peak_id = "MM1_HSA_K562_CEBPB")
 
-motifDistrib <- function(id, peak_list, peak_id, plot_at_each_side= 100, TFregulome_url)
+motifDistrib <- function(id, peak_list, peak_id, plot_at_each_side = 100, TFregulome_url)
 {
   # check input arguments
   if (missing(id))
@@ -28,11 +28,11 @@ motifDistrib <- function(id, peak_list, peak_id, plot_at_each_side= 100, TFregul
   }
   if (missing(peak_id))
   {
-    stop("Please provide unique ids in vector corresponding to the peak sets in 'peak_list'. If the peak set was loaded from TFregulome database using loadPeaks(), please use TFregulome ID here!")
+    stop("Please provide unique ids in vector corresponding to the peak sets in 'peak_list'. If the peak set was derived from TFregulome database, please use its TFregulome ID here!")
   }
   if (length(peak_list) != length(peak_id))
   {
-    stop("The number of peaks sets in 'peak_list' is NOT equal to the number of ids in 'peak_id'")
+    stop("The number of peak sets in 'peak_list' is NOT equal to the number of ids in 'peak_id'")
   }
   if (!is.character(id))
   {
@@ -49,7 +49,7 @@ motifDistrib <- function(id, peak_list, peak_id, plot_at_each_side= 100, TFregul
 
   # make an appropriate API url
   if (missing(TFregulome_url)){
-    TFregulome_url <- "http://localhost:8888/api/table_query/"
+    TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
   } else if (endsWith(TFregulome_url, suffix = "/index.php")==TRUE){
     TFregulome_url <- gsub("index.php", "", TFregulome_url)
     TFregulome_url <- paste0(TFregulome_url, "api/table_query/")
@@ -92,7 +92,8 @@ motifDistrib <- function(id, peak_list, peak_id, plot_at_each_side= 100, TFregul
       motif_seq <- read.delim(motif_seq_path, sep = "\t", header = F)
       colnames(motif_seq) <- c("motif_chr","motif_start","motif_end","motif_strand","motif_weight", "motif_pvalue","motif_qvalue","motif_sequence")
       motif_seq$motif_id <- paste0(id,"_motif_sequence_", as.vector(rownames(motif_seq)))
-      motif_seq_grange <- with(motif_seq[,c("motif_chr","motif_start","motif_end","motif_id")], GRanges(motif_chr, IRanges(motif_start+1, motif_end), names = motif_id))
+      motif_seq_grange <- with(motif_seq[,c("motif_chr","motif_start","motif_end","motif_id")],
+                               GRanges(motif_chr, IRanges(motif_start+1, motif_end), names = motif_id))
       names(motif_seq_grange) <- motif_seq$motif_id
     }
   }

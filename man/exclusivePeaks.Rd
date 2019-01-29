@@ -27,11 +27,11 @@ exclusivePeaks(target_peak_id, motif_only_for_target_peak = F,
 
 \item{user_excluded_peak_id}{Character of vector, each of which is a unique ID corresponding to each peak set in the list user_excluded_peak_list. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulome database, its TFregulome ID should be used here correspondingly.}
 
-\item{methylation_profile_in_narrow_region}{Either TRUE (default) of FALSE. If TRUE, methylation states in 200bp window surrounding peak summits for each exclusive peak from target_peak_id and user_target_peak_list with TFregulome ID.}
+\item{methylation_profile_in_narrow_region}{Either TRUE (default) of FALSE. If TRUE, methylation states in 200bp window surrounding peak summits for each exclusive peak from target_peak_id and user_target_peak_list (with TFregulome ID).}
+
+\item{motif_type}{Motif PFM format, either in MEME by default or TRANSFAC.}
 
 \item{TFregulome_url}{TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
-
-\item{motif_format}{Motif PFM format, either in MEME by default or TRANSFAC.}
 }
 \value{
 matrix of ExclusivePeaksMM class objects
@@ -43,9 +43,9 @@ This function allows you to obtain a list of exclusive peak subsets along with t
 target_id <- "MM1_HSA_K562_CEBPB"
 excluded_id <- c("MM1_HSA_HepG2_CEBPB", "MM1_HSA_HCT116_CEBPB")
 excluPeak_output <- exclusivePeaks(target_peak_id=target_id,
-                                   motif_only_for_target_peak=T,
+                                   motif_only_for_target_peak=TRUE,
                                    excluded_peak_id=excluded_id,
-                                   motif_only_for_excluded_peak=T,
-                                   methylation_profile_in_narrow_region=T)
+                                   motif_only_for_excluded_peak=TRUE,
+                                   methylation_profile_in_narrow_region=TRUE)
 }
 \keyword{exclusivePeaks}

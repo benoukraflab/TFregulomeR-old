@@ -2,7 +2,7 @@
 % Please edit documentation in R/searchMotif.R
 \name{searchMotif}
 \alias{searchMotif}
-\title{Motif PFM (and beta score matrix) for a given TFregulome ID}
+\title{Search motif PFM and beta score matrix (if source is MethMotif) for a given TFregulome ID in TFregulome database}
 \usage{
 searchMotif(id, motif_format = "MEME", TFregulome_url)
 }
@@ -17,10 +17,10 @@ searchMotif(id, motif_format = "MEME", TFregulome_url)
 MethMotif class object
 }
 \description{
-This function allows you to obtain motif PFM matrix (and beta score matrix if the source is 'MethMotif') for a given TFregulome ID.
+This function allows you to obtain motif PFM matrix and beta score matrix (if source is MethMotif) for a given TFregulome ID in TFregulome database.
 }
 \examples{
-K562_CEBPB <- searchMethMotif(id = "MM1_HSA_K562_CEBPB")
+K562_CEBPB <- searchMotif(id = "MM1_HSA_K562_CEBPB")
 K562_CEBPB_transfac <- searchMotif(id = "MM1_HSA_K562_CEBPB",
                                    motif_format = "TRANSFAC")
 }

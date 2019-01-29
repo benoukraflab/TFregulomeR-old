@@ -2,7 +2,7 @@
 % Please edit documentation in R/exportMMPFM.R
 \name{exportMMPFM}
 \alias{exportMMPFM}
-\title{export MethMotif motif position frequency matrix and beta score matrix}
+\title{export motif position frequency matrix and beta score matrix}
 \usage{
 exportMMPFM(fun_output, fun, save_motif_PFM = FALSE,
   save_betaScore_matrix = FALSE,
@@ -29,11 +29,11 @@ exportMMPFM(fun_output, fun, save_motif_PFM = FALSE,
 motif position frequency matrix file and beta score matrix file
 }
 \description{
-This function allows you to export motif position frequency matrix and beta score matrix from the output of "searchMethMotif", "commonPeaks", "exclusivePeaks" or "intersectPeakMatrix".
+This function allows you to export motif position frequency matrix and beta score matrix from the output of "searchMotif", "commonPeaks", "exclusivePeaks" or "intersectPeakMatrix".
 }
 \examples{
 methmotif_cebpb <- searchMotif(id = "MM1_HSA_K562_CEBPB")
 exportMMPFM(fun_output = methmotif_cebpb, fun = "searchMotif",
-            save_motif_PFM = T, save_betaScore_matrix = T)
+            save_motif_PFM = TRUE, save_betaScore_matrix = TRUE)
 }
 \keyword{exportMMPFM}

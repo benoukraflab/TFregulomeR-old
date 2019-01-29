@@ -1,10 +1,10 @@
 #' exclusivePeaks result
 #'
-#' This function allows you to get the reuslts from the exclusivePeaks() output, including a list of exclusive peak sets, (Meth)Motif logo, methylation profile in exclsive peak and exclsive peak summary.
+#' This function allows you to get the reuslts from the exclusivePeaks() output, including a list of exclusive peak sets, (Meth)Motif logo, methylation profile in exclsive peaks and exclsive peak summary.
 #' @param exclusivePeaks Required. exclusivePeaks() output, a matrix of ExclusivePeaksMM class objects.
 #' @param return_exclusive_peak_sites Either TRUE of FALSE (default). If TRUE, a list of data.frames containing exclusive peak sets will be returned.
-#' @param save_MethMotif_logo Either TRUE of FALSE (default). If TRUE, MethMotif logos for the exclusive peak sets will be saved.
-#' @param return_methylation_profile Either TRUE of FALSE (default). If TRUE, methylation profile in exclusive peak sets will be returned.
+#' @param save_MethMotif_logo Either TRUE of FALSE (default). If TRUE, (Meth)Motif logos for the exclusive peak sets will be saved.
+#' @param return_methylation_profile Either TRUE of FALSE (default). If TRUE, the methylation profiles in 200bp window around exclusive peak summits will be returned.
 #' @param return_summary Either TRUE of FALSE (default). If TRUE, a numeric matrix containing the percentage of peaks as exclusive will be returned.
 #' @param logo_type Logo type for the (Meth)Motif logo to be saved, either "entropy" (default) or "frequency".
 #' @param meth_level Methylation level to be plotted for the (Meth)Motif logo, and it should be one of the values, "all" (default), "methylated", and "unmethylated".
@@ -15,14 +15,14 @@
 #' target_id <- "MM1_HSA_K562_CEBPB"
 #' excluded_id <- c("MM1_HSA_HepG2_CEBPB", "MM1_HSA_HCT116_CEBPB")
 #' excluPeak_output <- exclusivePeaks(target_peak_id=target_id,
-#'                                    motif_only_for_target_peak=T,
+#'                                    motif_only_for_target_peak=TRUE,
 #'                                    excluded_peak_id=excluded_id,
-#'                                    motif_only_for_excluded_peak=T,
-#'                                    methylation_profile_in_narrow_region=T)
+#'                                    motif_only_for_excluded_peak=TRUE,
+#'                                    methylation_profile_in_narrow_region=TRUE)
 #' exclusivePeaks_result <- exclusivePeakResult(exclusivePeaks=excluPeak_output,
-#'                                              return_exclusive_peak_sites=T,
-#'                                              save_MethMotif_logo=T,
-#'                                              return_summary=T)
+#'                                              return_exclusive_peak_sites=TRUE,
+#'                                              save_MethMotif_logo=TRUE,
+#'                                              return_summary=TRUE)
 
 exclusivePeakResult <- function(exclusivePeaks, return_exclusive_peak_sites = FALSE,
                                 save_MethMotif_logo = FALSE, return_methylation_profile = FALSE,

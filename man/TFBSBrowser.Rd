@@ -2,7 +2,7 @@
 % Please edit documentation in R/TFBSBrowser.R
 \name{TFBSBrowser}
 \alias{TFBSBrowser}
-\title{browse existing TFBSs available in TFregulome server}
+\title{Browse the current TFBSs available in TFregulome database}
 \usage{
 TFBSBrowser(species, organ, sample_type, cell_tissue_name, tf,
   disease_state, source, TFregulome_url)
@@ -25,10 +25,10 @@ TFBSBrowser(species, organ, sample_type, cell_tissue_name, tf,
 \item{TFregulome_url}{TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
 }
 \value{
-data.frame giving the existing TFBSs in MethMotif database for a given cell type
+data.frame containing the information of the queried TFBSs in TFregulome database
 }
 \description{
-This function allows you to get existing TFBSs in TFregulome database
+This function allows you to get the current TFBSs in TFregulome database
 }
 \examples{
 TFBS_brain <- TFBSBrowser(organ = "brain")

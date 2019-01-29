@@ -9,7 +9,7 @@
 #' @param test The statistical test used in GREAT analysis, either 'binomial' (default) or 'hypergeometric'.
 #' @param great_rule Equivalent to the rGREAT input 'rule', 'basalPlusExt' (default, basal plus extension), 'twoClosest' (two nearest genes), or 'oneClosest' (single nearest gene).
 #' @param great_adv_upstream Equivalent to the rGREAT input 'adv_upstream' (upstream extension, kb). Only applicable when 'great_rule' is  'basalPlusExt', by default 5.0 (kb).
-#' @param great_adv_downstreams Equivalent to the rGREAT input 'adv_downstream' (downstream extension, kb). Only applicable when 'great_rule' is  'basalPlusExt', by default 1.0 (kb).
+#' @param great_adv_downstream Equivalent to the rGREAT input 'adv_downstream' (downstream extension, kb). Only applicable when 'great_rule' is  'basalPlusExt', by default 1.0 (kb).
 #' @param great_adv_span Equivalent to the rGREAT input 'adv_span' (maximal distal region). Only applicable when 'great_rule' is  'basalPlusExt', by default 1000.0 (kb).
 #' @param great_adv_twoDistance Equivalent to the rGREAT input 'adv_twoDistance' (region range to be considered). Only applicable when 'great_rule' is  'twoClosest', by default 1000.0 (kb).
 #' @param great_adv_oneDistance Equivalent to the rGREAT input 'adv_oneDistance' (region range to be considered). Only applicable when 'great_rule' is  'oneClosest', by default 1000.0 (kb).
@@ -19,9 +19,12 @@
 #' @keywords greatAnnotate
 #' @export
 #' @examples
+#' library(rGREAT)
+#' library(liftOver)
+#' library(rbokeh)
 #' K562_CEBPB_regions <- loadPeaks(id = "MM1_HSA_K562_CEBPB")
 #' K562_CEBPB_regions_annotation <- greatAnnotate(peaks = K562_CEBPB_regions,
-#'                              return_annotation = T, return_html_report = T)
+#'                              return_annotation = TRUE, return_html_report = TRUE)
 
 greatAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
                           return_html_report = FALSE, pvalue = 0.01, test = "binomial",
@@ -70,7 +73,7 @@ greatAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
   }
   if (assembly == "hg38" && !("liftOver" %in% (.packages())))
   {
-    stop("Your input is hg38. Currently GREAT doesn't support hg38. We need to convert hg38 to hg19 using liftOver (>=1.4.0). But liftOver package is NOT loaded yet!")
+    stop("Your input is hg38. Currently GREAT doesn't support hg38. We need to convert hg38 to hg19 using 'liftOver' (>=1.4.0). But liftOver package is NOT loaded yet!")
   }
   if (return_html_report==TRUE && !("rbokeh" %in% (.packages())))
   {

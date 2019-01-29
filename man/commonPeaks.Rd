@@ -29,9 +29,9 @@ commonPeaks(target_peak_id, motif_only_for_target_peak = F,
 
 \item{methylation_profile_in_narrow_region}{Either TRUE (default) of FALSE. If TRUE, methylation states in 200bp window surrounding peak summits for each common peak from target_peak_id and user_target_peak_list with TFregulome ID.}
 
-\item{TFregulome_url}{TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{motif_type}{Motif PFM format, either in MEME by default or TRANSFAC.}
 
-\item{motif_format}{Motif PFM format, either in MEME by default or TRANSFAC.}
+\item{TFregulome_url}{TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
 }
 \value{
 matrix of CommonPeaksMM class objects
@@ -43,9 +43,9 @@ This function allows you to obtain a list of common peak subsets along with the 
 target_id <- c("MM1_HSA_K562_CEBPB")
 compared_id <- c("MM1_HSA_HepG2_CEBPB")
 commonPeaks_output <- commonPeaks(target_peak_id=target_id,
-                                  motif_only_for_target_peak=T,
+                                  motif_only_for_target_peak=TRUE,
                                   compared_peak_id=compared_id,
-                                  motif_only_for_compared_peak=T,
-                                  methylation_profile_in_narrow_region=T)
+                                  motif_only_for_compared_peak=TRUE,
+                                  methylation_profile_in_narrow_region=TRUE)
 }
 \keyword{commonPeaks}

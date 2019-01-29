@@ -13,9 +13,9 @@ exclusivePeakResult(exclusivePeaks, return_exclusive_peak_sites = FALSE,
 
 \item{return_exclusive_peak_sites}{Either TRUE of FALSE (default). If TRUE, a list of data.frames containing exclusive peak sets will be returned.}
 
-\item{save_MethMotif_logo}{Either TRUE of FALSE (default). If TRUE, MethMotif logos for the exclusive peak sets will be saved.}
+\item{save_MethMotif_logo}{Either TRUE of FALSE (default). If TRUE, (Meth)Motif logos for the exclusive peak sets will be saved.}
 
-\item{return_methylation_profile}{Either TRUE of FALSE (default). If TRUE, methylation profile in exclusive peak sets will be returned.}
+\item{return_methylation_profile}{Either TRUE of FALSE (default). If TRUE, the methylation profiles in 200bp window around exclusive peak summits will be returned.}
 
 \item{return_summary}{Either TRUE of FALSE (default). If TRUE, a numeric matrix containing the percentage of peaks as exclusive will be returned.}
 
@@ -27,19 +27,19 @@ exclusivePeakResult(exclusivePeaks, return_exclusive_peak_sites = FALSE,
 a list of data.frames, a numeric matrix or (Meth)Motif logo PDF files depending on the options.
 }
 \description{
-This function allows you to get the reuslts from the exclusivePeaks() output, including a list of exclusive peak sets, (Meth)Motif logo, methylation profile in exclsive peak and exclsive peak summary.
+This function allows you to get the reuslts from the exclusivePeaks() output, including a list of exclusive peak sets, (Meth)Motif logo, methylation profile in exclsive peaks and exclsive peak summary.
 }
 \examples{
 target_id <- "MM1_HSA_K562_CEBPB"
 excluded_id <- c("MM1_HSA_HepG2_CEBPB", "MM1_HSA_HCT116_CEBPB")
 excluPeak_output <- exclusivePeaks(target_peak_id=target_id,
-                                   motif_only_for_target_peak=T,
+                                   motif_only_for_target_peak=TRUE,
                                    excluded_peak_id=excluded_id,
-                                   motif_only_for_excluded_peak=T,
-                                   methylation_profile_in_narrow_region=T)
+                                   motif_only_for_excluded_peak=TRUE,
+                                   methylation_profile_in_narrow_region=TRUE)
 exclusivePeaks_result <- exclusivePeakResult(exclusivePeaks=excluPeak_output,
-                                             return_exclusive_peak_sites=T,
-                                             save_MethMotif_logo=T,
-                                             return_summary=T)
+                                             return_exclusive_peak_sites=TRUE,
+                                             save_MethMotif_logo=TRUE,
+                                             return_summary=TRUE)
 }
 \keyword{exclusivePeakResult}

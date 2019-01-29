@@ -19,14 +19,14 @@
 #' peak_id_x <- c("MM1_HSA_K562_CEBPB", "MM1_HSA_HCT116_CEBPB")
 #' peak_id_y <- c("MM1_HSA_HepG2_CEBPB", "MM1_HSA_HCT116_CEBPB")
 #' intersect_output <- intersectPeakMatrix(peak_id_x=peak_id_x,
-#'                                                   motif_only_for_id_x=T,
+#'                                                   motif_only_for_id_x=TRUE,
 #'                                                   peak_id_y=peak_id_y,
-#'                                                   motif_only_for_id_y=T,
-#'                                                   methylation_profile_in_narrow_region=T)
+#'                                                   motif_only_for_id_y=TRUE,
+#'                                                   methylation_profile_in_narrow_region=TRUE)
 #' intersect_matrix <- intersectPeakMatrixResult(intersectPeakMatrix=intersect_output,
-#'                                               return_intersection_matrix=T,
-#'                                               return_methylation_profile=T,
-#'                                               save_MethMotif_logo=T,
+#'                                               return_intersection_matrix=TRUE,
+#'                                               return_methylation_profile=TRUE,
+#'                                               save_MethMotif_logo=TRUE,
 #'                           saving_MethMotif_logo_x_id=c("MM1_HSA_K562_CEBPB"))
 
 intersectPeakMatrixResult <- function(intersectPeakMatrix,
@@ -194,7 +194,7 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
             }
             else
             {
-              message(paste0("No MethMotif logo for ", logo_id, " will be generated, because its ID does match any record of existing MethMotif IDs or number of the interected motif is zero."))
+              message(paste0("No (Meth)Motif logo for ", logo_id, " will be generated, because its ID does match any record of existing TFregulome IDs or number of the interected motif is zero."))
             }
           }
           else
@@ -208,7 +208,7 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
             }
             else
             {
-              message(paste0("No MethMotif logo for ", logo_id, " will be generated, because its ID does match any record of existing MethMotif IDs or number of the interected motif is zero."))
+              message(paste0("No (Meth)Motif logo for ", logo_id, " will be generated, because its ID does match any record of existing TFregulome IDs or number of the interected motif is zero."))
             }
           }
         }

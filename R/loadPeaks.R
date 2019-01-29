@@ -1,6 +1,6 @@
-#' load peaks from MethMotif database
+#' load peaks from TFregulome database
 #'
-#' This function allows you to obtain the peaks using TFregulome ID.
+#' This function allows you to obtain the peaks from TFregulome database using TFregulome ID.
 #' @param id Required. TFregulome ID
 #' @param includeMotifOnly Either TRUE or FALSE (default). If TRUE, only peaks with motif will be returned
 #' @param TFregulome_url TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
@@ -14,7 +14,7 @@ loadPeaks <- function(id, includeMotifOnly = F, TFregulome_url)
 {
   # make an appropriate API url
   if (missing(TFregulome_url)){
-    TFregulome_url <- "http://localhost:8888/api/table_query/"
+    TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
   } else if (endsWith(TFregulome_url, suffix = "/index.php")==TRUE){
     TFregulome_url <- gsub("index.php", "", TFregulome_url)
     TFregulome_url <- paste0(TFregulome_url, "api/table_query/")

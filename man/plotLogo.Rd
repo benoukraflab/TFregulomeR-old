@@ -14,13 +14,13 @@ plotLogo(MM_object, logo_type = "entropy", meth_level = "all")
 \item{meth_level}{Methylation level to be plot for the (Meth)Motif logo, and it should be one of the values, "all" (default), "methylated", and "unmethylated".}
 }
 \value{
-MethMotif logo pdf file
+(Meth)Motif logo pdf file. If the TFregulome peak source is from MethMotif, MethMotif logo will be saved; if the source is GTRD, only motif logo will be saved.
 }
 \description{
 This function allows you to plot (Meth)Motif logo.
 }
 \examples{
-CEBPB_all <- searchMotif(tf = "CEBPB")
-for (i in CEBPB_all){plotLogo(MM_object = i)}
+K562_CEBPB <- searchMotif(id = "MM1_HSA_K562_CEBPB")
+plotLogo(MM_object = K562_CEBPB)
 }
 \keyword{plotLogo}

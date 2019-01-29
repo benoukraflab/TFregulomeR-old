@@ -1,15 +1,14 @@
 ---
-title: "TFregulomeR: a toolbox to study transcription factor regulome"
+title: "TFRegulomeR: Flexible characterization of transcription factor binding partners and binding motifs using cell specificity and DNA methylation profiles"
 author: 
  - name: Quy Xiao Xuan Lin
    affiliation: National University of Singapore
+ - name: Sudhakar Jha
+   affiliation: National University of Singapore
  - name: Touati Benoukraf
    affiliation: National University of Singapore & Memorial University of Newfoundland
-date: "`r format(Sys.Date(), '%m/%d/%Y')`"
 abstract: >
-  A recently launched transcription factor binding site database, MethMotif, has
-  demonstrated a cell sepcificity of trancription factors in DNA binding sequences 
-  and DNA methylation states.
+  TFregulome is a comprehensive transcription factor binding site (TFBS) database combining MethMotif and GTRD. The binding motifs predicted in-silico from MethMotif and GTRD describe cell specific transcription factor (TF) binding propensities, while the DNA methylation profiles from MethMotif portray a second epigenetic dimension in TF binding events. Therefore, TFregulome database is useful to study TF binding partners along with DNA methylation. TFregulomeR is an effective and efficient application programming interface (API) based R package that facilitates the retrieval and exploitation of TFregulome datasets. This package comprises functions that simplify the queries in TFregulome database. In addition, TFregulomeR uses standard objects compatible with other TFBS packages such as TFBSTools, allowing users to take advantage of the tools developed by the community. Further, the functionalities implemented in our toolbox allow to better understand the mechanism of TF recruitment in a cell-specific manner. As an illustration, we are able to identify different MAFF co-binding proteins (including the known partners), which are associated with distinct DNA binding motifs and varied methyl-CpG binding abilities across cell types, and to explore the different functions associated with MAFF different binding contexts.
   TFregulomeR package version: `r packageVersion("TFregulomeR")`
 
 output: 
@@ -17,7 +16,7 @@ output:
     toc: true
     fig_caption: yes
 vignette: >
-  %\VignetteIndexEntry{Access to MethMotif database with methmotifR}
+  %\VignetteIndexEntry{TFRegulomeR: Flexible characterization of transcription factor binding partners and binding motifs using cell specificity and DNA methylation profiles}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -33,9 +32,9 @@ knitr::opts_chunk$set(
 ## Browse TFregulome Database
 
 TFregulomeR allows users to easily browse the TFregulome database using only one simple
-function `TFBSBrowser`. One can search the database according to species, organ, sample type,
+function `TFBSBrowser`. Users can search the database according to species, organ, sample type,
 cell/tissue name, TF name, disease state, and source. A data.frame will be returned upon
-searching, including information in TFregulome ID (important for following analysis), species, 
+searching, including the information in TFregulome ID (important for following analysis), species, 
 organ, sample type, cell/tissue name, description of cell/tissue, disease state, TF name, 
 source, TF source ID, number of peaks, and number of peaks with motif. In particular, if 
 no input is given for the function, all records in TFregulome database will be returned.
@@ -70,20 +69,20 @@ head(all_record)
 #> 4                  GTRD-EXP000132_HSA_HUVEC_FLI1   human connective_tissue
 #> 5                GTRD-EXP000140_HSA_LS180_TCF7L2   human        colorectum
 #> 6                 GTRD-EXP000142_HSA_LS180_CEBPB   human        colorectum
-#>     sample_type     cell_tissue_name                      description
-#> 1 primary_cells embryonic stem cells             embryonic stem cells
-#> 2 primary_cells         CD4+ T-cells                     CD4+ T-cells
-#> 3     cell_line               EWS502                    Ewing sarcoma
-#> 4     cell_line                HUVEC umbilical vein endothelial cells
-#> 5     cell_line                LS180                     colon cancer
-#> 6     cell_line                LS180                     colon cancer
-#>   disease_state     TF source source_ID peak_num peak_with_motif_num
-#> 1        normal PRDM14   GTRD EXP000061    17482                5656
-#> 2        normal    YY1   GTRD EXP000080    18298                2038
-#> 3         tumor   FLI1   GTRD EXP000128    89523               28914
-#> 4        normal   FLI1   GTRD EXP000132    71437               36126
-#> 5         tumor TCF7L2   GTRD EXP000140    16517                2312
-#> 6         tumor  CEBPB   GTRD EXP000142   128542               67747
+#>     sample_type     cell_tissue_name                      description disease_state
+#> 1 primary_cells embryonic-stem-cells             embryonic stem cells        normal
+#> 2 primary_cells       CD4pos-T-cells                     CD4+ T-cells        normal
+#> 3     cell_line               EWS502                    Ewing sarcoma         tumor
+#> 4     cell_line                HUVEC umbilical vein endothelial cells        normal
+#> 5     cell_line                LS180                     colon cancer         tumor
+#> 6     cell_line                LS180                     colon cancer         tumor
+#>       TF source source_ID peak_num peak_with_motif_num
+#> 1 PRDM14   GTRD EXP000061    17482                5656
+#> 2    YY1   GTRD EXP000080    18298                2038
+#> 3   FLI1   GTRD EXP000128    89523               28914
+#> 4   FLI1   GTRD EXP000132    71437               36126
+#> 5 TCF7L2   GTRD EXP000140    16517                2312
+#> 6  CEBPB   GTRD EXP000142   128542               67747
 
 # browse TFBSs in blood and lymph
 blood_and_lymph_record <- TFBSBrowser(organ = "blood_and_lymph")
@@ -120,19 +119,18 @@ CEBPB_record <- TFBSBrowser(tf = "CEBPB")
 ## Retrieve datasets from TFregulome database
 
 We have designed some useful functions to aid in data retrival from TFregulome database. 
-Retrival of motif matrix (and DNA methylation matrix if the source is MethMotif) can be achieved 
-using `searchMotif`. Further those obtained matrices can be easily saved locally using `exportMMPFM`,
-and corresponding (Meth)Motif logo (MethMotif logo if DNA methylation matrix or beta score 
-matrix is available)can be simply plotted using `plotLogo`. Here, we introduced an object of class 
+Retrival of motif matrix and DNA methylation matrix (if the source is MethMotif) can be achieved 
+using `searchMotif`. Further these obtained matrices can be easily saved locally using `exportMMPFM`,
+and corresponding (Meth)Motif logo (MethMotif logo, if both motif matrix and DNA methylation matrix are available; motif logo, if only motif matrix is available) can be simply plotted using `plotLogo`. Here, we introduced an object of class 
 "MethMotif" using S4 class in order for an easy and intuitive storage, manipulation and conversion 
 (with other packages such as "TFBSTools") of a MethMotif matrix, which is a combination of a TF 
-motif weight position matrix and, if available, its DNA methylation matrix (beta score matrix). 
+motif weight position matrix and its DNA methylation matrix (beta score matrix). 
 To obtain the element or slot from an S4 obejct, one can simply use `@` to retrive it from class 
 "MethMotif". What's more, we allow users to directly load peak regions of TF of interest 
 (all peaks or peaks with motif only) from TFregulome database using `loadPeaks`.
 
 ```{r eval=FALSE}
-# according to TFBSBrowser results for all CEBPB TFBSs, we select two CEBPB TFBSs 
+# according to TFBSBrowser results for all CEBPB TFBS query, we select two CEBPB TFBSs 
 # from MethMotif and GTRD: MM1_HSA_K562_CEBPB, GTRD-EXP040801_HSA_HL-60_CEBPB
 
 # loading MethMotif object in "MEME" format. Currently we support "MEME" and "TRANSFAC".
@@ -140,7 +138,6 @@ K562_CEBPB <- searchMotif(id = "MM1_HSA_K562_CEBPB", motif_format = "MEME")
 #> There are a matched record exported in a MethMotif object.
 HL60_CEBPB <- searchMotif(id = "GTRD-EXP040801_HSA_HL-60_CEBPB", motif_format = "MEME")
 #> There are a matched record exported in a MethMotif object.
-K562_CEBPB_MM <- K562_CEBPB$MM1_HSA_K562_CEBPB
 class(K562_CEBPB)
 #> [1] "MethMotif"
 #> attr(,"package")
@@ -150,9 +147,9 @@ class(K562_CEBPB)
 K562_CEBPB_betaScore <- K562_CEBPB@MMBetaScore
 K562_CEBPB_betaScore
 #>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11]
-#> [1,]   35    0    0    0    0  503    0    0    0     0    31
-#> [2,]   18    0    0    0    0  797    0    0    0     0    22
-#> [3,]    3    0    0    0    0  739    0    0    0     0     0
+#> [1,]   35    0    0    0    0  503    0    0    0     0    31 # beta score < 10%
+#> [2,]   18    0    0    0    0  797    0    0    0     0    22 # beta score >=10% && <=90%
+#> [3,]    3    0    0    0    0  739    0    0    0     0     0 # beta score > 90%
 
 # no beta score matrix from GTRD-EXP040801_HSA_HL-60_CEBPB since it's from GTRD
 HL60_CEBPB_betaScore <- HL60_CEBPB@MMBetaScore
@@ -227,12 +224,11 @@ K562_CEBPB_motifPWM@motif_matrix
 #> [11,] 0.028143 0.403377 0.136961 0.431520
 ```
 
-After obtaining a MethMotif matrix, one can use `plotLogo` to plot logo as below (Figure 1). 
-If the TFBS source is MethMotif, then a MethMotif logo will be saved. One can choose 
-"entropy" and "frequency" for motif logo, and different methylation levels 
-("all", "methylated" and "unmethylated") for methylation barcharts. However, 
-if the TFBS source is GTRD, then only a motif logo will be saved due to the unavailablity 
-of DNA methylation within motif.
+After obtaining a MethMotif matrix, user can use `plotLogo` to plot logo as below (Figure 1). 
+If the TFBS source is MethMotif, then a MethMotif logo will be saved. Two options are available for motif logo, 
+"entropy" and "frequency", and also different methylation levels 
+("all", "methylated" and "unmethylated") can be opted for methylation barcharts. However, 
+if the TFBS source is GTRD, only a motif logo will be saved due to the unknown DNA methylation within motif.
 
 ```{r eval=FALSE}
 plotLogo(K562_CEBPB, logo_type = "entropy", meth_level = "all")
@@ -264,7 +260,7 @@ We will introduce it in the following section.
 
 ```{r eval=FALSE}
 # export MethMotif matrix for MM1_HSA_K562_CEBPB
-exportMMPFM(fun_output = K562_CEBPB, fun = "searchMethMotif", save_motif_PFM = T, save_betaScore_matrix = T)
+exportMMPFM(fun_output = K562_CEBPB, fun = "searchMotif", save_motif_PFM = T, save_betaScore_matrix = T)
 #> Start exporting ... ...
 #> ... ... You chose to save motif PFM and beta score matrix.
 #> ... ... export searchMotif
@@ -313,13 +309,13 @@ head(K562_CEBPB_peaks)
 ### Common peak regions
 
 TFregulomeR provides the functionality to find the common peak regions along with DNA methylation 
-profiling using `commonPeaks`. 
-For the target peak sets, users can directly use TFregulome TF peaks (hg38 for human) by using its TFregulome IDs in `target_peak_id` 
-(all peaks or peaks with motif only can be selected using `motif_only_for_target_peak`), or their
-own peaks regions in `user_target_peak_list`. If customised peak sets are provided, all peak sets 
+profiles using `commonPeaks`. 
+For the target peak sets, users can directly use TFregulome TF peaks (hg38 for human) by inputting its TFregulome IDs in `target_peak_id` 
+(all peaks or peaks with motif only can be opted using `motif_only_for_target_peak`), or their
+own peak regions in `user_target_peak_list`. If customised peak sets are provided, all peak sets 
 should be stored in an R list(), and each peak set should be a bed-format data.frame with the 
 first three columns as chromosome (starting with 'chr'), start and end. It's recommended that users 
-provide the unique IDs for their customised peak list (also should be unique to provided TFregulome 
+provide the unique IDs for their customised peak list in `user_target_peak_id` (also should be unique to the provided TFregulome 
 ID list in `target_peak_id`). If unavailable, the function will automatically assign IDs for the 
 provided peak sets. It should be noted that if the customised peak set is a subset of a TFregulome 
 peak set, it's highly recommended that its TFregulome ID should be provided correspondingly in 
@@ -328,15 +324,14 @@ are peak summits, the function is able to recognise it with the provided TFregul
 automatically expand +/- 100bp during the analysis. Similar rules are applicable to options `compared_peak_id`,
 `motif_only_for_compared_peak`, `user_compared_peak_list` and `user_compared_peak_id` when loading compared peak sets.
 
-During the analyisis, each target peak set from `target_peak_id` (will be automatically loaded from TFregulome database during analysis) and 
+During the analyisis, each target peak set from `target_peak_id` (will be automatically loaded from TFregulome database during the analysis) and 
 `user_target_peak_list` will be compared with all input compared peak sets from `compared_peak_id` and 
-`user_compared_peak_list`, to get the final common peak subsets for each target set. 
-If `methylation_profile_in_narrow_region=T`, DNA methylation profiling in 100bp surrounding peak summit will be performed 
-for each common peak subset whose source is MethMotif in `target_peak_id` and `user_compared_peak_list` with TFregulome IDs 
-indicated in `user_target_peak_id`.
+`user_compared_peak_list`, to get a final common peak subset for each target set. 
+If `methylation_profile_in_narrow_region=T`, DNA methylation profiling in +/- 100bp surrounding peak summit will be performed 
+for each common peak subset, whose TF source in TFregulome database is MethMotif, in `target_peak_id` and `user_target_peak_list` tagged with TFregulome IDs in `user_target_peak_id`.
 
 ```{r eval=FALSE}
-# read my local file. Here we use the HCT116 CEBPB binding sites published in Nucleic Acids Research
+# read my local file. Here we use the HCT116 CEBPB binding sites from the publication PMID: 30380113
 my_peak_path <- system.file("extdata", "HCT116_CEBPb_binding_sites.txt", package = "TFregulomeR")
 my_peak <- read.delim(my_peak_path, sep = "\t", header = F)
 head(my_peak)
@@ -349,7 +344,7 @@ head(my_peak)
 #> 6  chr1   8175025   8175038
 
 # To get the common subsets of K562 CEBPB peaks and my peaks, which are 
-# common with (conserved in) the CEBPB peaks in all cell types available in TFregulome database,
+# common with (conserved in) the CEBPB peaks in all cell types from TFregulome database,
 # and at the same time to profile the DNA methylation states in the common subsets
 
 # 1) Get all CEBPB records in TFregulome database
@@ -382,29 +377,29 @@ commonPeak_output <- commonPeaks(target_peak_id = "MM1_HSA_K562_CEBPB",
 #> ... You have 1 TFBS(s) requested to be loaded from TFregulome server
 #> ... You chose to load TF peaks with motif only. Using 'motif_only_for_target_peak' tunes your options
 #> ... loading TFBS(s) from TFregulome now
-#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_CEBPB'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_K562_CEBPB'
 #> ... Done loading TFBS(s) from TFregulome
 #> ... You have 1 customised peak set(s)
 #> Loading compared peak list ... ...
 #> ... You have 16 TFBS(s) requested to be loaded from TFregulome server
 #> ... You chose to load TF peaks with motif only. Using 'motif_only_for_compared_peak' tunes your options
 #> ... loading TFBS(s) from TFregulome now
-#> .. ... peak file loaded successfully for id 'GTRD-EXP000142_HSA_LS180_CEBPB'
-#> .. ... peak file loaded successfully for id 'GTRD-EXP010975_HSA_Ishikawa_CEBPB'
-#> .. ... peak file loaded successfully for id 'GTRD-EXP030173_HSA_LoVo_CEBPB'
-#> .. ... peak file loaded successfully for id 'GTRD-EXP030702_HSA_blood-monocytes_CEBPB'
-#> .. ... peak file loaded successfully for id 'GTRD-EXP034967_HSA_mesenchymal-stem-cells_CEBPB'
-#> .. ... peak file loaded successfully for id 'GTRD-EXP036478_HSA_fetal-osteoblasts_CEBPB'
-#> .. ... peak file loaded successfully for id 'GTRD-EXP040652_HSA_monocyte-derived-macrophages_CEBPB'
-#> .. ... peak file loaded successfully for id 'GTRD-EXP040801_HSA_HL-60_CEBPB'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_A549_CEBPB'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_H1-hESC_CEBPB'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_HCT116_CEBPB'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_CEBPB'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_HepG2_CEBPB'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_IMR-90_CEBPB'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_CEBPB'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_MCF-7_CEBPB'
+#> ... ... peak file loaded successfully for id 'GTRD-EXP000142_HSA_LS180_CEBPB'
+#> ... ... peak file loaded successfully for id 'GTRD-EXP010975_HSA_Ishikawa_CEBPB'
+#> ... ... peak file loaded successfully for id 'GTRD-EXP030173_HSA_LoVo_CEBPB'
+#> ... ... peak file loaded successfully for id 'GTRD-EXP030702_HSA_blood-monocytes_CEBPB'
+#> ... ... peak file loaded successfully for id 'GTRD-EXP034967_HSA_mesenchymal-stem-cells_CEBPB'
+#> ... ... peak file loaded successfully for id 'GTRD-EXP036478_HSA_fetal-osteoblasts_CEBPB'
+#> ... ... peak file loaded successfully for id 'GTRD-EXP040652_HSA_monocyte-derived-macrophages_CEBPB'
+#> ... ... peak file loaded successfully for id 'GTRD-EXP040801_HSA_HL-60_CEBPB'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_A549_CEBPB'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_H1-hESC_CEBPB'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_HCT116_CEBPB'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_CEBPB'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_HepG2_CEBPB'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_IMR-90_CEBPB'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_K562_CEBPB'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_MCF-7_CEBPB'
 #> ... Done loading TFBS(s) from TFregulome
 #> Start analysing: MM1_HSA_K562_CEBPB... ...
 #> Start analysing: HCT116_CEBPB... ...
@@ -412,8 +407,8 @@ commonPeak_output <- commonPeaks(target_peak_id = "MM1_HSA_K562_CEBPB",
 ```
 
 After obtaining the output of `commonPeaks`, you can use `commonPeakResult` to get 
-1) the summary, 2) the common peak regions, 3) DNA methylation levels in common peak subsets if the input source is 
-MethMotif in TFregulome database and 4) the (Meth)Motif logo if input is from TFregulome or with TFregulome ID.
+1) the summary, 2) the common peak regions, 3) DNA methylation levels in 200bp around common peak summits if the input TF source is 
+MethMotif in TFregulome database and 4) the (Meth)Motif logo if TF input is from TFregulome or with TFregulome ID.
 
 ```{r eval=FALSE}
 commonPeak_result <- commonPeakResult(commonPeaks = commonPeak_output,
@@ -492,12 +487,12 @@ Exclusive peak regions are important to study a TF's context-specifc function.
 Hence, we implemented such functionality to achieve the extraction of the context dependent peak loci 
 along with DNA methylation profiles, `exclusivePeaks`. 
 
-For the target peak sets, users can directly use TFregulome TF peaks (hg38 for human) by using its TFregulome IDs in `target_peak_id` 
+For the target peak sets, users can directly use TFregulome TF peaks (hg38 for human) by inputting its TFregulome IDs in `target_peak_id` 
 (all peaks or peaks with motif only can be selected using `motif_only_for_target_peak`), or their
-own peaks regions in `user_target_peak_list`. If customised peak sets are provided, all peak sets 
+own peak regions in `user_target_peak_list`. If customised peak sets are provided, all peak sets 
 should be stored in an R list(), and each peak set should be a bed-format data.frame with the 
 first three columns as chromosome (starting with 'chr'), start and end. It's recommended that users 
-provide the unique IDs for their customised peak list (also should be unique to provided TFregulome 
+provide the unique IDs for their customised peak list in `user_target_peak_id` (also should be unique to the provided TFregulome 
 ID list in `target_peak_id`). If unavailable, the function will automatically assign IDs for the 
 provided peak sets. It should be noted that if the customised peak set is a subset of a TFregulome 
 peak set, it's highly recommended that its TFregulome ID should be provided correspondingly in 
@@ -506,16 +501,15 @@ are peak summits, the function is able to recognise it with the provided TFregul
 automatically expand +/- 100bp during the analysis. Similar rules are applicable to options `excluded_peak_id`,
 `motif_only_for_excluded_peak`, `user_excluded_peak_list` and `user_excluded_peak_id` when loading compared peak sets.
 
-During the analyisis, each target peak set from `target_peak_id` (will be automatically loaded from TFregulome database during analysis) and 
+During the analyisis, each target peak set from `target_peak_id` (will be automatically loaded from TFregulome database during the analysis) and 
 `user_target_peak_list` will be compared with all input excluded peak sets from `excluded_peak_id` and 
-`user_excluded_peak_list`, to get the final unique peak subsets for each target set. 
-If `methylation_profile_in_narrow_region=T`, DNA methylation profiling in 100bp surrounding peak summit will be performed 
-for each unique peak subset whose source is MethMotif in `target_peak_id` and `user_compared_peak_list` with TFregulome IDs 
-indicated in `user_target_peak_id`.
+`user_excluded_peak_list`, to get a final unique peak subset for each target set. 
+If `methylation_profile_in_narrow_region=T`, DNA methylation profiling in +/- 100bp surrounding peak summit will be performed 
+for each unique peak subset, whose TF source in TFregulome database is MethMotif, in `target_peak_id` and `user_target_peak_list` tagged with TFregulome IDs in `user_target_peak_id`.
 
 ```{r eval=FALSE}
-# To get the exclusive subset of K562 CEBPB peaks and my peaks,
-# and at the same time to profile the DNA methylation states in the exclusive subsets
+# To get the exclusive subset of K562 CEBPB peaks and at the same time to profile the DNA 
+# methylation states in the exclusive subsets
 
 # 1) Get all CEBPB records in TFregulome database
 CEBPB_record <- TFBSBrowser(tf = "CEBPB")
@@ -546,27 +540,27 @@ exclusivePeak_output <- exclusivePeaks(target_peak_id = "MM1_HSA_K562_CEBPB",
 #> ... You have 1 TFBS(s) requested to be loaded from TFregulome server
 #> ... You chose to load TF peaks with motif only. Using 'motif_only_for_target_peak' tunes your options
 #> ... loading TFBS(s) from TFregulome now
-#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_CEBPB'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_K562_CEBPB'
 #> ... Done loading TFBS(s) from TFregulome
 #> Loading excluded peak list ... ...
 #> ... You have 15 TFBS(s) requested to be loaded from TFregulome server
 #> ... You chose to load TF peaks with motif only. Using 'motif_only_for_excluded_peak' tunes your options
 #> ... loading TFBS(s) from TFregulome now
-#> .. ... peak file loaded successfully for id 'GTRD-EXP000142_HSA_LS180_CEBPB'
-#> .. ... peak file loaded successfully for id 'GTRD-EXP010975_HSA_Ishikawa_CEBPB'
-#> .. ... peak file loaded successfully for id 'GTRD-EXP030173_HSA_LoVo_CEBPB'
-#> .. ... peak file loaded successfully for id 'GTRD-EXP030702_HSA_blood-monocytes_CEBPB'
-#> .. ... peak file loaded successfully for id 'GTRD-EXP034967_HSA_mesenchymal-stem-cells_CEBPB'
-#> .. ... peak file loaded successfully for id 'GTRD-EXP036478_HSA_fetal-osteoblasts_CEBPB'
-#> .. ... peak file loaded successfully for id 'GTRD-EXP040652_HSA_monocyte-derived-macrophages_CEBPB'
-#> .. ... peak file loaded successfully for id 'GTRD-EXP040801_HSA_HL-60_CEBPB'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_A549_CEBPB'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_H1-hESC_CEBPB'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_HCT116_CEBPB'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_CEBPB'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_HepG2_CEBPB'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_IMR-90_CEBPB'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_MCF-7_CEBPB'
+#> ... ... peak file loaded successfully for id 'GTRD-EXP000142_HSA_LS180_CEBPB'
+#> ... ... peak file loaded successfully for id 'GTRD-EXP010975_HSA_Ishikawa_CEBPB'
+#> ... ... peak file loaded successfully for id 'GTRD-EXP030173_HSA_LoVo_CEBPB'
+#> ... ... peak file loaded successfully for id 'GTRD-EXP030702_HSA_blood-monocytes_CEBPB'
+#> ... ... peak file loaded successfully for id 'GTRD-EXP034967_HSA_mesenchymal-stem-cells_CEBPB'
+#> ... ... peak file loaded successfully for id 'GTRD-EXP036478_HSA_fetal-osteoblasts_CEBPB'
+#> ... ... peak file loaded successfully for id 'GTRD-EXP040652_HSA_monocyte-derived-macrophages_CEBPB'
+#> ... ... peak file loaded successfully for id 'GTRD-EXP040801_HSA_HL-60_CEBPB'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_A549_CEBPB'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_H1-hESC_CEBPB'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_HCT116_CEBPB'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_CEBPB'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_HepG2_CEBPB'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_IMR-90_CEBPB'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_MCF-7_CEBPB'
 #> ... Done loading TFBS(s) from TFregulome
 #> Start analysing: MM1_HSA_K562_CEBPB... ...
 #> Done analysing.
@@ -643,13 +637,13 @@ knitr::include_graphics("../inst/extdata/MM1_HSA_K562_CEBPB_exclusive_peaks-logo
 TFregulomeR allows users to portray the co-binding landscapes between two collections 
 of TFs, along with DNA methylation states in the pair-wise intersected peaks, using `intersectPeakMatrix`. 
 This functionality is particularly useful to study TF interactome in a cell type. Different from `commonPeaks`, 
-`intersectPeakMatrix` perform a exhaustive intersection between a pair of peak sets, one from list x and the other from list y, 
+`intersectPeakMatrix` perform a exhaustive intersection analysis between a pair of peak sets, one from list x and the other from list y, 
 to form an x*y intersection matrix. Therefore, it is required for users to provide the two lists of peak sets. 
 
 For peak list x, users can directly use TFregulome peaks by providing TFregulome ID in `peak_id_x` and indicating 
 whether loading peaks with motif only using `motif_only_for_id_x`. In addition, customised peak sets can also be
 input in `user_peak_list_x`. It's recommended that unique IDs (also unique to IDs in `peak_id_x`) be provided for
-each customised peak set using `user_peak_x_id`. If the customised peak set is a TFregulome TF subset, it's highly
+each customised peak set in `user_peak_x_id`. If the customised peak set is a TFregulome TF subset, it's highly
 recommended that the corresponding TFregulome ID be provided in `user_peak_x_id`, which allows the function
 to recognise the source of peak set and to properly profile the DNA methylation states in the intersected regions, 
 if `methylation_profile_in_narrow_region=T`. Even though TFregulome peak sets 
@@ -657,7 +651,7 @@ are peak summits, the function is able to recognise it with the provided TFregul
 automatically expand +/- 100bp during the analysis. Same principles are applicable for peak list y.
 
 ```{r eval=FALSE}
-# profile the co-binding landscapes of all K562 TFs in MethMotif database surrounding
+# profile the co-binding landscapes of all K562 TFs in TFregulome database surrounding
 # K562 CEBPB common and exclusive peaks
 
 # browse all TFBS record in K562
@@ -691,12 +685,12 @@ intersectMatrix_common <- intersectPeakMatrix(user_peak_list_x = list(K562_CEBPB
 #> ... You have 108 TFBS(s) requested to be loaded from TFregulome server
 #> ... You chose to load TF peaks with motif only. Using 'motif_only_for_id_y' tunes your options
 #> ... loading TFBS(s) from TFregulome now
-#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_AFF1'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_ARID2'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_ARID3A'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_ATF1'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_K562_AFF1'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_K562_ARID2'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_K562_ARID3A'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_K562_ATF1'
 #>     ... ...
-#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_ZSCAN29'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_K562_ZSCAN29'
 #> ... Done loading TFBS(s) from TFregulome
 #> Start analysing list x:MM1_HSA_K562_CEBPB... ...
 #> ... ... Start analysing list y:MM1_HSA_K562_AFF1
@@ -742,9 +736,9 @@ We have implemented `intersectPeakMatrixResult` in TFregulomeR package, allowing
 
 When users opt to return intersection matrix using `return_intersection_matrix = T` in `intersectPeakMatrixResult`, if s/he wants to know the co-binding profiles in `peak_list_x`, then he/she needs to choose `angle_of_matrix = "x"` and `intersectPeakMatrixResult` will report the percentages of each TF peaks in `peak_list_x` overlapped with each peaks in `peak_list_y`. 
 
-If methylation level profiling in +/-100bp around intersected peak x is needed, `return_methylation_profile` and angle_of_methylation_profile should be `TRUE` and `"x"` respectively. To be noted, the methylation profile output in `intersectPeakMatrixResult` is different from `commonPeakResult` and `exclusivePeakResult`; instead, a DNA methylation matrix will be returned, and in this matrix, each row is a peak x while each column is a peak y, and each cell in the matrix is a list of CpG beta score distributions in a specified peak x intersected with a peak y. 
+If methylation level profiling in +/-100bp around intersected peak x is needed, `return_methylation_profile` and angle_of_methylation_profile should be `TRUE` and `"x"` respectively. To be noted, the methylation profile output in `intersectPeakMatrixResult` is different from `commonPeakResult` and `exclusivePeakResult`. In `intersectPeakMatrixResult`, a DNA methylation matrix will be returned. In this matrix, each row is a peak x while each column is a peak y, and each cell in the matrix is a list of CpG beta score distributions in a specified peak x intersected with a peak y. 
 
-Similarly, when `save_MethMotif_logo` option is wanted and `angle_of_logo = "x"`, the function will plot and save the (Meth)Motif logos for the intersected TFBSs in `peak_list_x` (if any is originally from TFregulome database). Indeed, it's not necessary to plot all (Met)hMotif logos for every pair of intersection at the same time. One can focus only on some subsets of `peak_list_x` and `peak_list_y`, using `saving_MethMotif_logo_x_id` and `saving_MethMotif_logo_y_id` respectively.
+Similarly, when `save_MethMotif_logo` option is wanted and `angle_of_logo = "x"`, the function will plot and save the (Meth)Motif logos for the intersected TFBSs from `peak_list_x` (if any is originally from TFregulome database). Indeed, it's not necessary to plot all (Met)hMotif logos for every pair of intersection at the same time. One can focus only on some subsets of `peak_list_x` and `peak_list_y`, using `saving_MethMotif_logo_x_id` and `saving_MethMotif_logo_y_id` respectively.
 
 ```{r eval=FALSE}
 # get the intersection matrix for K562 common peaks
@@ -818,7 +812,7 @@ colnames(IM_K562_common_methylation)[1:5]
 # each cell in the matrix is a list()
 IM_K562_common_methylation[1,1][[1]]
 #>         CpG_num
-#> 0-10%         2 #2 CpG methylation scores are less than 0.1 in +/-100bp window around exclusive peak summits
+#> 0-10%         2 #2 CpG methylation scores are less than 0.1 in +/-100bp window around intersected peak summits
 #> 10-20%        0
 #> 20-30%        0
 #> 30-40%        0
@@ -832,7 +826,7 @@ IM_K562_common_methylation[1,1][[1]]
 # the methylation level in the intersected regions between CEBPB and CEBPBD in K562
 IM_K562_common_methylation["MM1_HSA_K562_CEBPB","MM1_HSA_K562_CEBPD"][[1]]
 #>         CpG_num
-#> 0-10%        64 #64 CpG methylation scores are less than 0.1 in +/-100bp window around exclusive peak summits
+#> 0-10%        64 #64 CpG methylation scores are less than 0.1 in +/-100bp window around intersected peak summits
 #> 10-20%        8
 #> 20-30%        7
 #> 30-40%        2
@@ -841,7 +835,7 @@ IM_K562_common_methylation["MM1_HSA_K562_CEBPB","MM1_HSA_K562_CEBPD"][[1]]
 #> 60-70%        8
 #> 70-80%        3
 #> 80-90%       10
-#> 90-100%      16 #16 CpG methylation scores are more than 0.9 in +/-100bp window around exclusive peak summits
+#> 90-100%      16 #16 CpG methylation scores are more than 0.9 in +/-100bp window around intersected peak summits
 
 
 # get the intersection matrix for K562 exclusive peaks
@@ -902,7 +896,7 @@ intersectPeakMatrixResult(intersectPeakMatrix = intersectMatrix_exclusive,
 
 # the methylation levels in the intersected regions between CEBPB and ATF4
 IM_K562_exclusive_methylation <- IM_K562_exclusive_result$methylation_profile_matrix
-IM_K562_exclusive_methylation["MM1_HSA_K562_CEBPB","MM1_HSA_K562_ATF4"]
+IM_K562_exclusive_methylation["MM1_HSA_K562_CEBPB","MM1_HSA_K562_ATF4"][[1]]
 #>         CpG_num
 #> 0-10%       303
 #> 10-20%       44
@@ -991,7 +985,7 @@ exportMMPFM(fun_output = intersectMatrix_exclusive,
 
 TFregulomeR also allows uers to plot the distributions of a given TFBS from the TFregulome database in a list of peak sets, using `motifDistrib` and `plotDistrib` sequentially. By providing the TFregulome ID in `id` as the input of the `motifDistrib`, `motifDistrib` will calculate the occurrences the TFBSs in the given list of peak sets input in `peak_list`. The unique IDs correpsonding to `peak_list` is required to be provided at the same time using `peak_id`. If a peak set is a TFregulome TF subset, the TFregulome ID should be input accordingly; if it is self provided, you can name it with a unique ID yourself. 
 
-It should be noted that even though the loaded peak regions from the TFregulome database are the peak summits, you don't need to expand the regions. Once you tell `motifDistrib` the peak set is a TFregulome TF subset by providing MethMotif ID in the `peak_id`, it will automatically operate on the peaks itself.
+It should be noted that even though the loaded peak regions from the TFregulome database are the peak summits, you don't need to expand the regions. Once you tell `motifDistrib` the peak set is a TFregulome TF subset by providing TFregulome ID in the `peak_id`, it will automatically operate on the peaks itself.
 
 The output of `motifDistrib` is the input of `plotDistrib`. In each motif distribution plot, x-axis is the relative distance (bp) to the peak center, while y-axis is the percentage of the TFBS at the position.
 
@@ -1020,7 +1014,7 @@ knitr::include_graphics("../inst/extdata/motif_distribution.png")
 
 ## Annotate TFBS locations
 
-TFregulomeR is able to annotate TFBS genomic location by using `genomeAnnotate`. The annotation process is following the order: promoter, TTS, exon, 5' UTR exon, 3' UTR exon, intron and intergenic region. Specifically, promoter is defined as the range from 1000bp upstream of TSS to 100bp downstream of TSS, and TTS is defined as the range from 100bp upstream of TTS to 1000bp downstream of TTS. Users can change the parameters using `promoter_range` and `TTS_range` respectively. The annotation output of `genomeAnnotate` is intuitive, not only will a data.frame containing annotation results be returned, but also an HTML report will be saved.
+TFregulomeR is able to annotate TFBS genomic locations using `genomeAnnotate`. The annotation process is following the order: promoter, TTS, exon, 5' UTR exon, 3' UTR exon, intron and intergenic region. Specifically, promoter is defined as the range from 1000bp upstream of TSS to 100bp downstream of TSS, and TTS is defined as the range from 100bp upstream of TTS to 1000bp downstream of TTS. Users can change the parameters using `promoter_range` and `TTS_range` respectively. The annotation output of `genomeAnnotate` is intuitive, not only will a data.frame containing annotation results be returned, but also an HTML report will be saved.
 
 ```{r eval=FALSE}
 # annotate the locations of K562 CEBPB exclusive peaks
@@ -1066,7 +1060,7 @@ knitr::include_graphics("../inst/extdata/genomeAnnotate.png")
 
 ## Annotate TFBS functions
 
-The key function of transcription factors is to regulate gene expression. By working with Genomic Regions Enrichment of Annotations Tool (GREAT), TFregulomeR allows users to annotate the TFBSs using `greatAnnotate`. Given that GREAT server doesn't support hg38, liftOver R package has been incorporated in TFregulomeR to convert hg38 to hg19. The annotation output of `greatAnnotate` is intuitive, not only will a data.frame containing annotation results be returned, but also an HTML report will be saved. The HTML report takes advantage of `rbokeh` package, which presents a vivid and dynamic interface (Figure 8).
+The key function of transcription factors is to regulate gene expression. By working with Genomic Regions Enrichment of Annotations Tool (GREAT), TFregulomeR allows users to annotate the functions of TFBSs using `greatAnnotate`. Given that GREAT server doesn't support hg38, liftOver R package has been incorporated in TFregulomeR to convert hg38 to hg19. The annotation output of `greatAnnotate` is intuitive, not only will a data.frame containing annotation results be returned, but also an HTML report will be saved. The HTML report takes advantage of `rbokeh` package, which presents a vivid and dynamic interface (Figure 8).
 
 ```{r eval=FALSE}
 # annotate the functions of K562 CEBPB exclusive peaks
@@ -1140,10 +1134,10 @@ K562_CEBPB_TFBS_PFM
 
 ## A case study: MAFF binding partners
 
-Here we are going to use MAFF as an example to provide the evidence that 1) different TF binding partners contribute to the distinct TF motifs across celll types; 2) different methyl-DNA bindnig profiles for the same TF are associated with its dist co-binding partners. TFregulome database records MAFF binding motifs in three cell types (Figure 9), namely K562, HeLa-S3 and HepG2. In K562, MAFF binding sites are prone to hypomethylation, while in the other two cell types, they can be methylated or unmethylated.
+Here we are going to use MAFF as an example to provide the evidence that 1) different TF binding partners contribute to the distinct TF motifs across celll types; 2) different methyl-DNA bindnig profiles for the same TF are associated with its distinct co-binding partners. TFregulome database records MAFF binding motifs in three cell types (Figure 9), namely K562, HeLa-S3 and HepG2. In K562, MAFF binding sites are prone to hypomethylation, while in the other two cell types, they can be methylated or unmethylated.
 
 ```{r eval=FALSE}
-# browser MAFF TFBS in TFregulome
+# browser MAFF TFBSs in TFregulome
 MAFF_TFBS <- TFBSBrowser(tf = "MAFF")
 #> 3 TFBS(s) founded: ...
 #> ... covering 1 TF(s)
@@ -1193,17 +1187,17 @@ MAFF_common_output <- commonPeaks(target_peak_id = MAFF_TFBS$ID,
 #> ... You have 3 TFBS(s) requested to be loaded from TFregulome server
 #> ... You chose to load TF peaks with motif only. Using 'motif_only_for_target_peak' tunes your options
 #> ... loading TFBS(s) from TFregulome now
-#> .. ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_MAFF'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_HepG2_MAFF'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_MAFF'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_MAFF'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_HepG2_MAFF'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_K562_MAFF'
 #> ... Done loading TFBS(s) from TFregulome
 #> Loading compared peak list ... ...
 #> ... You have 3 TFBS(s) requested to be loaded from TFregulome server
 #> ... You chose to load TF peaks with motif only. Using 'motif_only_for_compared_peak' tunes your options
 #> ... loading TFBS(s) from TFregulome now
-#> .. ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_MAFF'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_HepG2_MAFF'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_MAFF'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_MAFF'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_HepG2_MAFF'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_K562_MAFF'
 #> ... Done loading TFBS(s) from TFregulome
 #> Start analysing: MM1_HSA_HeLa-S3_MAFF... ...
 #> Start analysing: MM1_HSA_HepG2_MAFF... ...
@@ -1254,14 +1248,14 @@ K562_MAFF_exclusive_output <- exclusivePeaks(target_peak_id = c("MM1_HSA_K562_MA
 #> ... You have 1 TFBS(s) requested to be loaded from TFregulome server
 #> ... You chose to load TF peaks with motif only. Using 'motif_only_for_target_peak' tunes your options
 #> ... loading TFBS(s) from TFregulome now
-#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_MAFF'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_K562_MAFF'
 #> ... Done loading TFBS(s) from TFregulome
 #> Loading excluded peak list ... ...
 #> ... You have 2 TFBS(s) requested to be loaded from TFregulome server
 #> ... You chose to load TF peaks with motif only. Using 'motif_only_for_excluded_peak' tunes your options
 #> ... loading TFBS(s) from TFregulome now
-#> .. ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_MAFF'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_HepG2_MAFF'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_MAFF'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_HepG2_MAFF'
 #> ... Done loading TFBS(s) from TFregulome
 #> Start analysing: MM1_HSA_K562_MAFF... ...
 #> Done analysing.
@@ -1277,14 +1271,14 @@ HeLa_MAFF_exclusive_output <- exclusivePeaks(target_peak_id = c("MM1_HSA_HeLa-S3
 #> ... You have 1 TFBS(s) requested to be loaded from TFregulome server
 #> ... You chose to load TF peaks with motif only. Using 'motif_only_for_target_peak' tunes your options
 #> ... loading TFBS(s) from TFregulome now
-#> .. ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_MAFF'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_MAFF'
 #> ... Done loading TFBS(s) from TFregulome
 #> Loading excluded peak list ... ...
 #> ... You have 2 TFBS(s) requested to be loaded from TFregulome server
 #> ... You chose to load TF peaks with motif only. Using 'motif_only_for_excluded_peak' tunes your options
 #> ... loading TFBS(s) from TFregulome now
-#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_MAFF'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_HepG2_MAFF'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_K562_MAFF'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_HepG2_MAFF'
 #> ... Done loading TFBS(s) from TFregulome
 #> Start analysing: MM1_HSA_HeLa-S3_MAFF... ...
 #> Done analysing.
@@ -1300,14 +1294,14 @@ HepG2_MAFF_exclusive_output <- exclusivePeaks(target_peak_id = c("MM1_HSA_HepG2_
 #> ... You have 1 TFBS(s) requested to be loaded from TFregulome server
 #> ... You chose to load TF peaks with motif only. Using 'motif_only_for_target_peak' tunes your options
 #> ... loading TFBS(s) from TFregulome now
-#> .. ... peak file loaded successfully for id 'MM1_HSA_HepG2_MAFF'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_HepG2_MAFF'
 #> ... Done loading TFBS(s) from TFregulome
 #> Loading excluded peak list ... ...
 #> ... You have 2 TFBS(s) requested to be loaded from TFregulome server
 #> ... You chose to load TF peaks with motif only. Using 'motif_only_for_excluded_peak' tunes your options
 #> ... loading TFBS(s) from TFregulome now
-#> .. ... peak file loaded successfully for id 'MM1_HSA_K562_MAFF'
-#> .. ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_MAFF'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_K562_MAFF'
+#> ... ... peak file loaded successfully for id 'MM1_HSA_HeLa-S3_MAFF'
 #> ... Done loading TFBS(s) from TFregulome
 #> Start analysing: MM1_HSA_HepG2_MAFF... ...
 #> Done analysing.

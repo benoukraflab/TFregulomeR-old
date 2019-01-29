@@ -1,12 +1,12 @@
 #' commonPeaks result
 #'
-#' This function allows you to get the reuslts from the commonPeaks() output, including a list of common peak sets, (Meth)Motif logos, methylation profile in common peak and common peak summary.
+#' This function allows you to get the reuslts from the commonPeaks() output, including a list of common peak sets, (Meth)Motif logos, methylation profile in common peaks and common peak summary.
 #' @param commonPeaks Required. commonPeaks() output, a matrix of CommonPeaksMM class objects.
 #' @param return_common_peak_sites Either TRUE of FALSE (default). If TRUE, a list of data.frames containing common peak sets.
-#' @param save_MethMotif_logo Either TRUE of FALSE (default). If TRUE, MethMotif logos for the common peak sets will be saved.
-#' @param return_methylation_profile Either TRUE of FALSE (default). If TRUE, methylation profile in common peak sets will be returned.
+#' @param save_MethMotif_logo Either TRUE of FALSE (default). If TRUE, (Meth)Motif logos for the common peak sets will be saved.
+#' @param return_methylation_profile Either TRUE of FALSE (default). If TRUE, the methylation profiles in 200bp window around common peak summits will be returned.
 #' @param return_summary Either TRUE of FALSE (default). If TRUE, a numeric matrix containing the percentage of peaks as common will be returned.
-#' @param logo_type Logo type for the MethMotif logo to be saved, either "entropy" (default) or "frequency",
+#' @param logo_type Logo type for the (Meth)Motif logo to be saved, either "entropy" (default) or "frequency",
 #' @param meth_level Methylation level to be plotted for the (Meth)Motif logo, and it should be one of the values, "all" (default), "methylated", and "unmethylated".
 #' @return  a list of data.frames, a numeric matrix or (Meth)Motif logo PDF files depending on the options.
 #' @keywords commonPeakResult
@@ -15,15 +15,15 @@
 #' target_id <- c("MM1_HSA_K562_CEBPB")
 #' compared_id <- c("MM1_HSA_HepG2_CEBPB")
 #' commonPeaks_output <- commonPeaks(target_peak_id=target_id,
-#'                                   motif_only_for_target_peak=T,
+#'                                   motif_only_for_target_peak=TRUE,
 #'                                   compared_peak_id=compared_id,
-#'                                   motif_only_for_compared_peak=T,
-#'                                   methylation_profile_in_narrow_region=T)
+#'                                   motif_only_for_compared_peak=TRUE,
+#'                                   methylation_profile_in_narrow_region=TRUE)
 #' commonPeaks_result <- commonPeakResult(commonPeaks=commonPeaks_output,
-#'                                        return_common_peak_sites=T,
-#'                                        save_MethMotif_logo=T,
-#'                                        return_methylation_profile=T,
-#'                                        return_summary=T)
+#'                                        return_common_peak_sites=TRUE,
+#'                                        save_MethMotif_logo=TRUE,
+#'                                        return_methylation_profile=TRUE,
+#'                                        return_summary=TRUE)
 
 commonPeakResult <- function(commonPeaks, return_common_peak_sites = FALSE,
                              save_MethMotif_logo = FALSE, return_methylation_profile = FALSE,

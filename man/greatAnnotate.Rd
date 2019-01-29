@@ -28,6 +28,8 @@ greatAnnotate(peaks, assembly = "hg38", return_annotation = FALSE,
 
 \item{great_adv_upstream}{Equivalent to the rGREAT input 'adv_upstream' (upstream extension, kb). Only applicable when 'great_rule' is  'basalPlusExt', by default 5.0 (kb).}
 
+\item{great_adv_downstream}{Equivalent to the rGREAT input 'adv_downstream' (downstream extension, kb). Only applicable when 'great_rule' is  'basalPlusExt', by default 1.0 (kb).}
+
 \item{great_adv_span}{Equivalent to the rGREAT input 'adv_span' (maximal distal region). Only applicable when 'great_rule' is  'basalPlusExt', by default 1000.0 (kb).}
 
 \item{great_adv_twoDistance}{Equivalent to the rGREAT input 'adv_twoDistance' (region range to be considered). Only applicable when 'great_rule' is  'twoClosest', by default 1000.0 (kb).}
@@ -37,8 +39,6 @@ greatAnnotate(peaks, assembly = "hg38", return_annotation = FALSE,
 \item{request_interval}{The minimal gap time between two requests using greatAnnotate, by default 60 (s).}
 
 \item{great_version}{Equivalent to the rGREAT input 'version', by default 3.0.}
-
-\item{great_adv_downstreams}{Equivalent to the rGREAT input 'adv_downstream' (downstream extension, kb). Only applicable when 'great_rule' is  'basalPlusExt', by default 1.0 (kb).}
 }
 \value{
 a data.frame, or an HTML report depending on the options.
@@ -47,8 +47,11 @@ a data.frame, or an HTML report depending on the options.
 This function allows you to analyse the gene ontologies of targeting genes by cis-regulatory regions.
 }
 \examples{
+library(rGREAT)
+library(liftOver)
+library(rbokeh)
 K562_CEBPB_regions <- loadPeaks(id = "MM1_HSA_K562_CEBPB")
 K562_CEBPB_regions_annotation <- greatAnnotate(peaks = K562_CEBPB_regions,
-                             return_annotation = T, return_html_report = T)
+                             return_annotation = TRUE, return_html_report = TRUE)
 }
 \keyword{greatAnnotate}

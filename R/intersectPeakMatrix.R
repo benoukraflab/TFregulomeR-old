@@ -19,10 +19,10 @@
 #' peak_id_x <- c("MM1_HSA_K562_CEBPB", "MM1_HSA_HCT116_CEBPB")
 #' peak_id_y <- c("MM1_HSA_HepG2_CEBPB", "MM1_HSA_HCT116_CEBPB")
 #' intersectPeakMatrix_output <- intersectPeakMatrix(peak_id_x=peak_id_x,
-#'                                                   motif_only_for_id_x=T,
+#'                                                   motif_only_for_id_x=TRUE,
 #'                                                   peak_id_y=peak_id_y,
-#'                                                   motif_only_for_id_y=T,
-#'                                                   methylation_profile_in_narrow_region=T)
+#'                                                   motif_only_for_id_y=TRUE,
+#'                                                   methylation_profile_in_narrow_region=TRUE)
 
 
 intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_list_x, user_peak_x_id,
@@ -33,11 +33,11 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
   # check the input argument
   if (missing(peak_id_x) && missing(user_peak_list_x))
   {
-    stop("No peak list x input. Please EITHER input TFregulome peaks using TFregulome ID(s) by 'peak_id_x = ' OR your own peak list using a list of data.frame(s) containing bed-format regions by 'user_peak_list_x = '")
+    stop("No peak list x input. Please input TFregulome peaks using TFregulome ID(s) by 'peak_id_x = ' OR your own peak list using a list of data.frame(s) containing bed-format regions by 'user_peak_list_x = '")
   }
   if (missing(peak_id_y) && missing(user_peak_list_y))
   {
-    stop("No peak list y input. Please EITHER input TFregulome peaks using TFregulome ID(s) by 'peak_id_y = ' OR your own peak list using a list of data.frame(s) containing bed-format regions by 'user_peak_list_y = '")
+    stop("No peak list y input. Please input TFregulome peaks using TFregulome ID(s) by 'peak_id_y = ' OR your own peak list using a list of data.frame(s) containing bed-format regions by 'user_peak_list_y = '")
   }
   if ((!missing(user_peak_list_x) && class(user_peak_list_x) != "list") ||
       (!missing(user_peak_list_y) && class(user_peak_list_y) != "list"))
@@ -59,7 +59,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
 
   # make an appropriate API url
   if (missing(TFregulome_url)){
-    TFregulome_url <- "http://localhost:8888/api/table_query/"
+    TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
   } else if (endsWith(TFregulome_url, suffix = "/index.php")==TRUE){
     TFregulome_url <- gsub("index.php", "", TFregulome_url)
     TFregulome_url <- paste0(TFregulome_url, "api/table_query/")
@@ -110,7 +110,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
         peak_list_x_all[[peak_list_x_count]] <- peak_i
         is_x_TFregulome <- c(is_x_TFregulome, T)
         TFregulome_peak_x_id <- c(TFregulome_peak_x_id, i)
-        message(paste0(".. ... peak file loaded successfully for id '", i,"'"))
+        message(paste0("... ... peak file loaded successfully for id '", i,"'"))
       }
     }
     message("... Done loading TFBS(s) from TFregulome")
@@ -185,7 +185,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
         peak_list_y_all[[peak_list_y_count]] <- peak_i
         is_y_TFregulome <- c(is_y_TFregulome, T)
         TFregulome_peak_y_id <- c(TFregulome_peak_y_id, i)
-        message(paste0(".. ... peak file loaded successfully for id '", i,"'"))
+        message(paste0("... ... peak file loaded successfully for id '", i,"'"))
       }
     }
     message("... Done loading TFBS(s) from TFregulome")
@@ -335,7 +335,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
         bed_y <- with(peak_y, GRanges(chr, IRanges(start, end), id=id))
       }
 
-      # get peak x which intersect with y
+      # get peak x which intersects with y
       # subsetOverlaps may mis-think the two sets coming from different references, so suppressWarnings here
       suppressWarnings(bedx_with_bedy <- subsetByOverlaps(bed_x, bed_y))
       peakx_with_peaky <- unique(as.data.frame(bedx_with_bedy))
@@ -460,7 +460,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
         meth_score_distri_target_x <- matrix()
       }
 
-      # get peak y which intersect with x
+      # get peak y which intersects with x
       suppressWarnings(bedy_with_bedx <- subsetByOverlaps(bed_y, bed_x))
       peaky_with_peakx <- unique(as.data.frame(bedy_with_bedx))
       y_interect_percentage <- 100*nrow(peaky_with_peakx)/nrow(peak_y)

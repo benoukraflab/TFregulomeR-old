@@ -9,8 +9,8 @@
 #' @param motif_only_for_excluded_peak Either TRUE of FALSE (default). If TRUE, only peaks with motif will be loaded for each TFregulome ID in excluded_peak_id.
 #' @param user_excluded_peak_list A list of data.frames, each of which contains user's own bed-format excluded peak regions.
 #' @param user_excluded_peak_id Character of vector, each of which is a unique ID corresponding to each peak set in the list user_excluded_peak_list. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulome database, its TFregulome ID should be used here correspondingly.
-#' @param methylation_profile_in_narrow_region Either TRUE (default) of FALSE. If TRUE, methylation states in 200bp window surrounding peak summits for each exclusive peak from target_peak_id and user_target_peak_list with TFregulome ID.
-#' @param motif_format Motif PFM format, either in MEME by default or TRANSFAC.
+#' @param methylation_profile_in_narrow_region Either TRUE (default) of FALSE. If TRUE, methylation states in 200bp window surrounding peak summits for each exclusive peak from target_peak_id and user_target_peak_list (with TFregulome ID).
+#' @param motif_type Motif PFM format, either in MEME by default or TRANSFAC.
 #' @param TFregulome_url TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
 #' @return  matrix of ExclusivePeaksMM class objects
 #' @keywords exclusivePeaks
@@ -19,10 +19,10 @@
 #' target_id <- "MM1_HSA_K562_CEBPB"
 #' excluded_id <- c("MM1_HSA_HepG2_CEBPB", "MM1_HSA_HCT116_CEBPB")
 #' excluPeak_output <- exclusivePeaks(target_peak_id=target_id,
-#'                                    motif_only_for_target_peak=T,
+#'                                    motif_only_for_target_peak=TRUE,
 #'                                    excluded_peak_id=excluded_id,
-#'                                    motif_only_for_excluded_peak=T,
-#'                                    methylation_profile_in_narrow_region=T)
+#'                                    motif_only_for_excluded_peak=TRUE,
+#'                                    methylation_profile_in_narrow_region=TRUE)
 
 exclusivePeaks <- function(target_peak_id, motif_only_for_target_peak = F,
                            user_target_peak_list, user_target_peak_id,
@@ -34,11 +34,11 @@ exclusivePeaks <- function(target_peak_id, motif_only_for_target_peak = F,
   # check the input arguments
   if(missing(target_peak_id) && missing(user_target_peak_list))
   {
-    stop("No target peak input. Please EITHER input TFregulome peaks using TFregulome ID(s) by 'target_peak_id = ' OR your own peak list using a list of data.frame(s) containing bed-format regions by 'user_target_peak_list = '")
+    stop("No target peak input. Please input TFregulome peaks using TFregulome ID(s) by 'target_peak_id = ' OR your own peak list using a list of data.frame(s) containing bed-format regions by 'user_target_peak_list = '")
   }
   if(missing(excluded_peak_id) && missing(user_excluded_peak_list))
   {
-    stop("No excluded peak input. Please EITHER input TFregulome peaks using TFregulome ID(s) by 'excluded_peak_id = ' OR your own peak list using a list of data.frame(s) containing bed-format regions by 'user_excluded_peak_list = '")
+    stop("No excluded peak input. Please input TFregulome peaks using TFregulome ID(s) by 'excluded_peak_id = ' OR your own peak list using a list of data.frame(s) containing bed-format regions by 'user_excluded_peak_list = '")
   }
   if ((!missing(user_target_peak_list) && class(user_target_peak_list) != "list") ||
       (!missing(user_excluded_peak_list) && class(user_excluded_peak_list) != "list"))
@@ -60,7 +60,7 @@ exclusivePeaks <- function(target_peak_id, motif_only_for_target_peak = F,
 
   # make an appropriate API url
   if (missing(TFregulome_url)){
-    TFregulome_url <- "http://localhost:8888/api/table_query/"
+    TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
   } else if (endsWith(TFregulome_url, suffix = "/index.php")==TRUE){
     TFregulome_url <- gsub("index.php", "", TFregulome_url)
     TFregulome_url <- paste0(TFregulome_url, "api/table_query/")
@@ -111,7 +111,7 @@ exclusivePeaks <- function(target_peak_id, motif_only_for_target_peak = F,
         target_peak_list_all[[target_list_count]] <- peak_i
         TFregulome_target_peak_id <- c(TFregulome_target_peak_id, i)
         is_taregt_TFregulome <- c(is_taregt_TFregulome, T)
-        message(paste0(".. ... peak file loaded successfully for id '", i,"'"))
+        message(paste0("... ... peak file loaded successfully for id '", i,"'"))
       }
     }
     message("... Done loading TFBS(s) from TFregulome")
@@ -170,7 +170,7 @@ exclusivePeaks <- function(target_peak_id, motif_only_for_target_peak = F,
     }
     else
     {
-      message("... You chose to load TF peaks regardless of presence of motif. Using 'motif_only_for_excluded_peak' tunes your options")
+      message("... You chose to load TF peaks regardless of the presence of motif. Using 'motif_only_for_excluded_peak' tunes your options")
     }
     message("... loading TFBS(s) from TFregulome now")
     for (i in excluded_peak_id)
@@ -186,7 +186,7 @@ exclusivePeaks <- function(target_peak_id, motif_only_for_target_peak = F,
         excluded_peak_list_all[[excluded_list_count]] <- peak_i
         is_excluded_TFregulome <- c(is_excluded_TFregulome, T)
         TFregulome_excluded_peak_id <- c(TFregulome_excluded_peak_id, i)
-        message(paste0(".. ... peak file loaded successfully for id '", i,"'"))
+        message(paste0("... ... peak file loaded successfully for id '", i,"'"))
       }
     }
     message("... Done loading TFBS(s) from TFregulome")
