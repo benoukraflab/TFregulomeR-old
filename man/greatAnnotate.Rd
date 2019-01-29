@@ -51,7 +51,7 @@ library(rGREAT)
 library(liftOver)
 library(rbokeh)
 K562_CEBPB_regions <- loadPeaks(id = "MM1_HSA_K562_CEBPB")
-K562_CEBPB_regions_annotation <- greatAnnotate(peaks = K562_CEBPB_regions,
+K562_CEBPB_regions_annotation <- greatAnnotate(peaks = K562_CEBPB_regions[1:100,],
                              return_annotation = TRUE, return_html_report = TRUE)
 }
 \keyword{greatAnnotate}

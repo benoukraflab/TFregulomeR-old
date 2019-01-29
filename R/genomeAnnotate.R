@@ -14,7 +14,7 @@
 #' @examples
 #' require(TxDb.Hsapiens.UCSC.hg38.knownGene)
 #' HCT116_CEBPB_regions <- loadPeaks(id = "MM1_HSA_HCT116_CEBPB", includeMotifOnly=TRUE)
-#' HCT116_CEBPB_regions_annotation <- genomeAnnotate(peaks = HCT116_CEBPB_regions,
+#' HCT116_CEBPB_regions_annotation <- genomeAnnotate(peaks = HCT116_CEBPB_regions[1:100,],
 #'                               return_annotation = TRUE, return_html_report = TRUE)
 
 genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
