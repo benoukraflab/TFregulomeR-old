@@ -46,7 +46,7 @@ toTFBSTools <- function(id, TFregulome_url)
   else
   {
     methmotif_output_transfac <- methmotif_output
-    pfm <- PFMatrix(ID = methmotif_output_transfac@MMmotif@id, name = methmotif_output_transfac@MMmotif@alternate_name, strand = "*",
+    pfm <- TFBSTools::PFMatrix(ID = methmotif_output_transfac@MMmotif@id, name = methmotif_output_transfac@MMmotif@alternate_name, strand = "*",
                    bg = methmotif_output_transfac@MMmotif@background, profileMatrix = t(methmotif_output_transfac@MMmotif@motif_matrix))
     return(pfm)
   }

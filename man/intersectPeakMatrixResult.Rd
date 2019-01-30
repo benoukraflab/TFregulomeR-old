@@ -47,11 +47,9 @@ peak_id_y <- c("MM1_HSA_HepG2_CEBPB", "MM1_HSA_HCT116_CEBPB")
 intersect_output <- intersectPeakMatrix(peak_id_x=peak_id_x,
                                                   motif_only_for_id_x=TRUE,
                                                   peak_id_y=peak_id_y,
-                                                  motif_only_for_id_y=TRUE,
-                                                  methylation_profile_in_narrow_region=TRUE)
+                                                  motif_only_for_id_y=TRUE)
 intersect_matrix <- intersectPeakMatrixResult(intersectPeakMatrix=intersect_output,
                                               return_intersection_matrix=TRUE,
-                                              return_methylation_profile=TRUE,
                                               save_MethMotif_logo=TRUE,
                           saving_MethMotif_logo_x_id=c("MM1_HSA_K562_CEBPB"))
 }

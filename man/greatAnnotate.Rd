@@ -47,11 +47,11 @@ a data.frame, or an HTML report depending on the options.
 This function allows you to analyse the gene ontologies of targeting genes by cis-regulatory regions.
 }
 \examples{
-library(rGREAT)
-library(liftOver)
-library(rbokeh)
+require(rGREAT)
+require(liftOver)
+require(rbokeh)
 K562_CEBPB_regions <- loadPeaks(id = "MM1_HSA_K562_CEBPB")
-K562_CEBPB_regions_annotation <- greatAnnotate(peaks = K562_CEBPB_regions[1:100,],
+K562_CEBPB_regions_annotation <- greatAnnotate(peaks = K562_CEBPB_regions[1:500,],
                              return_annotation = TRUE, return_html_report = TRUE)
 }
 \keyword{greatAnnotate}

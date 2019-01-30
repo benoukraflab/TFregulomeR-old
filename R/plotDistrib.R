@@ -7,7 +7,8 @@
 #' @export
 #' @examples
 #' CEBPB_peaks <- loadPeaks(id = "MM1_HSA_K562_CEBPB")
-#' motifDistrib_output <- motifDistrib(id = "MM1_HSA_K562_CEBPB", peak_list = list(CEBPB_peaks),
+#' motifDistrib_output <- motifDistrib(id = "MM1_HSA_K562_CEBPB",
+#'                                     peak_list = list(CEBPB_peaks[1:100,]),
 #'                                     peak_id = c("MM1_HSA_K562_CEBPB"))
 #' plotDistrib(motifDistrib = motifDistrib_output)
 
@@ -17,7 +18,7 @@ plotDistrib <- function(motifDistrib)
   {
     stop("Please provided output from motifDistrib() function using 'motifDistrib ='!")
   }
-  for (i in 1:length(motifDistrib))
+  for (i in seq(1, length(motifDistrib), 1))
   {
     target_id <- motifDistrib[[i]]$target_id
     peak_id <- names(motifDistrib)[i]

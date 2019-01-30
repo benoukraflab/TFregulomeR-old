@@ -21,11 +21,9 @@
 #' intersect_output <- intersectPeakMatrix(peak_id_x=peak_id_x,
 #'                                                   motif_only_for_id_x=TRUE,
 #'                                                   peak_id_y=peak_id_y,
-#'                                                   motif_only_for_id_y=TRUE,
-#'                                                   methylation_profile_in_narrow_region=TRUE)
+#'                                                   motif_only_for_id_y=TRUE)
 #' intersect_matrix <- intersectPeakMatrixResult(intersectPeakMatrix=intersect_output,
 #'                                               return_intersection_matrix=TRUE,
-#'                                               return_methylation_profile=TRUE,
 #'                                               save_MethMotif_logo=TRUE,
 #'                           saving_MethMotif_logo_x_id=c("MM1_HSA_K562_CEBPB"))
 
@@ -171,13 +169,13 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
     # if save methmotif logo
     if (save_MethMotif_logo)
     {
-      for (i in 1:nrow(intersectPeakMatrix))
+      for (i in seq(1, nrow(intersectPeakMatrix), 1))
       {
         if (saving_MethMotif_logo_x_id != "all" && !(rownames(intersectPeakMatrix)[i] %in% saving_MethMotif_logo_x_id))
         {
           next
         }
-        for (j in 1:ncol(intersectPeakMatrix))
+        for (j in seq(1, ncol(intersectPeakMatrix), 1))
         {
           if (saving_MethMotif_logo_y_id != "all" && !(colnames(intersectPeakMatrix)[j] %in% saving_MethMotif_logo_y_id))
           {
@@ -221,9 +219,9 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
       intersection_matrix <- data.frame(matrix(nrow = nrow(intersectPeakMatrix), ncol = ncol(intersectPeakMatrix)))
       rownames(intersection_matrix) <- rownames(intersectPeakMatrix)
       colnames(intersection_matrix) <- colnames(intersectPeakMatrix)
-      for (i in 1:nrow(intersectPeakMatrix))
+      for (i in seq(1, nrow(intersectPeakMatrix), 1))
       {
-        for (j in 1:ncol(intersectPeakMatrix))
+        for (j in seq(1, ncol(intersectPeakMatrix), 1))
         {
           if (angle_of_matrix == "x")
           {
@@ -242,9 +240,9 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
     {
       methylation_profile_list <- list()
       count = 1
-      for (i in 1:nrow(intersectPeakMatrix))
+      for (i in seq(1, nrow(intersectPeakMatrix), 1))
       {
-        for (j in 1:ncol(intersectPeakMatrix))
+        for (j in seq(1, ncol(intersectPeakMatrix), 1))
         {
 
           if (angle_of_methylation_profile == "x")

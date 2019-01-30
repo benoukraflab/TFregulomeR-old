@@ -36,7 +36,7 @@ readBetaScoreMatrix <- function(betaScore_file_path)
     }
     else
     {
-      message(paste0("Beta score matrix for ", id, " is NULL!"))
+      message(paste0("Beta score matrix for is NULL!"))
       return(NULL)
     }
   }

@@ -19,11 +19,11 @@
 #' @keywords greatAnnotate
 #' @export
 #' @examples
-#' library(rGREAT)
-#' library(liftOver)
-#' library(rbokeh)
+#' require(rGREAT)
+#' require(liftOver)
+#' require(rbokeh)
 #' K562_CEBPB_regions <- loadPeaks(id = "MM1_HSA_K562_CEBPB")
-#' K562_CEBPB_regions_annotation <- greatAnnotate(peaks = K562_CEBPB_regions[1:100,],
+#' K562_CEBPB_regions_annotation <- greatAnnotate(peaks = K562_CEBPB_regions[1:500,],
 #'                              return_annotation = TRUE, return_html_report = TRUE)
 
 greatAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
@@ -38,7 +38,7 @@ greatAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
   {
     stop("please provide peak regions using 'peaks ='!")
   }
-  if (class(peaks) != "data.frame")
+  if (!is.data.frame(peaks))
   {
     stop("The 'peaks' should be a BED-format data.frame!")
   }
@@ -73,7 +73,7 @@ greatAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
   }
   if (assembly == "hg38" && !("liftOver" %in% (.packages())))
   {
-    stop("Your input is hg38. Currently GREAT doesn't support hg38. We need to convert hg38 to hg19 using 'liftOver' (>=1.4.0). But liftOver package is NOT loaded yet!")
+    stop("Your input is hg38. Currently GREAT doesn't support hg38. We need to convert hg38 to hg19 using 'liftOver' (>= 1.4.0). But liftOver package is NOT loaded yet!")
   }
   if (return_html_report==TRUE && !("rbokeh" %in% (.packages())))
   {
@@ -104,7 +104,7 @@ greatAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
     return(NULL)
   }
 
-  peaks <- peaks[,1:3]
+  peaks <- peaks[,c(1,2,3)]
   colnames(peaks) <- c("chr","start", "end")
   peaks$id <- paste0("greatAnnotate_peak_", as.vector(rownames(peaks)))
   # hg38 to hg19
@@ -112,7 +112,9 @@ greatAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
   {
     message("... ... assembly is hg38. Now converting to hg19 using liftOver...")
     message(paste0("... ... number of the original input regions is ", nrow(peaks)))
-    peaks_grange <- with(peaks, GRanges(chr, IRanges(start, end), id=id))
+    peaks_grange <- GRanges(peaks$chr,
+                            IRanges(peaks$start, peaks$end),
+                            id=peaks$id)
     peaks <- hg38Tohg19(peaks_grange)
     assembly <- "hg19"
     message(paste0("... ... number of the regions successfully converted to hg19 is ", nrow(peaks)))
@@ -121,23 +123,23 @@ greatAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
   message("... ... start GREAT analysis")
   if (great_rule == "basalPlusExt")
   {
-    jobs <- submitGreatJob(gr = peaks, species = assembly, rule = great_rule,
+    jobs <- rGREAT::submitGreatJob(gr = peaks, species = assembly, rule = great_rule,
                           adv_upstream = great_adv_upstream, adv_downstream = great_adv_downstream,
                           adv_span = great_adv_span, request_interval = request_interval, version = great_version)
   }
   else if (great_rule == "twoClosest")
   {
-    jobs <- submitGreatJob(gr = peaks, species = assembly, rule = great_rule,
+    jobs <- rGREAT::submitGreatJob(gr = peaks, species = assembly, rule = great_rule,
                           adv_twoDistance = great_adv_twoDistance, request_interval = request_interval,
                           version = great_version)
   }
   else
   {
-    jobs <- submitGreatJob(gr = peaks, species = assembly, rule = great_rule,
+    jobs <- rGREAT::submitGreatJob(gr = peaks, species = assembly, rule = great_rule,
                           adv_oneDistance = great_adv_oneDistance, request_interval = request_interval,
                           version = great_version)
   }
-  tb <- getEnrichmentTables(jobs)
+  tb <- rGREAT::getEnrichmentTables(jobs)
   go_MF <- tb$`GO Molecular Function`
   go_BP <- tb$`GO Biological Process`
   go_CC <- tb$`GO Cellular Component`
@@ -273,12 +275,12 @@ greatAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
 
 hg38Tohg19 <- function(peaks)
 {
-  seqlevelsStyle(peaks) <- "UCSC"
+  GenomeInfoDb::seqlevelsStyle(peaks) <- "UCSC"
   path <- system.file(package="liftOver", "extdata", "hg38ToHg19.over.chain")
-  ch <- import.chain(path)
-  cur19 <- suppressWarnings(liftOver(peaks, ch))
+  ch <- rtracklayer::import.chain(path)
+  cur19 <- suppressWarnings(rtracklayer::liftOver(peaks, ch))
   cur19 <- unlist(cur19)
-  genome(cur19) <- "hg19"
+  GenomeInfoDb::genome(cur19) <- "hg19"
   cur19_df <- data.frame(cur19)
   return(cur19_df[,c("seqnames","start","end","id")])
 }
@@ -305,7 +307,7 @@ formHTMLoutput <- function(all, test)
   table_html <- paste0(table_html, "
         <tbody id='table_BP' style='display:;'>")
   if (nrow(go_BP_sorted_pass)>0){
-    for (elm in 1:nrow(go_BP_sorted_pass)){
+    for (elm in seq(1, nrow(go_BP_sorted_pass), 1)){
       go_id = go_BP_sorted_pass[elm, "ID"]
       go_name = go_BP_sorted_pass[elm, "name"]
       if (test == "binomial")
@@ -338,7 +340,7 @@ formHTMLoutput <- function(all, test)
         </tbody>
         <tbody id='table_MF' style='display: none;'>")
   if (nrow(go_MF_sorted_pass)>0){
-    for (elm in 1:nrow(go_MF_sorted_pass)){
+    for (elm in seq(1,nrow(go_MF_sorted_pass),1)){
       go_id = go_MF_sorted_pass[elm, "ID"]
       go_name = go_MF_sorted_pass[elm, "name"]
       if (test == "binomial")
@@ -371,7 +373,7 @@ formHTMLoutput <- function(all, test)
         </tbody>
         <tbody id='table_CC' style='display: none;'>")
   if (nrow(go_CC_sorted_pass)>0){
-    for (elm in 1:nrow(go_CC_sorted_pass)){
+    for (elm in seq(1, nrow(go_CC_sorted_pass), 1)){
       go_id = go_CC_sorted_pass[elm, "ID"]
       go_name = go_CC_sorted_pass[elm, "name"]
       if (test == "binomial")
@@ -618,18 +620,32 @@ rbokehPlot <- function(inputdata, inputtype)
   {
     col = "green"
   }
-  p <- suppressWarnings(figure(xgrid = F, ygrid = F, xaxes = "below",yaxes = "left",
-                               width = 500, height = 500, title = "GREAT analysis",
-                               ylab = "Number of genes",xlab = "-log10(adjusted p-value)",
-                               logo = NULL, tools = c( "pan", "wheel_zoom", "box_zoom",
-                                                       "reset"))
-                        %>% ly_points(data=inputdata, x = log10p,
-                                      y = Hyper_Observed_Gene_Hits, color = col, alpha = 0.5,
-                                    size = 10,hover = list(Term,adjusted_pvalue,gene_number)))
-  suppressMessages(suppressWarnings(rbokeh2html(p, file = "rbokeh_temp.html")))
-  html_contents <- get_html_content("rbokeh_temp.html")
-  file.remove("rbokeh_temp.html")
-  return(html_contents)
+  if (nrow(inputdata)==0)
+  {
+    html_contents <- list("var modelid = '';", "var docid = '';", "var docs_json = null;")
+    return(html_contents)
+  }
+  else
+  {
+    p <- suppressWarnings(rbokeh::figure(xgrid = FALSE, ygrid = FALSE, xaxes = "below",yaxes = "left",
+                                         width = 500, height = 500, title = "GREAT analysis",
+                                         ylab = "Number of genes",xlab = "-log10(adjusted p-value)",
+                                         logo = NULL, tools = c( "pan", "wheel_zoom", "box_zoom",
+                                                                 "reset"))
+                          %>% rbokeh::ly_points(data=inputdata,
+                                                x = inputdata$log10p,
+                                                y = inputdata$Hyper_Observed_Gene_Hits,
+                                                color = col,
+                                                alpha = 0.5,
+                                                size = 10,
+                                                hover = list(inputdata$Term,
+                                                             inputdata$adjusted_pvalue,
+                                                             inputdata$gene_number)))
+    suppressMessages(suppressWarnings(rbokeh::rbokeh2html(p, file = "rbokeh_temp.html")))
+    html_contents <- get_html_content("rbokeh_temp.html")
+    file.remove("rbokeh_temp.html")
+    return(html_contents)
+  }
 }
 
 get_html_content <- function(filename){

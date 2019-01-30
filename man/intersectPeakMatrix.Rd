@@ -4,10 +4,11 @@
 \alias{intersectPeakMatrix}
 \title{intersectPeakMatrix}
 \usage{
-intersectPeakMatrix(peak_id_x, motif_only_for_id_x = F, user_peak_list_x,
-  user_peak_x_id, peak_id_y, motif_only_for_id_y = F, user_peak_list_y,
-  user_peak_y_id, methylation_profile_in_narrow_region = F,
-  motif_type = "MEME", TFregulome_url)
+intersectPeakMatrix(peak_id_x, motif_only_for_id_x = FALSE,
+  user_peak_list_x, user_peak_x_id, peak_id_y,
+  motif_only_for_id_y = FALSE, user_peak_list_y, user_peak_y_id,
+  methylation_profile_in_narrow_region = FALSE, motif_type = "MEME",
+  TFregulome_url)
 }
 \arguments{
 \item{peak_id_x}{Character of vector, each of which is a unique TFregulome ID.}
@@ -44,7 +45,6 @@ peak_id_y <- c("MM1_HSA_HepG2_CEBPB", "MM1_HSA_HCT116_CEBPB")
 intersectPeakMatrix_output <- intersectPeakMatrix(peak_id_x=peak_id_x,
                                                   motif_only_for_id_x=TRUE,
                                                   peak_id_y=peak_id_y,
-                                                  motif_only_for_id_y=TRUE,
-                                                  methylation_profile_in_narrow_region=TRUE)
+                                                  motif_only_for_id_y=TRUE)
 }
 \keyword{intersectPeakMatrix}

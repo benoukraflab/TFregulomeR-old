@@ -4,10 +4,10 @@
 \alias{commonPeaks}
 \title{commonPeaks}
 \usage{
-commonPeaks(target_peak_id, motif_only_for_target_peak = F,
+commonPeaks(target_peak_id, motif_only_for_target_peak = FALSE,
   user_target_peak_list, user_target_peak_id, compared_peak_id,
-  motif_only_for_compared_peak = F, user_compared_peak_list,
-  user_compared_peak_id, methylation_profile_in_narrow_region = T,
+  motif_only_for_compared_peak = FALSE, user_compared_peak_list,
+  user_compared_peak_id, methylation_profile_in_narrow_region = TRUE,
   motif_type = "MEME", TFregulome_url)
 }
 \arguments{

@@ -29,7 +29,8 @@ exportMMPFM(fun_output, fun, save_motif_PFM = FALSE,
 motif position frequency matrix file and beta score matrix file
 }
 \description{
-This function allows you to export motif position frequency matrix and beta score matrix from the output of "searchMotif", "commonPeaks", "exclusivePeaks" or "intersectPeakMatrix".
+This function allows you to export motif position frequency matrix and beta score matrix from the output of "
+searchMotif", "commonPeaks", "exclusivePeaks" or "intersectPeakMatrix".
 }
 \examples{
 methmotif_cebpb <- searchMotif(id = "MM1_HSA_K562_CEBPB")

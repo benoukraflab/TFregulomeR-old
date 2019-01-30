@@ -94,7 +94,7 @@ readMMmotif <- function(motif_file_path, motif_format, motif_file_path_MEME)
           }
         }
       }
-      motif_matrix <- matrix(motif_vector, ncol = 4, byrow = T)
+      motif_matrix <- matrix(motif_vector, ncol = 4, byrow = TRUE)
       colnames(motif_matrix) <- c("A", "C", "G", "T")
       close(con)
       MMmotif <- new("MMmotif")
@@ -138,7 +138,7 @@ readMMmotif <- function(motif_file_path, motif_format, motif_file_path_MEME)
           }
         }
       }
-      motif_matrix <- matrix(motif_vector, ncol = 5, byrow = T)
+      motif_matrix <- matrix(motif_vector, ncol = 5, byrow = TRUE)
       motif_matrix <- motif_matrix[,-1]
       colnames(motif_matrix) <- c("A", "C", "G", "T")
       width <- as.integer(nrow(motif_matrix))

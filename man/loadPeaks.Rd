@@ -4,7 +4,7 @@
 \alias{loadPeaks}
 \title{load peaks from TFregulome database}
 \usage{
-loadPeaks(id, includeMotifOnly = F, TFregulome_url)
+loadPeaks(id, includeMotifOnly = FALSE, TFregulome_url)
 }
 \arguments{
 \item{id}{Required. TFregulome ID}

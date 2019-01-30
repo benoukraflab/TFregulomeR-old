@@ -24,9 +24,13 @@
 #'                                              save_MethMotif_logo=TRUE,
 #'                                              return_summary=TRUE)
 
-exclusivePeakResult <- function(exclusivePeaks, return_exclusive_peak_sites = FALSE,
-                                save_MethMotif_logo = FALSE, return_methylation_profile = FALSE,
-                                return_summary = FALSE, logo_type="entropy", meth_level="all")
+exclusivePeakResult <- function(exclusivePeaks,
+                                return_exclusive_peak_sites = FALSE,
+                                save_MethMotif_logo = FALSE,
+                                return_methylation_profile = FALSE,
+                                return_summary = FALSE,
+                                logo_type="entropy",
+                                meth_level="all")
 {
   # check input arguments
   if (missing(exclusivePeaks))
@@ -156,7 +160,7 @@ exclusivePeakResult <- function(exclusivePeaks, return_exclusive_peak_sites = FA
     # if save methmotif logo
     if (save_MethMotif_logo)
     {
-      for (i in 1:nrow(exclusivePeaks))
+      for (i in seq(1, nrow(exclusivePeaks), 1))
       {
         logo_id <- exclusivePeaks[i,1][[1]]@id
         is_TFregulome <- exclusivePeaks[i,1][[1]]@isTFregulomeID
@@ -177,7 +181,7 @@ exclusivePeakResult <- function(exclusivePeaks, return_exclusive_peak_sites = FA
     if (return_exclusive_peak_sites)
     {
       exclusive_peak_list <- list()
-      for (i in 1:nrow(exclusivePeaks))
+      for (i in seq(1,nrow(exclusivePeaks), 1))
       {
         exclusive_peak_i <- as.data.frame(exclusivePeaks[i,1][[1]]@exclusive_peak)
         peak_id <- exclusivePeaks[i,1][[1]]@id
@@ -189,7 +193,7 @@ exclusivePeakResult <- function(exclusivePeaks, return_exclusive_peak_sites = FA
     if (return_methylation_profile)
     {
       methylation_profile <- list()
-      for (i in 1:nrow(exclusivePeaks))
+      for (i in seq(1,nrow(exclusivePeaks), 1))
       {
         meth_profile_i <- as.matrix(exclusivePeaks[i,1][[1]]@methylation_profile)
         peak_id <- exclusivePeaks[i,1][[1]]@id
@@ -202,7 +206,7 @@ exclusivePeakResult <- function(exclusivePeaks, return_exclusive_peak_sites = FA
     {
       summary_matrix <- matrix(nrow = nrow(exclusivePeaks), ncol = 1)
       id_list <- c()
-      for (i in 1:nrow(exclusivePeaks))
+      for (i in seq(1, nrow(exclusivePeaks), 1))
       {
         summary_id <- exclusivePeaks[i,1][[1]]@id
         id_list <- c(id_list, summary_id)
@@ -213,7 +217,7 @@ exclusivePeakResult <- function(exclusivePeaks, return_exclusive_peak_sites = FA
       return_all[["peak_summary"]] <- summary_matrix
     }
     # return values
-    if (!(return_exclusive_peak_sites == F && return_methylation_profile == F && return_summary == F))
+    if (!(return_exclusive_peak_sites == FALSE && return_methylation_profile == FALSE && return_summary == FALSE))
     {
       return(return_all)
     }

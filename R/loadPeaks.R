@@ -10,7 +10,7 @@
 #' @examples
 #' CEBPB_peaks <- loadPeaks(id = "MM1_HSA_K562_CEBPB")
 
-loadPeaks <- function(id, includeMotifOnly = F, TFregulome_url)
+loadPeaks <- function(id, includeMotifOnly = FALSE, TFregulome_url)
 {
   # make an appropriate API url
   if (missing(TFregulome_url)){
@@ -66,7 +66,7 @@ loadPeaks <- function(id, includeMotifOnly = F, TFregulome_url)
         }
         # read peak file
         peak_df <- tryCatch({
-          read.delim(peak_file, sep = "\t", header = F)
+          read.delim(peak_file, sep = "\t", header = FALSE)
         },
         warning = function(w)
         {

@@ -4,10 +4,10 @@
 \alias{exclusivePeaks}
 \title{exclusivePeaks}
 \usage{
-exclusivePeaks(target_peak_id, motif_only_for_target_peak = F,
+exclusivePeaks(target_peak_id, motif_only_for_target_peak = FALSE,
   user_target_peak_list, user_target_peak_id, excluded_peak_id,
-  motif_only_for_excluded_peak = F, user_excluded_peak_list,
-  user_excluded_peak_id, methylation_profile_in_narrow_region = T,
+  motif_only_for_excluded_peak = FALSE, user_excluded_peak_list,
+  user_excluded_peak_id, methylation_profile_in_narrow_region = TRUE,
   motif_type = "MEME", TFregulome_url)
 }
 \arguments{

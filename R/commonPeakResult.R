@@ -1,6 +1,8 @@
 #' commonPeaks result
 #'
-#' This function allows you to get the reuslts from the commonPeaks() output, including a list of common peak sets, (Meth)Motif logos, methylation profile in common peaks and common peak summary.
+#' This function allows you to get the reuslts from the commonPeaks() output,
+#' including a list of common peak sets, (Meth)Motif logos, methylation profile
+#' in common peaks and common peak summary.
 #' @param commonPeaks Required. commonPeaks() output, a matrix of CommonPeaksMM class objects.
 #' @param return_common_peak_sites Either TRUE of FALSE (default). If TRUE, a list of data.frames containing common peak sets.
 #' @param save_MethMotif_logo Either TRUE of FALSE (default). If TRUE, (Meth)Motif logos for the common peak sets will be saved.
@@ -25,9 +27,13 @@
 #'                                        return_methylation_profile=TRUE,
 #'                                        return_summary=TRUE)
 
-commonPeakResult <- function(commonPeaks, return_common_peak_sites = FALSE,
-                             save_MethMotif_logo = FALSE, return_methylation_profile = FALSE,
-                             return_summary = FALSE, logo_type="entropy", meth_level="all")
+commonPeakResult <- function(commonPeaks,
+                             return_common_peak_sites = FALSE,
+                             save_MethMotif_logo = FALSE,
+                             return_methylation_profile = FALSE,
+                             return_summary = FALSE,
+                             logo_type="entropy",
+                             meth_level="all")
 {
   # check input arguments
   if (missing(commonPeaks))
@@ -157,7 +163,7 @@ commonPeakResult <- function(commonPeaks, return_common_peak_sites = FALSE,
     # if save methmotif logo
     if (save_MethMotif_logo)
     {
-      for (i in 1:nrow(commonPeaks))
+      for (i in seq(1,nrow(commonPeaks),1))
       {
         logo_id <- commonPeaks[i,1][[1]]@id
         is_TFregulome <- commonPeaks[i,1][[1]]@isTFregulomeID
@@ -178,7 +184,7 @@ commonPeakResult <- function(commonPeaks, return_common_peak_sites = FALSE,
     if (return_common_peak_sites)
     {
       common_peak_list <- list()
-      for (i in 1:nrow(commonPeaks))
+      for (i in seq(1, nrow(commonPeaks), 1))
       {
         common_peak_i <- as.data.frame(commonPeaks[i,1][[1]]@common_peak)
         peak_id <- commonPeaks[i,1][[1]]@id
@@ -190,7 +196,7 @@ commonPeakResult <- function(commonPeaks, return_common_peak_sites = FALSE,
     if (return_methylation_profile)
     {
       methylation_profile <- list()
-      for (i in 1:nrow(commonPeaks))
+      for (i in seq(1, nrow(commonPeaks), 1))
       {
         meth_profile_i <- as.matrix(commonPeaks[i,1][[1]]@methylation_profile)
         peak_id <- commonPeaks[i,1][[1]]@id
@@ -203,7 +209,7 @@ commonPeakResult <- function(commonPeaks, return_common_peak_sites = FALSE,
     {
       summary_matrix <- matrix(nrow = nrow(commonPeaks), ncol = 1)
       id_list <- c()
-      for (i in 1:nrow(commonPeaks))
+      for (i in seq(1, nrow(commonPeaks), 1))
       {
         summary_id <- commonPeaks[i,1][[1]]@id
         id_list <- c(id_list, summary_id)
@@ -214,7 +220,7 @@ commonPeakResult <- function(commonPeaks, return_common_peak_sites = FALSE,
       return_all[["peak_summary"]] <- summary_matrix
     }
     # return values
-    if (!(return_common_peak_sites == F && return_methylation_profile == F && return_summary == F))
+    if (!(return_common_peak_sites == FALSE && return_methylation_profile == FALSE && return_summary == FALSE))
     {
       return(return_all)
     }

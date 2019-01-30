@@ -21,14 +21,20 @@
 #' intersectPeakMatrix_output <- intersectPeakMatrix(peak_id_x=peak_id_x,
 #'                                                   motif_only_for_id_x=TRUE,
 #'                                                   peak_id_y=peak_id_y,
-#'                                                   motif_only_for_id_y=TRUE,
-#'                                                   methylation_profile_in_narrow_region=TRUE)
+#'                                                   motif_only_for_id_y=TRUE)
 
 
-intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_list_x, user_peak_x_id,
-                                peak_id_y, motif_only_for_id_y = F, user_peak_list_y, user_peak_y_id,
-                                methylation_profile_in_narrow_region = F,
-                                motif_type = "MEME", TFregulome_url)
+intersectPeakMatrix <- function(peak_id_x,
+                                motif_only_for_id_x = FALSE,
+                                user_peak_list_x,
+                                user_peak_x_id,
+                                peak_id_y,
+                                motif_only_for_id_y = FALSE,
+                                user_peak_list_y,
+                                user_peak_y_id,
+                                methylation_profile_in_narrow_region = FALSE,
+                                motif_type = "MEME",
+                                TFregulome_url)
 {
   # check the input argument
   if (missing(peak_id_x) && missing(user_peak_list_x))
@@ -39,16 +45,16 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
   {
     stop("No peak list y input. Please input TFregulome peaks using TFregulome ID(s) by 'peak_id_y = ' OR your own peak list using a list of data.frame(s) containing bed-format regions by 'user_peak_list_y = '")
   }
-  if ((!missing(user_peak_list_x) && class(user_peak_list_x) != "list") ||
-      (!missing(user_peak_list_y) && class(user_peak_list_y) != "list"))
+  if ((!missing(user_peak_list_x) && !is.list(user_peak_list_x)) ||
+      (!missing(user_peak_list_y) && !is.list(user_peak_list_y)))
   {
     stop("The class of input 'user_peak_list_x' and 'user_peak_list_y' should be 'list', a list of bed-like data.frame storing peak regions!")
   }
-  if (class(motif_only_for_id_x) != "logical" || class(motif_only_for_id_y) != "logical")
+  if (!is.logical(motif_only_for_id_x) || !is.logical(motif_only_for_id_y))
   {
     stop("motif_only_for_id_x and motif_only_for_id_y should be either TRUE or FALSE (default)")
   }
-  if (class(methylation_profile_in_narrow_region) != "logical")
+  if (!is.logical(methylation_profile_in_narrow_region))
   {
     stop("methylation_profile_in_narrow_region should be either TRUE or FALSE (default)")
   }
@@ -88,7 +94,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
   if (!missing(peak_id_x) && length(peak_id_x)>0)
   {
     message(paste0("... You have ", length(peak_id_x)," TFBS(s) requested to be loaded from TFregulome server"))
-    if (motif_only_for_id_x == T)
+    if (motif_only_for_id_x == TRUE)
     {
       message("... You chose to load TF peaks with motif only. Using 'motif_only_for_id_x' tunes your options")
     }
@@ -108,7 +114,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
       {
         peak_list_x_count <- peak_list_x_count + 1
         peak_list_x_all[[peak_list_x_count]] <- peak_i
-        is_x_TFregulome <- c(is_x_TFregulome, T)
+        is_x_TFregulome <- c(is_x_TFregulome, TRUE)
         TFregulome_peak_x_id <- c(TFregulome_peak_x_id, i)
         message(paste0("... ... peak file loaded successfully for id '", i,"'"))
       }
@@ -125,10 +131,10 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
       message("... ... You didn't provide the ID for each customised peak set or your ID number does not uniquely equal to the input user peak number. Instead we will use 'user_peak_x1', 'user_peak_x2'..." )
       user_peak_x_id <- paste0("user_peak_x", seq(1,length(user_peak_list_x), 1))
     }
-    for (i in 1:length(user_peak_list_x))
+    for (i in seq(1,length(user_peak_list_x),1))
     {
       peak_i <- user_peak_list_x[[i]]
-      peak_i_sub <- peak_i[,1:3]
+      peak_i_sub <- peak_i[,c(1,2,3)]
       colnames(peak_i_sub) <- c("chr","start","end")
       peak_i_sub$id <- paste0(user_peak_x_id[i], "_", as.vector(rownames(peak_i_sub)))
       peak_i_sub <- peak_i_sub[,c("chr","start","end","id")]
@@ -138,11 +144,11 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
       motif_matrix_i <- suppressMessages(searchMotif(id = user_peak_x_id[i], TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
       if (is.null(motif_matrix_i))
       {
-        is_x_TFregulome <- c(is_x_TFregulome, F)
+        is_x_TFregulome <- c(is_x_TFregulome, FALSE)
       }
       else
       {
-        is_x_TFregulome <- c(is_x_TFregulome, T)
+        is_x_TFregulome <- c(is_x_TFregulome, TRUE)
       }
     }
   }
@@ -163,7 +169,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
   if (!missing(peak_id_y) && length(peak_id_y)>0)
   {
     message(paste0("... You have ", length(peak_id_y)," TFBS(s) requested to be loaded from TFregulome server"))
-    if (motif_only_for_id_y == T)
+    if (motif_only_for_id_y == TRUE)
     {
       message("... You chose to load TF peaks with motif only. Using 'motif_only_for_id_y' tunes your options")
     }
@@ -183,7 +189,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
       {
         peak_list_y_count <- peak_list_y_count + 1
         peak_list_y_all[[peak_list_y_count]] <- peak_i
-        is_y_TFregulome <- c(is_y_TFregulome, T)
+        is_y_TFregulome <- c(is_y_TFregulome, TRUE)
         TFregulome_peak_y_id <- c(TFregulome_peak_y_id, i)
         message(paste0("... ... peak file loaded successfully for id '", i,"'"))
       }
@@ -200,10 +206,10 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
       message("... ... You didn't provide the ID for each customised peak set or your ID number does not uniquely equal to the input user peak number. Instead we will use 'user_peak_y1', 'user_peak_y2'..." )
       user_peak_y_id <- paste0("user_peak_y", seq(1,length(user_peak_list_y), 1))
     }
-    for (i in 1:length(user_peak_list_y))
+    for (i in seq(1, length(user_peak_list_y), 1))
     {
       peak_i <- user_peak_list_y[[i]]
-      peak_i_sub <- peak_i[,1:3]
+      peak_i_sub <- peak_i[,c(1,2,3)]
       colnames(peak_i_sub) <- c("chr","start","end")
       peak_i_sub$id <- paste0(user_peak_y_id[i], "_", as.vector(rownames(peak_i_sub)))
       peak_i_sub <- peak_i_sub[,c("chr","start","end","id")]
@@ -213,11 +219,11 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
       motif_matrix_i <- suppressMessages(searchMotif(id = user_peak_y_id[i], TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
       if (is.null(motif_matrix_i))
       {
-        is_y_TFregulome <- c(is_y_TFregulome, F)
+        is_y_TFregulome <- c(is_y_TFregulome, FALSE)
       }
       else
       {
-        is_y_TFregulome <- c(is_y_TFregulome, T)
+        is_y_TFregulome <- c(is_y_TFregulome, TRUE)
       }
     }
   }
@@ -230,7 +236,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
 
 
   intersection_matrix <- list()
-  for (i in 1:length(peak_list_x_all))
+  for (i in seq(1, length(peak_list_x_all), 1))
   {
     id_x <- peak_id_x_all[i]
     message(paste0("Start analysing list x:", id_x, "... ..."))
@@ -273,7 +279,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
       isTFregulome_x <- FALSE
     }
     # start comparing with peak set y
-    for (j in 1:length(peak_list_y_all))
+    for (j in seq(1, length(peak_list_y_all), 1))
     {
       id_y <- peak_id_y_all[j]
       message(paste0("... ... Start analysing list y:", id_y))
@@ -319,20 +325,28 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
       # if peak x is from TRregulome database, extend peak regions by 100 bp
       if (isTFregulome_x)
       {
-        bed_x <- with(peak_x, GRanges(chr, IRanges(start-99, end+100), id=id))
+        bed_x <- GRanges(peak_x$chr,
+                         IRanges(peak_x$start-99, peak_x$end+100),
+                         id=peak_x$id)
       }
       else
       {
-        bed_x <- with(peak_x, GRanges(chr, IRanges(start, end), id=id))
+        bed_x <- GRanges(peak_x$chr,
+                         IRanges(peak_x$start, peak_x$end),
+                         id=peak_x$id)
       }
       # if peak y is from MethMotif database, extend peak regions by 100 bp
       if (isTFregulome_y)
       {
-        bed_y <- with(peak_y, GRanges(chr, IRanges(start-99, end+100), id=id))
+        bed_y <- GRanges(peak_y$chr,
+                         IRanges(peak_y$start-99, peak_y$end+100),
+                         id=peak_y$id)
       }
       else
       {
-        bed_y <- with(peak_y, GRanges(chr, IRanges(start, end), id=id))
+        bed_y <- GRanges(peak_y$chr,
+                         IRanges(peak_y$start, peak_y$end),
+                         id=peak_y$id)
       }
 
       # get peak x which intersects with y
@@ -344,19 +358,22 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
       # collecting all CpG meth scores in the defined methylation profile area
       meth_score_collection_x <- data.frame()
       # methylation distribution only meaningful if we have WGBS and peaks
-      is_methProfile_meaningful_x <- F
+      is_methProfile_meaningful_x <- FALSE
 
       # form MethMotif object if the id is TFregulome id
       if (isTFregulome_x)
       {
-        motif_seq_x <- read.delim(motif_seq_path_x, sep = "\t", header = F)
+        motif_seq_x <- read.delim(motif_seq_path_x, sep = "\t", header = FALSE)
         if (nrow(peakx_with_peaky) > 0)
         {
           #compute motif matrix
           colnames(motif_seq_x) <- c("chr","start","end","strand","weight", "pvalue","qvalue","sequence")
           motif_len_x <- nchar(as.character(motif_seq_x[1,"sequence"]))
           motif_seq_x$id <- paste0(id_x,"_motif_sequence_", as.vector(rownames(motif_seq_x)))
-          motif_seq_x_grange <- with(motif_seq_x[,c("chr","start","end","id")], GRanges(chr, IRanges(start+1, end), id=id))
+          motif_seq_x_grange <- GRanges(motif_seq_x$chr,
+                                        IRanges(motif_seq_x$start+1,
+                                                motif_seq_x$end),
+                                        id=motif_seq_x$id)
           suppressWarnings(motif_of_peakx_with_peaky_grange <- subsetByOverlaps(motif_seq_x_grange, bedx_with_bedy))
           motif_of_peakx_with_peaky <- unique(as.data.frame(motif_of_peakx_with_peaky_grange))
           if (nrow(motif_of_peakx_with_peaky) > 0)
@@ -369,7 +386,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
             if (isMethMotifID_x)
             {
               # methylation file can be empty
-              meth_level_x <- tryCatch(read.delim(meth_file_path_x, sep = "\t", header = F),
+              meth_level_x <- tryCatch(read.delim(meth_file_path_x, sep = "\t", header = FALSE),
                                        error=function(e) data.frame())
               # methylation file can be empty
               if (nrow(meth_level_x)==0)
@@ -383,8 +400,10 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
                 colnames(meth_level_x) <- c("chr","start","end","meth_score","C_num","T_num","seq_chr","seq_start",
                                             "seq_end","strand","weight","pvalue","qvalue","sequence")
                 meth_level_x$id <- paste0(id_x,"_motif_with_CG_", as.vector(rownames(meth_level_x)))
-                meth_level_x_grange <- with(meth_level_x[,c("seq_chr","seq_start","seq_end","id")],
-                                            GRanges(seq_chr, IRanges(seq_start, seq_end), id=id))
+                meth_level_x_grange <- GRanges(meth_level_x$seq_chr,
+                                               IRanges(meth_level_x$seq_start,
+                                                       meth_level_x$seq_end),
+                                               id=meth_level_x$id)
                 suppressWarnings(meth_level_x_with_y <- unique(as.data.frame(subsetByOverlaps(meth_level_x_grange, motif_of_peakx_with_peaky_grange))))
                 meth_level_x_with_y_allInfo <- meth_level_x[which(meth_level_x$id %in% meth_level_x_with_y$id),]
                 beta_score_matrix_of_peakx_with_y <- formBetaScoreFromSeq(input_meth = meth_level_x_with_y_allInfo,
@@ -422,16 +441,18 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
             ### if in 200bp around peaks
             if (isMethMotifID_x)
             {
-              is_methProfile_meaningful_x <- T
-              meth_level_200bp_x <- tryCatch(read.delim(meth_file_200bp_path_x, sep = "\t", header = F),
+              is_methProfile_meaningful_x <- TRUE
+              meth_level_200bp_x <- tryCatch(read.delim(meth_file_200bp_path_x, sep = "\t", header = FALSE),
                                                   error=function(e) data.frame())
               if (nrow(meth_level_200bp_x) > 0)
               {
                 colnames(meth_level_200bp_x) <- c("chr","start","end",
                                                        "meth_score","C_num","T_num")
                 meth_level_200bp_x$id <- paste0("200bp_CG_", as.vector(rownames(meth_level_200bp_x)))
-                meth_level_200bp_x_grange <- with(meth_level_200bp_x[,c("chr","start","end","id")],
-                                                       GRanges(chr, IRanges(start, end), id=id))
+                meth_level_200bp_x_grange <- GRanges(meth_level_200bp_x$chr,
+                                                     IRanges(meth_level_200bp_x$start,
+                                                             meth_level_200bp_x$end),
+                                                     id=meth_level_200bp_x$id)
                 suppressWarnings(meth_level_in_peakx_200bp <- unique(as.data.frame(subsetByOverlaps(meth_level_200bp_x_grange,
                                                                                                     bedx_with_bedy))))
                 meth_level_in_peakx_200bp_allInfo <- unique(meth_level_200bp_x[which(meth_level_200bp_x$id
@@ -468,18 +489,21 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
       # collecting all CpG meth scores in the defined methylation profile area
       meth_score_collection_y <- data.frame()
       # methylation distribution only meaningful if we have WGBS and peaks
-      is_methProfile_meaningful_y <- F
+      is_methProfile_meaningful_y <- FALSE
       # form MethMotif object if the id is TFregulome id
       if (isTFregulome_y)
       {
-        motif_seq_y <- read.delim(motif_seq_path_y, sep = "\t", header = F)
+        motif_seq_y <- read.delim(motif_seq_path_y, sep = "\t", header = FALSE)
         if (nrow(peaky_with_peakx) > 0)
         {
           #compute motif matrix
           colnames(motif_seq_y) <- c("chr","start","end","strand","weight", "pvalue","qvalue","sequence")
           motif_len_y <- nchar(as.character(motif_seq_y[1,"sequence"]))
           motif_seq_y$id <- paste0(id_y,"_motif_sequence_", as.vector(rownames(motif_seq_y)))
-          motif_seq_y_grange <- with(motif_seq_y[,c("chr","start","end","id")], GRanges(chr, IRanges(start+1, end), id=id))
+          motif_seq_y_grange <- GRanges(motif_seq_y$chr,
+                                        IRanges(motif_seq_y$start+1,
+                                                motif_seq_y$end),
+                                        id=motif_seq_y$id)
           suppressWarnings(motif_of_peaky_with_peakx_grange <- subsetByOverlaps(motif_seq_y_grange, bedy_with_bedx))
           motif_of_peaky_with_peakx <- unique(as.data.frame(motif_of_peaky_with_peakx_grange))
           if (nrow(motif_of_peaky_with_peakx) > 0)
@@ -492,7 +516,7 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
             if (isMethMotifID_y)
             {
               # methylation file can be empty
-              meth_level_y <- tryCatch(read.delim(meth_file_path_y, sep = "\t", header = F),
+              meth_level_y <- tryCatch(read.delim(meth_file_path_y, sep = "\t", header = FALSE),
                                        error=function(e) data.frame())
               # methylation file can be empty
               if (nrow(meth_level_y)==0)
@@ -506,8 +530,10 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
                 colnames(meth_level_y) <- c("chr","start","end","meth_score","C_num","T_num","seq_chr","seq_start",
                                             "seq_end","strand","weight","pvalue","qvalue","sequence")
                 meth_level_y$id <- paste0(id_y,"_motif_with_CG_", as.vector(rownames(meth_level_y)))
-                meth_level_y_grange <- with(meth_level_y[,c("seq_chr","seq_start","seq_end","id")],
-                                            GRanges(seq_chr, IRanges(seq_start, seq_end), id=id))
+                meth_level_y_grange <- GRanges(meth_level_y$seq_chr,
+                                               IRanges(meth_level_y$seq_start,
+                                                       meth_level_y$seq_end),
+                                               id=meth_level_y$id)
                 suppressWarnings(meth_level_y_with_x <- unique(as.data.frame(subsetByOverlaps(meth_level_y_grange, motif_of_peaky_with_peakx_grange))))
                 meth_level_y_with_x_allInfo <- meth_level_y[which(meth_level_y$id %in% meth_level_y_with_x$id),]
                 beta_score_matrix_of_peaky_with_x <- formBetaScoreFromSeq(input_meth = meth_level_y_with_x_allInfo,
@@ -545,16 +571,18 @@ intersectPeakMatrix <- function(peak_id_x, motif_only_for_id_x = F, user_peak_li
             ### if in 200bp around peaks
             if (isMethMotifID_y)
             {
-              is_methProfile_meaningful_y <- T
-              meth_level_200bp_y <- tryCatch(read.delim(meth_file_200bp_path_y, sep = "\t", header = F),
+              is_methProfile_meaningful_y <- TRUE
+              meth_level_200bp_y <- tryCatch(read.delim(meth_file_200bp_path_y, sep = "\t", header = FALSE),
                                              error=function(e) data.frame())
               if (nrow(meth_level_200bp_y) > 0)
               {
                 colnames(meth_level_200bp_y) <- c("chr","start","end",
                                                   "meth_score","C_num","T_num")
                 meth_level_200bp_y$id <- paste0("200bp_CG_", as.vector(rownames(meth_level_200bp_y)))
-                meth_level_200bp_y_grange <- with(meth_level_200bp_y[,c("chr","start","end","id")],
-                                                  GRanges(chr, IRanges(start, end), id=id))
+                meth_level_200bp_y_grange <- GRanges(meth_level_200bp_y$chr,
+                                                     IRanges(meth_level_200bp_y$start,
+                                                             meth_level_200bp_y$end),
+                                                     id=meth_level_200bp_y$id)
                 suppressWarnings(meth_level_in_peaky_200bp <- unique(as.data.frame(subsetByOverlaps(meth_level_200bp_y_grange,
                                                                                                     bedy_with_bedx))))
                 meth_level_in_peaky_200bp_allInfo <- unique(meth_level_200bp_y[which(meth_level_200bp_y$id
@@ -674,7 +702,7 @@ formBetaScoreFromSeq <- function(input_meth, WGBS_replicate, motif_len)
       input_meth_r$dis <- motif_len-(input_meth_r$start-input_meth_r$seq_start)
       # merge read in both strands
       if(nrow(input_meth_d)>0){
-        for (i in 1:nrow(input_meth_d)){
+        for (i in seq(1, nrow(input_meth_d), 1)){
           if (unlist(strsplit(as.character(input_meth_d[i,"sequence"]), split=""))[as.integer(input_meth_d[i,"dis"])]=="G"){
             input_meth_d[i,"dis"] <- input_meth_d[i,"dis"]-1
           }
@@ -682,7 +710,7 @@ formBetaScoreFromSeq <- function(input_meth, WGBS_replicate, motif_len)
       }
       # merge read in both strands
       if(nrow(input_meth_r)>0){
-        for (i in 1:nrow(input_meth_r)){
+        for (i in seq(1, nrow(input_meth_r), 1)){
           if (unlist(strsplit(as.character(input_meth_r[i,"sequence"]), split=""))[as.integer(input_meth_r[i,"dis"])]=="G"){
             input_meth_r[i,"dis"] <- input_meth_r[i,"dis"]-1
           }

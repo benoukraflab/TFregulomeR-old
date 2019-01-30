@@ -9,7 +9,8 @@ commonPeakResult(commonPeaks, return_common_peak_sites = FALSE,
   return_summary = FALSE, logo_type = "entropy", meth_level = "all")
 }
 \arguments{
-\item{commonPeaks}{Required. commonPeaks() output, a matrix of CommonPeaksMM class objects.}
+\item{commonPeaks}{Required. commonPeaks() output, a matrix of CommonPeaksMM
+class objects.}
 
 \item{return_common_peak_sites}{Either TRUE of FALSE (default). If TRUE, a list of data.frames containing common peak sets.}
 
@@ -27,7 +28,9 @@ commonPeakResult(commonPeaks, return_common_peak_sites = FALSE,
 a list of data.frames, a numeric matrix or (Meth)Motif logo PDF files depending on the options.
 }
 \description{
-This function allows you to get the reuslts from the commonPeaks() output, including a list of common peak sets, (Meth)Motif logos, methylation profile in common peaks and common peak summary.
+This function allows you to get the reuslts from the commonPeaks() output,
+including a list of common peak sets, (Meth)Motif logos, methylation profile
+in common peaks and common peak summary.
 }
 \examples{
 target_id <- c("MM1_HSA_K562_CEBPB")

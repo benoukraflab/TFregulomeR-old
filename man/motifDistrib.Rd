@@ -27,7 +27,7 @@ This function allows you to profile TFBS distributions in a given list of peak s
 \examples{
 CEBPB_peaks <- loadPeaks(id = "MM1_HSA_K562_CEBPB")
 motifDistrib_output <- motifDistrib(id = "MM1_HSA_K562_CEBPB",
-                                    peak_list = list(CEBPB_peaks),
+                                    peak_list = list(CEBPB_peaks[1:100,]),
                                     peak_id = "MM1_HSA_K562_CEBPB")
 }
 \keyword{motifDistrib}

@@ -57,13 +57,13 @@ plotLogo <- function(MM_object, logo_type="entropy", meth_level="all")
       # generate a dataframe for beta score plotting
       plot_beta_score <- matrix(rep(0,length(MMBetaScore)*3), ncol = 3)
       colnames(plot_beta_score) <- c("number","pos","meth")
-      plot_beta_score[1:motif_length,1] <- as.vector(MMBetaScore[3,])
+      plot_beta_score[seq(1,motif_length,1),1] <- as.vector(MMBetaScore[3,])
       plot_beta_score[(motif_length+1):(2*motif_length),1] <- as.vector(MMBetaScore[2,])
       plot_beta_score[(2*motif_length+1):(3*motif_length),1] <- as.vector(MMBetaScore[1,])
-      plot_beta_score[1:motif_length,2] <- seq(1, motif_length, 1)
+      plot_beta_score[seq(1,motif_length,1),2] <- seq(1, motif_length, 1)
       plot_beta_score[(motif_length+1):(2*motif_length),2] <- seq(1, motif_length, 1)
       plot_beta_score[(2*motif_length+1):(3*motif_length),2] <- seq(1, motif_length,1)
-      plot_beta_score[1:motif_length, 3] <- "beta score>90%"
+      plot_beta_score[seq(1,motif_length,1), 3] <- "beta score>90%"
       plot_beta_score[(motif_length+1):(2*motif_length),3] <- "beta score 10-90%"
       plot_beta_score[(2*motif_length+1):(3*motif_length),3] <- "beta score<10%"
       plot_beta_score <- as.data.frame(plot_beta_score)
@@ -91,12 +91,18 @@ plotLogo <- function(MM_object, logo_type="entropy", meth_level="all")
         plot_beta_score <- plot_beta_score[which(plot_beta_score$meth == "beta score<10%"), ]
         plot_beta_score$pos <- factor(plot_beta_score$pos, levels = seq(1,motif_length,1))
         ylim <- round(max(as.vector(MMBetaScore[1, ]))/1000+1)*1000+500
-        barplot_color = c("dodgerblue1")
-        pdf_name = paste0(ID, "-logo-", logo_type, "-unmethylated-only.pdf")
+        barplot_color <- c("dodgerblue1")
+        pdf_name <- paste0(ID, "-logo-", logo_type, "-unmethylated-only.pdf")
       }
 
+      sum_of_pos <- aggregate(as.numeric(as.character(plot_beta_score$number)),
+                              by=list(pos=plot_beta_score$pos),
+                              FUN=sum)
+      colnames(sum_of_pos) <- c("pos", "sum")
       #plot beta score
-      p1 <- ggplot(data = plot_beta_score[order(plot_beta_score$meth, decreasing = F),], aes(x=pos,y=as.numeric(as.character(number)),fill=meth)) +
+      p1 <- ggplot(data = plot_beta_score[order(plot_beta_score$meth, decreasing = FALSE),],
+                   aes(x=pos,y=as.numeric(as.character(plot_beta_score$number)),
+                       fill=plot_beta_score$meth)) +
         geom_bar(colour="black", stat="identity") +
         scale_fill_manual(values = barplot_color) + ylim(0, ylim) +
         theme(axis.title.y=element_blank(), axis.title.x=element_blank(), axis.text.y=element_blank(),
@@ -106,7 +112,7 @@ plotLogo <- function(MM_object, logo_type="entropy", meth_level="all")
               legend.position=c(0.9,0.9), plot.margin = margin(t = 10, r = 20, b = 0, l = 19, unit = "pt"),
               panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
               panel.background = element_blank()) +
-        stat_summary(fun.y = sum, aes(label = ..y.., group = pos), geom = "text",vjust = -0.5)
+        stat_summary(fun.y = sum, aes(label = stat(sum_of_pos$sum), group = pos), geom = "text",vjust = -0.5)
     }
     else
     {

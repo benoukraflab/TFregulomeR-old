@@ -1,6 +1,7 @@
 #' export motif position frequency matrix and beta score matrix
 #'
-#' This function allows you to export motif position frequency matrix and beta score matrix from the output of "searchMotif", "commonPeaks", "exclusivePeaks" or "intersectPeakMatrix".
+#' This function allows you to export motif position frequency matrix and beta score matrix from the output of "
+#' searchMotif", "commonPeaks", "exclusivePeaks" or "intersectPeakMatrix".
 #' @param fun_output Required. Output from "searchMotif", "commonPeaks", "exclusivePeaks" or "intersectPeakMatrix".
 #' @param fun Required. The function that was used to get the output and should be one of the options, 'searchMotif', 'commonPeaks', 'exclusivePeaks' and 'intersectPeakMatrix'.
 #' @param save_motif_PFM Either TRUE or FALSE (default). If "TRUE", the motif position frequency matrix will be saved.
@@ -113,7 +114,7 @@ exportMMPFM <- function(fun_output, fun, save_motif_PFM = FALSE,
   if (fun == "commonPeaks")
   {
     message("... ... export commonPeaks...")
-    for (i in 1:nrow(fun_output))
+    for (i in seq(1,nrow(fun_output),1))
     {
       fun_output_i <- fun_output[i, 1][[1]]
       if (class(fun_output_i)[1] != "CommonPeaksMM")
@@ -160,7 +161,7 @@ exportMMPFM <- function(fun_output, fun, save_motif_PFM = FALSE,
   if (fun == "exclusivePeaks")
   {
     message("... ... export exclusivePeaks...")
-    for (i in 1:nrow(fun_output))
+    for (i in seq(1,nrow(fun_output),1))
     {
       fun_output_i <- fun_output[i, 1][[1]]
       if (class(fun_output_i)[1] != "ExclusivePeaksMM")
@@ -208,13 +209,13 @@ exportMMPFM <- function(fun_output, fun, save_motif_PFM = FALSE,
   {
     message("... ... export intersectPeakMatrix...")
     message(paste0("... ... we will export in the ", angle_of_matrix_for_intersectPeakMatrix," wide of intersectPeakMatrix output since the input angle_of_matrix_for_intersectPeakMatrix = '", angle_of_matrix_for_intersectPeakMatrix,"'"))
-    for (i in 1:nrow(fun_output))
+    for (i in seq(1, nrow(fun_output), 1))
     {
       if (saving_id_x_for_intersectPeakMatrix != "all" && !(rownames(fun_output)[i] %in% saving_id_x_for_intersectPeakMatrix))
       {
         next
       }
-      for (j in 1:ncol(fun_output))
+      for (j in seq(1, ncol(fun_output), 1))
       {
         if (saving_id_y_for_intersectPeakMatrix != "all" && !(colnames(fun_output)[j] %in% saving_id_y_for_intersectPeakMatrix))
         {
@@ -305,13 +306,13 @@ save_BetaScore <- function(MethMotif_object)
 {
   id <- MethMotif_object@MMmotif@id
   beta_score <- as.data.frame(MethMotif_object@MMBetaScore)
-  colnames_original <- sapply(seq(1, ncol(beta_score), 1), as.character)
+  colnames_original <- vapply(seq(1, ncol(beta_score), 1), as.character, character(1))
   colnames(beta_score) <- colnames_original
   beta_score$position <- c("beta score < 10%", "beta score in between", "beta score > 90%")
   beta_score <- rbind(beta_score, colnames(beta_score))
-  beta_score <- beta_score[c(4,1:3), ]
+  beta_score <- beta_score[c(4,1,2,3), ]
   beta_score <- beta_score[, c("position", colnames_original)]
-  write.table(beta_score, paste0(id, "-methScore.txt"), sep = "\t", col.names = F, row.names = F, quote = F)
+  write.table(beta_score, paste0(id, "-methScore.txt"), sep = "\t", col.names = FALSE, row.names = FALSE, quote = FALSE)
   return(paste0(id, "-methScore.txt"))
 }
 
@@ -336,7 +337,7 @@ save_motifPFM <- function(MethMotif_object)
                      MethMotif_object@MMmotif@nsites, " E= ", MethMotif_object@MMmotif@evalue)
     motif_matrix <- MethMotif_object@MMmotif@motif_matrix
     line_matrix <- ""
-    for (i in 1:nrow(motif_matrix))
+    for (i in seq(1, nrow(motif_matrix), 1))
     {
       if (i < nrow(motif_matrix)){
         line_matrix <- paste0(line_matrix, "  ", specify_decimal(as.numeric(motif_matrix[i,1]), 6), "\t  ", specify_decimal(as.numeric(motif_matrix[i,2]), 6),
@@ -366,7 +367,7 @@ save_motifPFM <- function(MethMotif_object)
     line6 <- paste0("PO\tA\tC\tG\tT")
     motif_matrix <- MethMotif_object@MMmotif@motif_matrix
     line_matrix <- ""
-    for (i in 1:nrow(motif_matrix))
+    for (i in seq(1, nrow(motif_matrix), 1))
     {
       if(i < nrow(motif_matrix))
       {

@@ -17,7 +17,8 @@ This function allows you to plot TFBS distributions in a given list of peak sets
 }
 \examples{
 CEBPB_peaks <- loadPeaks(id = "MM1_HSA_K562_CEBPB")
-motifDistrib_output <- motifDistrib(id = "MM1_HSA_K562_CEBPB", peak_list = list(CEBPB_peaks),
+motifDistrib_output <- motifDistrib(id = "MM1_HSA_K562_CEBPB",
+                                    peak_list = list(CEBPB_peaks[1:100,]),
                                     peak_id = c("MM1_HSA_K562_CEBPB"))
 plotDistrib(motifDistrib = motifDistrib_output)
 }

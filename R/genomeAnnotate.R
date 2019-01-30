@@ -14,7 +14,7 @@
 #' @examples
 #' require(TxDb.Hsapiens.UCSC.hg38.knownGene)
 #' HCT116_CEBPB_regions <- loadPeaks(id = "MM1_HSA_HCT116_CEBPB", includeMotifOnly=TRUE)
-#' HCT116_CEBPB_regions_annotation <- genomeAnnotate(peaks = HCT116_CEBPB_regions[1:100,],
+#' HCT116_CEBPB_regions_annotation <- genomeAnnotate(peaks = HCT116_CEBPB_regions[1:10,],
 #'                               return_annotation = TRUE, return_html_report = TRUE)
 
 genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
@@ -26,7 +26,7 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
   {
     stop("please provide peak regions using 'peaks ='!")
   }
-  if (class(peaks) != "data.frame")
+  if (!is.data.frame(peaks))
   {
     stop("The 'peaks' should be a BED-format data.frame!")
   }
@@ -114,34 +114,33 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
     message("Advice:")
     message("1) Check internet access;")
     message("2) Current TFregulome server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
-    message(paste0("warning: ",cond))
     return(NULL)
   }
 
-  peaks <- peaks[,1:3]
+  peaks <- peaks[,c(1,2,3)]
   colnames(peaks) <- c("chr","start", "end")
   peaks$id <- paste0("genomeAnnotate_peak_", as.vector(rownames(peaks)))
-  peaks_gr <- with(peaks, GRanges(chr, IRanges(start+1, end), id=id))
+  peaks_gr <- GRanges(peaks$chr, IRanges(peaks$start+1, peaks$end), id=peaks$id)
   #load knowgene
   if (assembly=="hg38")
   {
-    txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
-    seqlevels(txdb) <- paste0(rep("chr",times=24), c(seq(1,22,1),"X","Y"))
+    txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene::TxDb.Hsapiens.UCSC.hg38.knownGene
+    GenomeInfoDb::seqlevels(txdb) <- paste0(rep("chr",times=24), c(seq(1,22,1),"X","Y"))
   } else if (assembly=="hg19")
   {
-    txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
-    seqlevels(txdb) <- paste0(rep("chr",times=24), c(seq(1,22,1),"X","Y"))
+    txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene::TxDb.Hsapiens.UCSC.hg19.knownGene
+    GenomeInfoDb::seqlevels(txdb) <- paste0(rep("chr",times=24), c(seq(1,22,1),"X","Y"))
   } else if (assembly=="mm10")
   {
-    txdb <- TxDb.Mmusculus.UCSC.mm10.knownGene
-    seqlevels(txdb) <- paste0(rep("chr",times=21), c(seq(1,19,1),"X","Y"))
+    txdb <- TxDb.Mmusculus.UCSC.mm10.knownGene::TxDb.Mmusculus.UCSC.mm10.knownGene
+    GenomeInfoDb::seqlevels(txdb) <- paste0(rep("chr",times=21), c(seq(1,19,1),"X","Y"))
     name_conversion_file <- paste0(TFregulome_url, "mm10_UCSC_to_GeneName.txt")
     name_conversion <- tryCatch(read.table(name_conversion_file, sep = "\t"),
                                 warning=function(w) data.frame())
   } else
   {
-    txdb <- TxDb.Mmusculus.UCSC.mm9.knownGene
-    seqlevels(txdb) <- paste0(rep("chr",times=21), c(seq(1,19,1),"X","Y"))
+    txdb <- TxDb.Mmusculus.UCSC.mm9.knownGene::TxDb.Mmusculus.UCSC.mm9.knownGene
+    GenomeInfoDb::seqlevels(txdb) <- paste0(rep("chr",times=21), c(seq(1,19,1),"X","Y"))
     name_conversion_file <- paste0(TFregulome_url, "mm10_UCSC_to_GeneName.txt")
     name_conversion <- tryCatch(read.table(name_conversion_file, sep = "\t"),
                                 warning=function(w) data.frame())
@@ -173,9 +172,11 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
   peaks <- peaks[!(peaks$id %in% new_promoter$id), ]
   if (nrow(peaks)>0)
   {
-    peaks_gr <- with(peaks, GRanges(chr, IRanges(start+1, end), id=id))
+    peaks_gr <- GRanges(peaks$chr,
+                        IRanges(peaks$start+1, peaks$end),
+                        id=peaks$id)
     # get TTS
-    all_transcript <- transcripts(txdb, use.names=T)
+    all_transcript <- GenomicFeatures::transcripts(txdb, use.names=TRUE)
     all_transcript_df <- as.data.frame(all_transcript)
     all_transcript_df_pos <- all_transcript_df[all_transcript_df$strand=="+",]
     pos_newStart <- as.integer(all_transcript_df_pos$end) - abs(TTS_range[1])
@@ -188,9 +189,12 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
     all_transcript_df_neg$start <- neg_newStart
     all_transcript_df_neg$end <- neg_newEnd
     all_transcript_df_new <- rbind(all_transcript_df_pos, all_transcript_df_neg)
-    all_tts <- with(all_transcript_df_new, GRanges(seqnames, IRanges(start, end),
-                                                   strand = strand, tx_id = tx_id,
-                                                   tx_name=tx_name))
+    all_tts <- GRanges(all_transcript_df_new$seqnames,
+                       IRanges(all_transcript_df_new$start,
+                               all_transcript_df_new$end),
+                       strand = all_transcript_df_new$strand,
+                       tx_id = all_transcript_df_new$tx_id,
+                       tx_name=all_transcript_df_new$tx_name)
     names(all_tts) <- all_transcript_df_new$tx_name
     # annotating TTS
     suppressWarnings(tts_overlapped <- subsetByOverlaps(peaks_gr, all_tts))
@@ -213,8 +217,10 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
   peaks <- peaks[!(peaks$id %in% new_tts$id), ]
   if (nrow(peaks)>0)
   {
-    peaks_gr <- with(peaks, GRanges(chr, IRanges(start+1, end), id=id))
-    all_exons <- exonsBy(txdb, by = "tx",use.names=T)
+    peaks_gr <- GRanges(peaks$chr,
+                        IRanges(peaks$start+1, peaks$end),
+                        id=peaks$id)
+    all_exons <- GenomicFeatures::exonsBy(txdb, by = "tx",use.names=TRUE)
     suppressWarnings(exons_overlapped <- subsetByOverlaps(peaks_gr, all_exons))
     # combine overlapped motif seq information with peak
     hits <- findOverlaps(peaks_gr, all_exons)
@@ -236,8 +242,10 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
   peaks <- peaks[!(peaks$id %in% new_exon$id), ]
   if (nrow(peaks)>0)
   {
-    peaks_gr <- with(peaks, GRanges(chr, IRanges(start+1, end), id=id))
-    all_5utr <- fiveUTRsByTranscript(txdb, use.names=T)
+    peaks_gr <- GRanges(peaks$chr,
+                        IRanges(peaks$start+1, peaks$end),
+                        id=peaks$id)
+    all_5utr <- GenomicFeatures::fiveUTRsByTranscript(txdb, use.names=TRUE)
     suppressWarnings(fiveUtr_overlapped <- subsetByOverlaps(peaks_gr, all_5utr))
     # combine overlapped motif seq information with peak
     hits <- findOverlaps(peaks_gr, all_5utr)
@@ -259,8 +267,10 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
   peaks <- peaks[!(peaks$id %in% new_5utr$id), ]
   if (nrow(peaks)>0)
   {
-    peaks_gr <- with(peaks, GRanges(chr, IRanges(start+1, end), id=id))
-    all_3utr <- threeUTRsByTranscript(txdb, use.names=T)
+    peaks_gr <- GRanges(peaks$chr,
+                        IRanges(peaks$start+1, peaks$end),
+                        id=peaks$id)
+    all_3utr <- GenomicFeatures::threeUTRsByTranscript(txdb, use.names=TRUE)
     suppressWarnings(threeUtr_overlapped <- subsetByOverlaps(peaks_gr, all_3utr))
     # combine overlapped motif seq information with peak
     hits <- findOverlaps(peaks_gr, all_3utr)
@@ -281,8 +291,10 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
   peaks <- peaks[!(peaks$id %in% new_3utr$id), ]
   if (nrow(peaks)>0)
   {
-    peaks_gr <- with(peaks, GRanges(chr, IRanges(start+1, end), id=id))
-    all_introns <- intronsByTranscript(txdb, use.names=T)
+    peaks_gr <- GRanges(peaks$chr,
+                        IRanges(peaks$start+1, peaks$end),
+                        id=peaks$id)
+    all_introns <- GenomicFeatures::intronsByTranscript(txdb, use.names=TRUE)
     suppressWarnings(intron_overlapped <- subsetByOverlaps(peaks_gr, all_introns))
     # combine overlapped motif seq information with peak
     hits <- findOverlaps(peaks_gr, all_introns)
@@ -306,9 +318,11 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
                                          ncol = 8))
   if (nrow(peaks)>0)
   {
-    peaks_gr <- with(peaks, GRanges(chr, IRanges(start+1, end), id=id))
-    near_start <- follow(peaks_gr, unstrand(all_TSS))
-    near_end <- precede(peaks_gr, unstrand(all_TSS))
+    peaks_gr <- GRanges(peaks$chr,
+                        IRanges(peaks$start+1, peaks$end),
+                        id=peaks$id)
+    near_start <- follow(peaks_gr, BiocGenerics::unstrand(all_TSS))
+    near_end <- precede(peaks_gr, BiocGenerics::unstrand(all_TSS))
     start_indx <- seq(1,length(near_start),1)
     distance_start <- rep(Inf, length(near_start))
     distance_start[!(is.na(near_start))] <- unlist(lapply(start_indx[!(is.na(near_start))],
@@ -343,7 +357,7 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
     genename_final <- genename_start
     genename_final[min_index==2] <- genename_end[min_index==2]
 
-    new_intergenic[,1:4] <- peaks[,1:4]
+    new_intergenic[,c(1,2,3,4)] <- peaks[,c(1,2,3,4)]
     new_intergenic[,5] <- "intergenic"
     new_intergenic[,6] <- genename_final
     new_intergenic[,7] <- transcript_final
@@ -375,14 +389,17 @@ addDistanceAndClean <- function(feature_df, all_TSS, name_conversion, annotation
   if (nrow(feature_df)>0)
   {
     feature_df_peak <- feature_df[,c("seqnames","start","end","id")]
-    feature_df_peak_gr <- with(feature_df_peak, GRanges(seqnames, IRanges(start, end), id=id))
+    feature_df_peak_gr <- GRanges(feature_df_peak$seqnames,
+                                  IRanges(feature_df_peak$start,
+                                          feature_df_peak$end),
+                                  id=feature_df_peak$id)
     feature_df$distance_tss <- unlist(lapply(seq(1,nrow(feature_df),1),
                                              function(x) paste0(distance(feature_df_peak_gr[x],all_TSS[feature_df[x,"feature_id"][[1]]]), collapse = ";")))
     feature_df$transcript <- unlist(apply(as.data.frame(feature_df$feature_id),
                                           1,function(x) paste0(as.character(x[[1]]), collapse = ";")))
     feature_df$gene_name <- unlist(lapply(feature_df$feature_id,
                                           function(x) paste0(unique(gene_name[which(UCSC_name %in% x[[1]])]), collapse = ";")))
-    new_feature_df[,1:4] <- feature_df[,c("seqnames","start","end","id")]
+    new_feature_df[,c(1,2,3,4)] <- feature_df[,c("seqnames","start","end","id")]
     new_feature_df[,5] <-  annotation
     new_feature_df[,6] <- feature_df[,"gene_name"]
     new_feature_df[,7] <- feature_df[,"transcript"]
