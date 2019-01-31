@@ -175,11 +175,13 @@ motifDistrib <- function(id, peak_list, peak_id, plot_at_each_side = 100, TFregu
       overlapped_df_full[x,] <- overlap_temp[[x]]
     }
     colnames(overlapped_df_full) <- c("peak_chr","peak_start","peak_end","peak_id","motif_id")
-    overlapped_df_full_all <- merge(x = overlapped_df_full, y = motif_seq[,c("motif_chr","motif_start","motif_end","motif_id")],
+    overlapped_df_full_all <- merge(x = overlapped_df_full,
+                                    y = motif_seq[,c("motif_chr","motif_start",
+                                                     "motif_end","motif_id")],
                                     by="motif_id")
     overlapped_df_full_all[, c("peak_start","peak_end","motif_start","motif_end")] <- lapply(overlapped_df_full_all[, c("peak_start","peak_end","motif_start","motif_end")], as.numeric)
     overlapped_df_full_all$peak_center <- (overlapped_df_full_all$peak_start+overlapped_df_full_all$peak_end)/2
-    overlapped_df_full_all[,c("peak_center")] <- lapply(overlapped_df_full_all[,c("peak_center")], as.integer)
+    overlapped_df_full_all[,c("peak_center")] <- vapply(overlapped_df_full_all[,c("peak_center")], as.integer, integer(1))
     overlapped_df_full_all$left_point <- overlapped_df_full_all$motif_start-overlapped_df_full_all$peak_center
     overlapped_df_full_all$right_point <- overlapped_df_full_all$motif_end-overlapped_df_full_all$peak_center
     #calculate motif occurrence
