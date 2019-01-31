@@ -50,7 +50,7 @@ TFregulomeR
 In R console,
 
 ```r
-# if you have not install "devtools" package
+# if you have not installed "devtools" package
 install.packages("devtools")
 devtools::install_github("linquynus/TFregulomeR")
 ```
