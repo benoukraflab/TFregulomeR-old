@@ -1,5 +1,5 @@
 ---
-title: "TFRegulomeR: Flexible characterization of transcription factor binding partners and binding motifs using cell specificity and DNA methylation profiles"
+title: "TFRegulomeR: Flexible characterisation of cell-specific transcription factor binding partners and binding motifs using ChIPseq and bisulfite sequencing meta-data"
 author: 
  - name: Quy Xiao Xuan Lin
    affiliation: National University of Singapore
@@ -16,7 +16,7 @@ output:
     toc: true
     fig_caption: yes
 vignette: >
-  %\VignetteIndexEntry{TFRegulomeR: Flexible characterization of transcription factor binding partners and binding motifs using cell specificity and DNA methylation profiles}
+  %\VignetteIndexEntry{TFRegulomeR: Flexible characterisation of cell-specific transcription factor binding partners and binding motifs using ChIPseq and bisulfite sequencing meta-data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
