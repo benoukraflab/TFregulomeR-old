@@ -6,7 +6,7 @@ Description: An effective and efficient application programming interface (API)/
 Authors@R: c(person("Quy Xiao Xuan", "Lin", email = "linquyzju@gmail.com", role = c("aut", "cre")), 
              person("Sudhakar", "Jha", email = "csisjha@nus.edu.sg", role = "ctb"),
               person("Touati", "Benoukraf", email = "tbenoukraf@mun.ca", role = "aut"))
-Depends: R (>= 3.3.0), methods
+Depends: R (>= 3.5.0), methods
 Imports: graphics,
          grDevices,
          utils,
