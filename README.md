@@ -1,6 +1,6 @@
 TFregulomeR
 
-[![Github All Releases](https://img.shields.io/github/downloads/linquynus/TFregulomeR/total.svg)](https://github.com/linquynus/TFregulomeR)
+[![Github All Releases](https://img.shields.io/github/downloads/linquynus/TFregulomeR/total.svg)](https://github.com/linquynus/TFregulomeR) [![Build Status](https://travis-ci.com/linquynus/TFregulomeR.svg?branch=master)](https://travis-ci.com/linquynus/TFregulomeR)
 
 # Introduction
 *TFregulome* is a comprehensive transcription factor binding site (TFBS) database encompassing the MethMotif and GTRD. The binding motifs predicted in-silico from MethMotif and GTRD describe cell specific transcription factor (TF) binding propensities, while the DNA methylation profiles from MethMotif portray a second epigenetic dimension in TF binding events. 
