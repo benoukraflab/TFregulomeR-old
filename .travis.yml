@@ -30,6 +30,7 @@ addons:
      packages:
      - gcc-4.8
      - g++-4.8
+     - libcurl4-openssl-dev
   
 notifications:
   email:
