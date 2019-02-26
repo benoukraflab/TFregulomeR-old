@@ -1,10 +1,10 @@
 <div align="center">
-<a>
-<img src="https://github.com/linquynus/TFregulomeR/tree/master/inst/TFregulomeR_logo.png" alt="TFregulomeR Logo" ></img>
+<a name="logo"/>
+<img src="./inst/TFregulomeR_logo.png" alt="TFregulomeR Logo" ></img>
 </a>
 </div>
 
--------
+
 
 TFregulomeR
 
