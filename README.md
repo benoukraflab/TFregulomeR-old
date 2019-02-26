@@ -1,3 +1,11 @@
+<div align="center">
+<a>
+<img src="https://github.com/linquynus/TFregulomeR/tree/master/inst/TFregulomeR_logo.png" alt="TFregulomeR Logo" ></img>
+</a>
+</div>
+
+-------
+
 TFregulomeR
 
 [![Github All Releases](https://img.shields.io/github/downloads/linquynus/TFregulomeR/total.svg)](https://github.com/linquynus/TFregulomeR) [![Build Status](https://travis-ci.com/linquynus/TFregulomeR.svg?branch=master)](https://travis-ci.com/linquynus/TFregulomeR)
