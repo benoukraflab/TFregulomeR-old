@@ -1,8 +1,8 @@
 Package: TFregulomeR
 Type: Package
-Title: Flexible Characterisation of Cell-specific Transcription Factor Binding Partners and Binding Motifs using ChIPseq and Bisulfite Sequencing Meta-data
+Title: Flexible Characterisation of Transcription Factor Binding Partners and Binding Motifs using Cell-specific Cistrome and Methylome Meta-data
 Version: 0.99.0
-Description: An effective and efficient application programming interface (API)/R package that facilitates the retrieval and exploitation of TFregulome datasets. This package comprises functions that simplify the queries in TFregulome database. In addition, TFregulomeR uses standard objects compatible with other TFBS packages such as TFBSTools, allowing users to take advantage of the tools developed by the community. Further, the functionalities implemented in our toolbox allow to better understand the mechanism of TF recruitment in a cell-specific manner.
+Description: An R-package linked to a large timely-updated compendium of cistrome and methylome datasets, implemented with functionalities that facilitate the manipulation and analysis of TFBS and methylome meta-data. In particular, TFregulomeR permits the characterisation of TF binding partners and cell-specific TFBSs, along with the study of TF’s functions in the context of different partners’ combinations and DNA methylation levels.
 Authors@R: c(person("Quy Xiao Xuan", "Lin", email = "linquyzju@gmail.com", role = c("aut", "cre")), 
              person("Sudhakar", "Jha", email = "csisjha@nus.edu.sg", role = "ctb"),
               person("Touati", "Benoukraf", email = "tbenoukraf@mun.ca", role = "aut"))

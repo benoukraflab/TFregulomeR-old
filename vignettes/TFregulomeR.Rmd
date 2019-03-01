@@ -1,5 +1,5 @@
 ---
-title: "TFRegulomeR: Flexible characterisation of cell-specific transcription factor binding partners and binding motifs using ChIPseq and bisulfite sequencing meta-data"
+title: "TFregulomeR: Flexible characterisation of transcription factor binding partners and binding motifs using cell-specific cistrome and methylome meta-data"
 author: 
  - name: Quy Xiao Xuan Lin
    affiliation: National University of Singapore
@@ -8,7 +8,7 @@ author:
  - name: Touati Benoukraf
    affiliation: National University of Singapore & Memorial University of Newfoundland
 abstract: >
-  TFregulome is a comprehensive transcription factor binding site (TFBS) database combining MethMotif and GTRD. The binding motifs predicted in-silico from MethMotif and GTRD describe cell specific transcription factor (TF) binding propensities, while the DNA methylation profiles from MethMotif portray a second epigenetic dimension in TF binding events. Therefore, TFregulome database is useful to study TF binding partners along with DNA methylation. TFregulomeR is an effective and efficient application programming interface (API)/R package that facilitates the retrieval and exploitation of TFregulome datasets. This package comprises functions that simplify the queries in TFregulome database. In addition, TFregulomeR uses standard objects compatible with other TFBS packages such as TFBSTools, allowing users to take advantage of the tools developed by the community. Further, the functionalities implemented in our toolbox allow to better understand the mechanism of TF recruitment in a cell-specific manner.
+  Transcription factors (TFs) are sequence-specific binding proteins, fine-tuning the spatiotemporal gene expression. Since the genomic occupancy of TF is highly dynamic, it is crucial to study TF binding sites (TFBS) in a cell-specific and in vivo context. Here, we introduce TFregulomeR, an R-package linked to a large timely-updated compendium of cistrome and methylome datasets, implemented with functionalities that facilitate the manipulation and analysis of TFBS and methylome meta-data. In particular, TFregulomeR permits the characterisation of TF binding partners and cell-specific TFBSs, along with the study of TF’s functions in the context of different partners’ combinations and DNA methylation levels.
   TFregulomeR package version: `r packageVersion("TFregulomeR")`
 
 output: 
@@ -16,7 +16,7 @@ output:
     toc: true
     fig_caption: yes
 vignette: >
-  %\VignetteIndexEntry{TFRegulomeR: Flexible characterisation of cell-specific transcription factor binding partners and binding motifs using ChIPseq and bisulfite sequencing meta-data}
+  %\VignetteIndexEntry{TFregulomeR: Flexible characterisation of transcription factor binding partners and binding motifs using cell-specific cistrome and methylome meta-data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
