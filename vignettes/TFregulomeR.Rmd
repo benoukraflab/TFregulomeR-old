@@ -29,19 +29,19 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Browse TFregulome Database
+## Browse TFregulomeR data warehouse
 
-TFregulomeR allows users to easily browse the TFregulome database using only one simple
-function `TFBSBrowser`. Users can search the database according to species, organ, sample type,
+TFregulomeR allows users to easily browse the a large compendium of TFBSs using only one simple
+function `TFBSBrowser`. Users can search the TFBS according to species, organ, sample type,
 cell/tissue name, TF name, disease state, and source. A data.frame will be returned upon
-searching, including the information in TFregulome ID (important for following analysis), species, 
+searching, including the information in TFregulomeR ID (important for following analysis), species, 
 organ, sample type, cell/tissue name, description of cell/tissue, disease state, TF name, 
 source, TF source ID, number of peaks, and number of peaks with motif. In particular, if 
-no input is given for the function, all records in TFregulome database will be returned.
+no input is given for the function, all records in TFregulomeR warehouse will be returned.
 
 ```{r eval=TRUE}
 library(TFregulomeR)
-# browse all records in TFregulome database
+# browse all records in TFregulomeR TFBS warehouse
 all_record <- TFBSBrowser()
 #> 1376 TFBS(s) founded: ...
 #> ... covering 374 TF(s)
@@ -95,16 +95,16 @@ CEBPB_record <- TFBSBrowser(tf = "CEBPB")
 #> ... from the source(s): GTRD, MethMotif
 ```
 
-## Retrieve datasets from TFregulome database
+## Retrieve datasets from TFregulomeR data warehouse
 
-We have designed some useful functions to aid in data retrival from TFregulome database. 
+We have designed some useful functions to aid in data retrival from TFregulomeR data warehouse. 
 Retrival of motif matrix and DNA methylation matrix (if the source is MethMotif) can be achieved 
 using `searchMotif`. Further these obtained matrices can be easily saved locally using `exportMMPFM`,
 and corresponding (Meth)Motif logo (MethMotif logo, if both motif matrix and DNA methylation matrix are available; motif logo, if only motif matrix is available) can be simply plotted using `plotLogo`. Here, we introduced an object of class 
 "MethMotif" using S4 class in order for an easy and intuitive storage, manipulation and conversion 
 (with other packages such as "TFBSTools") of a MethMotif matrix, which is a combination of a TF 
 motif weight position matrix and its DNA methylation matrix (beta score matrix). What's more, we allow users to directly load peak regions of TF of interest 
-(all peaks or peaks with motif only) from TFregulome database using `loadPeaks`.
+(all peaks or peaks with motif only) from TFregulomeR warehouse using `loadPeaks`.
 
 ```{r eval=TRUE}
 # according to TFBSBrowser results for all CEBPB TFBS query, we select two CEBPB TFBSs 
@@ -181,8 +181,8 @@ exportMMPFM(fun_output <- K562_CEBPB_TRANSFAC, fun = "searchMotif", save_motif_P
 ```
 
 More importantly, we allow the users to load peak regions (all peaks or peaks only with motif) 
-of all TFs in TFregulome database using `loadPeaks`. To be noted, the peak regions of a given 
-TF in TFregulome database are the peak summits (hg38 for human), and the TFBS is enriched 
+of all TFs in TFregulomeR warehouse using `loadPeaks`. To be noted, the peak regions of a given 
+TF in TFregulomeR warehouse are the peak summits (hg38 for human), and the TFBS is enriched 
 in a +/- 100bp window surrounding the peak summits.
 
 ```{r eval=TRUE}
@@ -197,25 +197,25 @@ head(K562_CEBPB_peaks)
 
 TFregulomeR provides the functionality to find the common peak regions along with DNA methylation 
 profiles using `commonPeaks`. 
-For the target peak sets, users can directly use TFregulome TF peaks (hg38 for human) by inputting its TFregulome IDs in `target_peak_id` 
+For the target peak sets, users can directly use TFregulomeR TF peaks (hg38 for human) by inputting its TFregulomeR IDs in `target_peak_id` 
 (all peaks or peaks with motif only can be opted using `motif_only_for_target_peak`), or their
 own peak regions in `user_target_peak_list`. If customised peak sets are provided, all peak sets 
 should be stored in an R list(), and each peak set should be a bed-format data.frame with the 
 first three columns as chromosome (starting with 'chr'), start and end. It's recommended that users 
-provide the unique IDs for their customised peak list in `user_target_peak_id` (also should be unique to the provided TFregulome 
+provide the unique IDs for their customised peak list in `user_target_peak_id` (also should be unique to the provided TFregulomeR 
 ID list in `target_peak_id`). If unavailable, the function will automatically assign IDs for the 
-provided peak sets. It should be noted that if the customised peak set is a subset of a TFregulome 
-peak set, it's highly recommended that its TFregulome ID should be provided correspondingly in 
-`user_target_peak_id` if one opts to profile the DNA methylation levels for the peaks. Even though TFregulome peak sets 
-are peak summits, the function is able to recognise it with the provided TFregulome ID in `user_target_peak_id` and
+provided peak sets. It should be noted that if the customised peak set is a subset of a TFregulomeR 
+peak set, it's highly recommended that its TFregulomeR ID should be provided correspondingly in 
+`user_target_peak_id` if one opts to profile the DNA methylation levels for the peaks. Even though TFregulomeR peak sets 
+are peak summits, the function is able to recognise it with the provided TFregulomeR ID in `user_target_peak_id` and
 automatically expand +/- 100bp during the analysis. Similar rules are applicable to options `compared_peak_id`,
 `motif_only_for_compared_peak`, `user_compared_peak_list` and `user_compared_peak_id` when loading compared peak sets.
 
-During the analyisis, each target peak set from `target_peak_id` (will be automatically loaded from TFregulome database during the analysis) and 
+During the analyisis, each target peak set from `target_peak_id` (will be automatically loaded from TFregulomeR warehouse during the analysis) and 
 `user_target_peak_list` will be compared with all input compared peak sets from `compared_peak_id` and 
 `user_compared_peak_list`, to get a final common peak subset for each target set. 
 If `methylation_profile_in_narrow_region=T`, DNA methylation profiling in +/- 100bp surrounding peak summit will be performed 
-for each common peak subset, whose TF source in TFregulome database is MethMotif, in `target_peak_id` and `user_target_peak_list` tagged with TFregulome IDs in `user_target_peak_id`.
+for each common peak subset, whose TF source in TFregulomeR warehouse is MethMotif, in `target_peak_id` and `user_target_peak_list` tagged with TFregulomeR IDs in `user_target_peak_id`.
 
 ```{r eval=FALSE}
 # read my local file. Here we use the HCT116 CEBPB binding sites from the publication PMID: 30380113
@@ -231,10 +231,10 @@ head(my_peak)
 #> 6  chr1   8175025   8175038
 
 # To get the common subsets of K562 CEBPB peaks and my peaks, which are 
-# common with (conserved in) the CEBPB peaks in all cell types from TFregulome database,
+# common with (conserved in) the CEBPB peaks in all cell types from TFregulomeR warehouse,
 # and at the same time to profile the DNA methylation states in the common subsets
 
-# 1) Get all CEBPB records in TFregulome database
+# 1) Get all CEBPB records in TFregulomeR warehouse
 CEBPB_record <- TFBSBrowser(tf = "CEBPB")
 #> 16 TFBS(s) founded: ...
 #> ... covering 1 TF(s)
@@ -295,7 +295,7 @@ commonPeak_output <- commonPeaks(target_peak_id = "MM1_HSA_K562_CEBPB",
 
 After obtaining the output of `commonPeaks`, you can use `commonPeakResult` to get 
 1) the summary, 2) the common peak regions, 3) DNA methylation levels in 200bp around common peak summits if the input TF source is 
-MethMotif in TFregulome database and 4) the (Meth)Motif logo if TF input is from TFregulome or with TFregulome ID.
+MethMotif in TFregulomeR warehouse and 4) the (Meth)Motif logo if TF input is from TFregulomeR warehouse or with TFregulomeR ID.
 
 ```{r eval=FALSE}
 commonPeak_result <- commonPeakResult(commonPeaks = commonPeak_output,
@@ -326,7 +326,7 @@ methylation_profile <- commonPeak_result$methylation_profile
 peak_summary <- commonPeak_result$peak_summary
 
 # peak summary: 1.137225% of K562 CEBPB peaks and 2.517540% of my peaks are common with 
-# the CEBPB peaks in all cell types available in TFregulome database.
+# the CEBPB peaks in all cell types available in TFregulomeR warehouse.
 peak_summary
 #>                                 percentage_in_original_inputs(%)
 #> MM1_HSA_K562_CEBPB_common_peaks                         1.137225
@@ -358,7 +358,7 @@ methylation_profile$MM1_HSA_K562_CEBPB_common_peaks
 #> 70-80%        5
 #> 80-90%       13
 #> 90-100%      25 #25 CpG methylation scores are more than 0.9 in +/-100bp window around common peak summits
-# customised input peaks are not orginated from TFregulome database, so no DNA methylation states
+# customised input peaks are not orginated from TFregulomeR warehouse, so no DNA methylation states
 methylation_profile$HCT116_CEBPB_common_peaks
 #>      [,1]
 #> [1,]   NA
@@ -374,31 +374,31 @@ Exclusive peak regions are important to study a TF's context-specifc function.
 Hence, we implemented such functionality to achieve the extraction of the context dependent peak loci 
 along with DNA methylation profiles, `exclusivePeaks`. 
 
-For the target peak sets, users can directly use TFregulome TF peaks (hg38 for human) by inputting its TFregulome IDs in `target_peak_id` 
+For the target peak sets, users can directly use TFregulomeR TF peaks (hg38 for human) by inputting its TFregulomeR IDs in `target_peak_id` 
 (all peaks or peaks with motif only can be selected using `motif_only_for_target_peak`), or their
 own peak regions in `user_target_peak_list`. If customised peak sets are provided, all peak sets 
 should be stored in an R list(), and each peak set should be a bed-format data.frame with the 
 first three columns as chromosome (starting with 'chr'), start and end. It's recommended that users 
-provide the unique IDs for their customised peak list in `user_target_peak_id` (also should be unique to the provided TFregulome 
+provide the unique IDs for their customised peak list in `user_target_peak_id` (also should be unique to the provided TFregulomeR 
 ID list in `target_peak_id`). If unavailable, the function will automatically assign IDs for the 
-provided peak sets. It should be noted that if the customised peak set is a subset of a TFregulome 
-peak set, it's highly recommended that its TFregulome ID should be provided correspondingly in 
-`user_target_peak_id` if one opts to profile the DNA methylation levels for the peaks. Even though TFregulome peak sets 
-are peak summits, the function is able to recognise it with the provided TFregulome ID in `user_target_peak_id` and
+provided peak sets. It should be noted that if the customised peak set is a subset of a TFregulomeR 
+peak set, it's highly recommended that its TFregulomeR ID should be provided correspondingly in 
+`user_target_peak_id` if one opts to profile the DNA methylation levels for the peaks. Even though TFregulomeR peak sets 
+are peak summits, the function is able to recognise it with the provided TFregulomeR ID in `user_target_peak_id` and
 automatically expand +/- 100bp during the analysis. Similar rules are applicable to options `excluded_peak_id`,
 `motif_only_for_excluded_peak`, `user_excluded_peak_list` and `user_excluded_peak_id` when loading compared peak sets.
 
-During the analyisis, each target peak set from `target_peak_id` (will be automatically loaded from TFregulome database during the analysis) and 
+During the analyisis, each target peak set from `target_peak_id` (will be automatically loaded from TFregulomeR warehouse during the analysis) and 
 `user_target_peak_list` will be compared with all input excluded peak sets from `excluded_peak_id` and 
 `user_excluded_peak_list`, to get a final unique peak subset for each target set. 
 If `methylation_profile_in_narrow_region=T`, DNA methylation profiling in +/- 100bp surrounding peak summit will be performed 
-for each unique peak subset, whose TF source in TFregulome database is MethMotif, in `target_peak_id` and `user_target_peak_list` tagged with TFregulome IDs in `user_target_peak_id`.
+for each unique peak subset, whose TF source in TFregulomeR warehouse is MethMotif, in `target_peak_id` and `user_target_peak_list` tagged with TFregulomeR IDs in `user_target_peak_id`.
 
 ```{r eval=FALSE}
 # To get the exclusive subset of K562 CEBPB peaks and at the same time to profile the DNA 
 # methylation states in the exclusive subsets
 
-# 1) Get all CEBPB records in TFregulome database
+# 1) Get all CEBPB records in TFregulomeR warehouse
 CEBPB_record <- TFBSBrowser(tf = "CEBPB")
 #> 16 TFBS(s) founded: ...
 #> ... covering 1 TF(s)
@@ -413,7 +413,7 @@ CEBPB_record <- TFBSBrowser(tf = "CEBPB")
 #> ... ... tumor, normal
 #> ... from the source(s): GTRD, MethMotif
 
-# 2) All CEBPB TFregulome ID except MM1_HSA_K562_CEBPB
+# 2) All CEBPB TFregulomeR ID except MM1_HSA_K562_CEBPB
 CEBPB_record_ID_noK562 <- CEBPB_record$ID[!(CEBPB_record$ID %in% "MM1_HSA_K562_CEBPB")]
 exclusivePeak_output <- exclusivePeaks(target_peak_id = "MM1_HSA_K562_CEBPB", 
                                        motif_only_for_target_peak = TRUE, 
@@ -455,7 +455,7 @@ exclusivePeak_output <- exclusivePeaks(target_peak_id = "MM1_HSA_K562_CEBPB",
 
 After obtaining the output of `exclusivePeaks`, you can use `exclusivePeakResult` to get 
 1) the summary, 2) the exclusive peak regions, 3) DNA methylation levels in exclusive peak subsets if the input source is 
-MethMotif in TFregulome database and 4) the (Meth)Motif logo if input is from TFregulome or with TFregulome ID.
+MethMotif in TFregulomeR warehouse and 4) the (Meth)Motif logo if input is from TFregulomeR warehouse or with TFregulomeR ID.
 
 ```{r eval=FALSE}
 exclusivePeak_result <- exclusivePeakResult(exclusivePeaks = exclusivePeak_output,
@@ -483,7 +483,7 @@ peak_summary <- exclusivePeak_result$peak_summary
 methylation_profile <- exclusivePeak_result$methylation_profile
 
 # peak summary, 9.110437% of K562 CEBPB peaks are unique compared with 
-# all CEBPB TFBSs in TFregulome database
+# all CEBPB TFBSs in TFregulomeR warehouse
 peak_summary
 #>                                    percentage_in_original_inputs(%)
 #> MM1_HSA_K562_CEBPB_exclusive_peaks                         9.110437
@@ -527,18 +527,18 @@ This functionality is particularly useful to study TF interactome in a cell type
 `intersectPeakMatrix` perform a exhaustive intersection analysis between a pair of peak sets, one from list x and the other from list y, 
 to form an x*y intersection matrix. Therefore, it is required for users to provide the two lists of peak sets. 
 
-For peak list x, users can directly use TFregulome peaks by providing TFregulome ID in `peak_id_x` and indicating 
+For peak list x, users can directly use TFregulomeR peaks by providing TFregulomeR ID in `peak_id_x` and indicating 
 whether loading peaks with motif only using `motif_only_for_id_x`. In addition, customised peak sets can also be
 input in `user_peak_list_x`. It's recommended that unique IDs (also unique to IDs in `peak_id_x`) be provided for
-each customised peak set in `user_peak_x_id`. If the customised peak set is a TFregulome TF subset, it's highly
-recommended that the corresponding TFregulome ID be provided in `user_peak_x_id`, which allows the function
+each customised peak set in `user_peak_x_id`. If the customised peak set is a TFregulomeR TF subset, it's highly
+recommended that the corresponding TFregulomeR ID be provided in `user_peak_x_id`, which allows the function
 to recognise the source of peak set and to properly profile the DNA methylation states in the intersected regions, 
-if `methylation_profile_in_narrow_region=T`. Even though TFregulome peak sets 
-are peak summits, the function is able to recognise it with the provided TFregulome ID in `peak_id_x` and
+if `methylation_profile_in_narrow_region=T`. Even though TFregulomeR peak sets 
+are peak summits, the function is able to recognise it with the provided TFregulomeR ID in `peak_id_x` and
 automatically expand +/- 100bp during the analysis. Same principles are applicable for peak list y.
 
 ```{r eval=FALSE}
-# profile the co-binding landscapes of all K562 TFs in TFregulome database surrounding
+# profile the co-binding landscapes of all K562 TFs in TFregulomeR warehouse surrounding
 # K562 CEBPB common and exclusive peaks
 
 # browse all TFBS record in K562
@@ -621,11 +621,11 @@ intersectMatrix_exclusive <- intersectPeakMatrix(user_peak_list_x = list(K562_CE
 
 We have implemented `intersectPeakMatrixResult` in TFregulomeR package, allowing an easy extraction and interpretation of `intersectPeakMatrix` output. It is worth noting that there are two ways of interpretations in intersection between set A and B, that is, 1) the percentage of A overlapped with B, and 2) the percentage of B intersected with A. The option is usually up to which study object should be focused on. Same principle is applicable for the output of `intersectPeakMatrix`. 
 
-When users opt to return intersection matrix using `return_intersection_matrix = T` in `intersectPeakMatrixResult`, if s/he wants to know the co-binding profiles in `peak_list_x`, then he/she needs to choose `angle_of_matrix = "x"` and `intersectPeakMatrixResult` will report the percentages of each TF peaks in `peak_list_x` overlapped with each peaks in `peak_list_y`. 
+When users opt to return intersection matrix using `return_intersection_matrix = T` in `intersectPeakMatrixResult`, if s/he wants to know the co-binding profiles in `peak_list_x`, then s/he needs to choose `angle_of_matrix = "x"` and `intersectPeakMatrixResult` will report the percentages of each TF peaks in `peak_list_x` overlapped with each peaks in `peak_list_y`. 
 
 If methylation level profiling in +/-100bp around intersected peak x is needed, `return_methylation_profile` and angle_of_methylation_profile should be `TRUE` and `"x"` respectively. To be noted, the methylation profile output in `intersectPeakMatrixResult` is different from `commonPeakResult` and `exclusivePeakResult`. In `intersectPeakMatrixResult`, a DNA methylation matrix will be returned. In this matrix, each row is a peak x while each column is a peak y, and each cell in the matrix is a list of CpG beta score distributions in a specified peak x intersected with a peak y. 
 
-Similarly, when `save_MethMotif_logo` option is wanted and `angle_of_logo = "x"`, the function will plot and save the (Meth)Motif logos for the intersected TFBSs from `peak_list_x` (if any is originally from TFregulome database). Indeed, it's not necessary to plot all (Met)hMotif logos for every pair of intersection at the same time. One can focus only on some subsets of `peak_list_x` and `peak_list_y`, using `saving_MethMotif_logo_x_id` and `saving_MethMotif_logo_y_id` respectively.
+Similarly, when `save_MethMotif_logo` option is wanted and `angle_of_logo = "x"`, the function will plot and save the (Meth)Motif logos for the intersected TFBSs from `peak_list_x` (if any is originally from TFregulomeR warehouse). Indeed, it's not necessary to plot all (Meth)Motif logos for every pair of intersection at the same time. One can focus only on some subsets of `peak_list_x` and `peak_list_y`, using `saving_MethMotif_logo_x_id` and `saving_MethMotif_logo_y_id` respectively.
 
 ```{r eval=FALSE}
 # get the intersection matrix for K562 common peaks
@@ -870,9 +870,9 @@ exportMMPFM(fun_output = intersectMatrix_exclusive,
 
 ### Motif distribution
 
-TFregulomeR also allows uers to plot the distributions of a given TFBS from the TFregulome database in a list of peak sets, using `motifDistrib` and `plotDistrib` sequentially. By providing the TFregulome ID in `id` as the input of the `motifDistrib`, `motifDistrib` will calculate the occurrences the TFBSs in the given list of peak sets input in `peak_list`. The unique IDs correpsonding to `peak_list` is required to be provided at the same time using `peak_id`. If a peak set is a TFregulome TF subset, the TFregulome ID should be input accordingly; if it is self provided, you can name it with a unique ID yourself. 
+TFregulomeR also allows uers to plot the distributions of a given TFBS from the TFregulomeR warehouse in a list of peak sets, using `motifDistrib` and `plotDistrib` sequentially. By providing the TFregulomeR ID in `id` as the input of the `motifDistrib`, `motifDistrib` will calculate the occurrences the TFBSs in the given list of peak sets input in `peak_list`. The unique IDs correpsonding to `peak_list` is required to be provided at the same time using `peak_id`. If a peak set is a TFregulomeR TF subset, the TFregulomeR ID should be input accordingly; if it is self provided, you can name it with a unique ID yourself. 
 
-It should be noted that even though the loaded peak regions from the TFregulome database are the peak summits, you don't need to expand the regions. Once you tell `motifDistrib` the peak set is a TFregulome TF subset by providing TFregulome ID in the `peak_id`, it will automatically operate on the peaks itself.
+It should be noted that even though the loaded peak regions from the TFregulomeR warehouse are the peak summits, you don't need to expand the regions. Once you tell `motifDistrib` the peak set is a TFregulomeR TF subset by providing TFregulomeR ID in the `peak_id`, it will automatically operate on the peaks itself.
 
 The output of `motifDistrib` is the input of `plotDistrib`. In each motif distribution plot, x-axis is the relative distance (bp) to the peak center, while y-axis is the percentage of the TFBS at the position.
 
@@ -995,7 +995,7 @@ knitr::include_graphics("../inst/extdata/greatAnnotate.png")
 
 ## Connect with TFBSTools
 
-TFregulomeR is not working alone. We have built a function allowing conversion of the motif matrix in TFregulome database to the subclass `PFMatrix` in TFBSTools, using `toTFBSTools`.
+TFregulomeR is not working alone. We have built a function allowing conversion of the motif matrix in TFregulomeR warehouse to the subclass `PFMatrix` in TFBSTools, using `toTFBSTools`.
 
 ```{r eval=TRUE}
 library(TFBSTools)

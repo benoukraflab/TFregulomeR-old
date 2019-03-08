@@ -11,9 +11,7 @@ TFregulomeR
  [![Build Status](https://travis-ci.com/linquynus/TFregulomeR.svg?branch=master)](https://travis-ci.com/linquynus/TFregulomeR)
 
 # Introduction
-*TFregulome* is a comprehensive transcription factor binding site (TFBS) database encompassing the MethMotif and GTRD. The binding motifs predicted in-silico from MethMotif and GTRD describe cell specific transcription factor (TF) binding propensities, while the DNA methylation profiles from MethMotif portray a second epigenetic dimension in TF binding events. 
-
-*TFregulomeR* is an effective and efficient application programming interface (API) R package that facilitates the retrieval and manipulation of TFregulome datasets. This package comprises functions that simplify the queries in TFregulome database. In addition, TFregulomeR uses standard objects compatible with other TFBS packages such as TFBSTools, allowing users to take advantage of the tools developed by the community. Further, the functionalities implemented in our toolbox allow to better understand the mechanism of TF recruitment in a cell-specific manner. 
+*TFregulomeR* comprises of a comprehensive compendium of transcription factor binding sites (TFBSs) derived from the MethMotif and GTRD, as well as the ready-to-use functionality in R language facilitating data access, integration and analysis. The binding motifs predicted in-silico from MethMotif and GTRD describe cell specific transcription factor (TF) binding propensities, while the DNA methylation profiles from MethMotif portray a second epigenetic dimension in TF binding events. The whole toolbox allows a better understanding of the TF binding propensities in a cell-specific manner. 
 
 ## Current functionalities
 1) Browse the TFregulome database (TFBSBrowser)
@@ -36,9 +34,10 @@ TFregulomeR
 TFregulome database current version: 1.0
 
 | Item     | Count |
-| ---------|:------:|
+| :---------:|:------:|
 | TFBS     | 1376   |
 | Unique TF     | 374   |
+| TFBS with DNA methylation records    | 563   |
 | Species     | human   |
 | Organ   | stem_cell, blood_and_lymph, connective_tissue, colorectum, brain, bone, stomach, prostate, breast, pancreas, skin, kidney, lung, eye, esophagus, heart, muscle, uterus, spleen, cervix, testis, liver, adrenal_gland, neck_and_mouth, pleura, ovary, thymus, fallopian, vagina   |
 | Sample type | primary_cells, cell_line, tissue

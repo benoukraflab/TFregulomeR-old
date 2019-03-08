@@ -131,33 +131,43 @@ intersectPeakMatrix <- function(peak_id_x,
       message("... ... You didn't provide the ID for each customised peak set or your ID number does not uniquely equal to the input user peak number. Instead we will use 'user_peak_x1', 'user_peak_x2'..." )
       user_peak_x_id <- paste0("user_peak_x", seq(1,length(user_peak_list_x), 1))
     }
+    # new user peak x id in case that any input peak set is empty
+    user_peak_x_id_new <- c()
     for (i in seq(1,length(user_peak_list_x),1))
     {
       peak_i <- user_peak_list_x[[i]]
-      peak_i_sub <- peak_i[,c(1,2,3)]
-      colnames(peak_i_sub) <- c("chr","start","end")
-      peak_i_sub$id <- paste0(user_peak_x_id[i], "_", as.vector(rownames(peak_i_sub)))
-      peak_i_sub <- peak_i_sub[,c("chr","start","end","id")]
-      peak_list_x_count <- peak_list_x_count + 1
-      peak_list_x_all[[peak_list_x_count]] <- peak_i_sub
-      # test if user input id i match any TFregulome database ID
-      motif_matrix_i <- suppressMessages(searchMotif(id = user_peak_x_id[i], TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
-      if (is.null(motif_matrix_i))
+      if (nrow(peak_i)==0)
       {
-        is_x_TFregulome <- c(is_x_TFregulome, FALSE)
+        message(paste0("... ... Your input peak set '",user_peak_x_id[i],"' is empty, so SKIP!"))
       }
       else
       {
-        is_x_TFregulome <- c(is_x_TFregulome, TRUE)
+        user_peak_x_id_new <- c(user_peak_x_id_new, user_peak_x_id[i])
+        peak_i_sub <- peak_i[,c(1,2,3)]
+        colnames(peak_i_sub) <- c("chr","start","end")
+        peak_i_sub$id <- paste0(user_peak_x_id[i], "_", as.vector(rownames(peak_i_sub)))
+        peak_i_sub <- peak_i_sub[,c("chr","start","end","id")]
+        peak_list_x_count <- peak_list_x_count + 1
+        peak_list_x_all[[peak_list_x_count]] <- peak_i_sub
+        # test if user input id i match any TFregulome database ID
+        motif_matrix_i <- suppressMessages(searchMotif(id = user_peak_x_id[i], TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
+        if (is.null(motif_matrix_i))
+        {
+          is_x_TFregulome <- c(is_x_TFregulome, FALSE)
+        }
+        else
+        {
+          is_x_TFregulome <- c(is_x_TFregulome, TRUE)
+        }
       }
     }
   }
   else
   {
-    user_peak_x_id <- c()
+    user_peak_x_id_new <- c()
   }
   # combine TFregulome ID and user ID
-  peak_id_x_all <- c(TFregulome_peak_x_id, user_peak_x_id)
+  peak_id_x_all <- c(TFregulome_peak_x_id, user_peak_x_id_new)
 
   # loading compared peak list
   message("Loading peak list y ... ...")
@@ -206,35 +216,59 @@ intersectPeakMatrix <- function(peak_id_x,
       message("... ... You didn't provide the ID for each customised peak set or your ID number does not uniquely equal to the input user peak number. Instead we will use 'user_peak_y1', 'user_peak_y2'..." )
       user_peak_y_id <- paste0("user_peak_y", seq(1,length(user_peak_list_y), 1))
     }
+    # new user peak y id in case that any input peak set is empty
+    user_peak_y_id_new <- c()
     for (i in seq(1, length(user_peak_list_y), 1))
     {
       peak_i <- user_peak_list_y[[i]]
-      peak_i_sub <- peak_i[,c(1,2,3)]
-      colnames(peak_i_sub) <- c("chr","start","end")
-      peak_i_sub$id <- paste0(user_peak_y_id[i], "_", as.vector(rownames(peak_i_sub)))
-      peak_i_sub <- peak_i_sub[,c("chr","start","end","id")]
-      peak_list_y_count <- peak_list_y_count + 1
-      peak_list_y_all[[peak_list_y_count]] <- peak_i_sub
-      # test if user input id i match any TFregulome database ID
-      motif_matrix_i <- suppressMessages(searchMotif(id = user_peak_y_id[i], TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
-      if (is.null(motif_matrix_i))
+      if (nrow(peak_i) == 0)
       {
-        is_y_TFregulome <- c(is_y_TFregulome, FALSE)
+        message(paste0("... ... Your input peak set '",user_peak_y_id[i],"' is empty, so SKIP!"))
       }
       else
       {
-        is_y_TFregulome <- c(is_y_TFregulome, TRUE)
+        user_peak_y_id_new <- c(user_peak_y_id_new, user_peak_y_id[i])
+        peak_i_sub <- peak_i[,c(1,2,3)]
+        colnames(peak_i_sub) <- c("chr","start","end")
+        peak_i_sub$id <- paste0(user_peak_y_id[i], "_", as.vector(rownames(peak_i_sub)))
+        peak_i_sub <- peak_i_sub[,c("chr","start","end","id")]
+        peak_list_y_count <- peak_list_y_count + 1
+        peak_list_y_all[[peak_list_y_count]] <- peak_i_sub
+        # test if user input id i match any TFregulome database ID
+        motif_matrix_i <- suppressMessages(searchMotif(id = user_peak_y_id[i], TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
+        if (is.null(motif_matrix_i))
+        {
+          is_y_TFregulome <- c(is_y_TFregulome, FALSE)
+        }
+        else
+        {
+          is_y_TFregulome <- c(is_y_TFregulome, TRUE)
+        }
       }
     }
   }
   else
   {
-    user_peak_y_id <- c()
+    user_peak_y_id_new <- c()
   }
   # combine TFregulome ID and user ID
-  peak_id_y_all <- c(TFregulome_peak_y_id, user_peak_y_id)
+  peak_id_y_all <- c(TFregulome_peak_y_id, user_peak_y_id_new)
 
 
+  # check if peak list x is empty
+  if (length(peak_list_x_all)==0)
+  {
+    message("No input in the peak list x. Function ends here!")
+    return(NULL)
+  }
+  # check if compared peak list is empty
+  if (length(peak_list_y_all)==0)
+  {
+    message("No input in the peak list y. Function ends here!")
+    return(NULL)
+  }
+
+  # start analysing
   intersection_matrix <- list()
   for (i in seq(1, length(peak_list_x_all), 1))
   {
