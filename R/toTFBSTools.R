@@ -1,8 +1,8 @@
-#' convert motif PFM in TFregulome database into PFMatrix class object in TFBSTools package
+#' convert motif PFM in TFregulomeR into PFMatrix class object in TFBSTools package
 #'
-#' This function allows you to retrieve and convert motif PFM in TFregulome database into PFMatrix class object, which can be used in TFBSTools package.
-#' @param id Required. TFregulome ID.
-#' @param TFregulome_url TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
+#' This function allows you to retrieve and convert motif PFM in TFregulomeR database into PFMatrix class object, which can be used in TFBSTools package.
+#' @param id Required. TFregulomeR ID.
+#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
 #' @return  An object of class PFMatrix
 #' @keywords toTFBSTools
 #' @export
@@ -14,7 +14,7 @@ toTFBSTools <- function(id, TFregulome_url)
 {
   if (missing(id))
   {
-    stop("Please provide a TFregulome ID using 'id ='")
+    stop("Please provide a TFregulomeR ID using 'id ='")
   }
   # make an appropriate API url
   if (missing(TFregulome_url)){
@@ -40,7 +40,7 @@ toTFBSTools <- function(id, TFregulome_url)
                                                    TFregulome_url=TFregulome_url_bk))
   if (is.null(methmotif_output))
   {
-    message(paste0("No record for id ", id, " in TFregulome database!"))
+    message(paste0("No record for id ", id, " in TFregulomeR!"))
     return(NULL)
   }
   else

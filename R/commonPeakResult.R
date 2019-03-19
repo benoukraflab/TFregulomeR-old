@@ -174,7 +174,7 @@ commonPeakResult <- function(commonPeaks,
         }
         else
         {
-          message(paste0("... ... ... The input peak set for the results '",logo_id,"' was not orginated from TFregulome or the number of direct binding sites in the common peaks is 0, so no motif logo available."))
+          message(paste0("... ... ... The input peak set for the results '",logo_id,"' was not orginated from TFregulomeR or the number of direct binding sites in the common peaks is 0, so no motif logo available."))
         }
       }
     }

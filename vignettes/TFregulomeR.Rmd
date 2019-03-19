@@ -261,16 +261,16 @@ commonPeak_output <- commonPeaks(target_peak_id = "MM1_HSA_K562_CEBPB",
 #> You chose to profile the methylation levels in 200bp window around peak summits, 
 #> if there is any peak loaded from TFregulome
 #> Loading target peak list ... ...
-#> ... You have 1 TFBS(s) requested to be loaded from TFregulome server
+#> ... You have 1 TFBS(s) requested to be loaded from TFregulomeR server
 #> ... You chose to load TF peaks with motif only. Using 'motif_only_for_target_peak' tunes your options
-#> ... loading TFBS(s) from TFregulome now
+#> ... loading TFBS(s) from TFregulomeR now
 #> ... ... peak file loaded successfully for id 'MM1_HSA_K562_CEBPB'
 #> ... Done loading TFBS(s) from TFregulome
 #> ... You have 1 customised peak set(s)
 #> Loading compared peak list ... ...
-#> ... You have 16 TFBS(s) requested to be loaded from TFregulome server
+#> ... You have 16 TFBS(s) requested to be loaded from TFregulomeR server
 #> ... You chose to load TF peaks with motif only. Using 'motif_only_for_compared_peak' tunes your options
-#> ... loading TFBS(s) from TFregulome now
+#> ... loading TFBS(s) from TFregulomeR now
 #> ... ... peak file loaded successfully for id 'GTRD-EXP000142_HSA_LS180_CEBPB'
 #> ... ... peak file loaded successfully for id 'GTRD-EXP010975_HSA_Ishikawa_CEBPB'
 #> ... ... peak file loaded successfully for id 'GTRD-EXP030173_HSA_LoVo_CEBPB'
@@ -315,7 +315,7 @@ commonPeak_result <- commonPeakResult(commonPeaks = commonPeak_output,
 #> ... ... ... You chose to show all methylation levels;
 #> Success: a PDF named 'MM1_HSA_K562_CEBPB_common_peaks-logo-entropy.pdf' has been saved!
 #> ... ... ... The input peak set for the results 'HCT116_CEBPB_common_peaks' was 
-#> not orginated from TFregulome or the number of direct binding sites in the 
+#> not orginated from TFregulomeR or the number of direct binding sites in the 
 #> common peaks is 0, so no motif logo available.
 
 # the contents in commonPeak_result
@@ -424,15 +424,15 @@ exclusivePeak_output <- exclusivePeaks(target_peak_id = "MM1_HSA_K562_CEBPB",
 #> You chose to profile the methylation levels in 200bp window around peak summits, 
 #> if there is any peak loaded from TFregulome
 #> Loading target peak list ... ...
-#> ... You have 1 TFBS(s) requested to be loaded from TFregulome server
+#> ... You have 1 TFBS(s) requested to be loaded from TFregulomeR server
 #> ... You chose to load TF peaks with motif only. Using 'motif_only_for_target_peak' tunes your options
-#> ... loading TFBS(s) from TFregulome now
+#> ... loading TFBS(s) from TFregulomeR now
 #> ... ... peak file loaded successfully for id 'MM1_HSA_K562_CEBPB'
 #> ... Done loading TFBS(s) from TFregulome
 #> Loading excluded peak list ... ...
-#> ... You have 15 TFBS(s) requested to be loaded from TFregulome server
+#> ... You have 15 TFBS(s) requested to be loaded from TFregulomeR server
 #> ... You chose to load TF peaks with motif only. Using 'motif_only_for_excluded_peak' tunes your options
-#> ... loading TFBS(s) from TFregulome now
+#> ... loading TFBS(s) from TFregulomeR now
 #> ... ... peak file loaded successfully for id 'GTRD-EXP000142_HSA_LS180_CEBPB'
 #> ... ... peak file loaded successfully for id 'GTRD-EXP010975_HSA_Ishikawa_CEBPB'
 #> ... ... peak file loaded successfully for id 'GTRD-EXP030173_HSA_LoVo_CEBPB'
@@ -569,9 +569,9 @@ intersectMatrix_common <- intersectPeakMatrix(user_peak_list_x = list(K562_CEBPB
 #> Loading peak list x ... ...
 #> ... You have 1 customised peak set(s)
 #> Loading peak list y ... ...
-#> ... You have 108 TFBS(s) requested to be loaded from TFregulome server
+#> ... You have 108 TFBS(s) requested to be loaded from TFregulomeR server
 #> ... You chose to load TF peaks with motif only. Using 'motif_only_for_id_y' tunes your options
-#> ... loading TFBS(s) from TFregulome now
+#> ... loading TFBS(s) from TFregulomeR now
 #> ... ... peak file loaded successfully for id 'MM1_HSA_K562_AFF1'
 #> ... ... peak file loaded successfully for id 'MM1_HSA_K562_ARID2'
 #> ... ... peak file loaded successfully for id 'MM1_HSA_K562_ARID3A'
@@ -600,9 +600,9 @@ intersectMatrix_exclusive <- intersectPeakMatrix(user_peak_list_x = list(K562_CE
 #> Loading peak list x ... ...
 #> ... You have 1 customised peak set(s)
 #> Loading peak list y ... ...
-#> ... You have 108 TFBS(s) requested to be loaded from TFregulome server
+#> ... You have 108 TFBS(s) requested to be loaded from TFregulomeR server
 #> ... You chose to load TF peaks with motif only. Using 'motif_only_for_id_y' tunes your options
-#> ... loading TFBS(s) from TFregulome now
+#> ... loading TFBS(s) from TFregulomeR now
 #> .. ... peak file loaded successfully for id 'MM1_HSA_K562_AFF1'
 #> .. ... peak file loaded successfully for id 'MM1_HSA_K562_ARID2'
 #> .. ... peak file loaded successfully for id 'MM1_HSA_K562_ARID3A'
@@ -822,7 +822,7 @@ exportMMPFM(fun_output = commonPeak_output,
 #> ... ... ... ... Beta score matrix has been saved as 'MM1_HSA_K562_CEBPB_common_peaks-methScore.txt'.
 #> ... ... ... ... Motif PFM has been saved as 'MM1_HSA_K562_CEBPB_common_peaks-motif-MEME.txt'.
 #> ... ... ... export id = HCT116_CEBPB_common_peaks
-#> ... ... ... the original peaks of HCT116_CEBPB_common_peaks is not loaded from TFregulome database, 
+#> ... ... ... the original peaks of HCT116_CEBPB_common_peaks is not loaded from TFregulomeR, 
 #> or in the common peak the number of TFBS is zero. Hence no further action for this id!
 
 # export motif PFM and beta score matrix for K562 CEBPB exclusive peaks

@@ -1,6 +1,6 @@
 #' intersectPeakMatrix result
 #'
-#' This function allows you to get the reuslts from the intersectPeakMatrix() output, including a matrix of the pair-wise intersecting percentages between two lists of peak sets, DNA methylation profiles in the intersected regions (for peaks from TFregulome database) and (Meth)Motif logos for each pair of intersections (for peaks from TFregulome database).
+#' This function allows you to get the reuslts from the intersectPeakMatrix() output, including a matrix of the pair-wise intersecting percentages between two lists of peak sets, DNA methylation profiles in the intersected regions (for peaks from TFregulomeR) and (Meth)Motif logos for each pair of intersections (for peaks from TFregulomeR).
 #' @param intersectPeakMatrix Required. intersectPeakMatrix() output, a marix of IntersectPeakMatrix class objects.
 #' @param return_intersection_matrix Either TRUE of FALSE (default). If TRUE, a matrix of the pair-wise intersecting percentages between two lists of peak sets will be returned.
 #' @param angle_of_matrix Either "x" (default) or "y". If "x", a matrix denoting the percentages of peak sets in "peak_list_x" intersected with "peak_list_y" will be returned; if "y", a matrix denoting the percentages of peak sets in "peak_list_y" intersected with "peak_list_x" will be returned.
@@ -192,7 +192,7 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
             }
             else
             {
-              message(paste0("No (Meth)Motif logo for ", logo_id, " will be generated, because its ID does match any record of existing TFregulome IDs or number of the interected motif is zero."))
+              message(paste0("No (Meth)Motif logo for ", logo_id, " will be generated, because its ID does match any record of existing TFregulomeR IDs or number of the interected motif is zero."))
             }
           }
           else
@@ -206,7 +206,7 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
             }
             else
             {
-              message(paste0("No (Meth)Motif logo for ", logo_id, " will be generated, because its ID does match any record of existing TFregulome IDs or number of the interected motif is zero."))
+              message(paste0("No (Meth)Motif logo for ", logo_id, " will be generated, because its ID does match any record of existing TFregulomeR IDs or number of the interected motif is zero."))
             }
           }
         }

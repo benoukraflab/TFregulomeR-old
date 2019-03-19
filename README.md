@@ -81,7 +81,7 @@ In R console,
 install.packages("devtools")
 devtools::install_github("linquynus/TFregulomeR")
 ```
-The step above will automatically install the requried packages. However, you still need to install optional packages if you opt to use the functions such as `greatAnnotate()`, `genomeAnnotate()` and `toTFBSTools()`.
+The step above will automatically install the required packages. However, you still need to install optional packages if you opt to use the functions such as `greatAnnotate()`, `genomeAnnotate()` and `toTFBSTools()`.
 
 -------
 

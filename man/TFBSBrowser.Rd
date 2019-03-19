@@ -2,7 +2,7 @@
 % Please edit documentation in R/TFBSBrowser.R
 \name{TFBSBrowser}
 \alias{TFBSBrowser}
-\title{Browse the current TFBSs available in TFregulome database}
+\title{Browse the current TFBSs available in TFregulomeR}
 \usage{
 TFBSBrowser(species, organ, sample_type, cell_tissue_name, tf,
   disease_state, source, TFregulome_url)
@@ -22,13 +22,13 @@ TFBSBrowser(species, organ, sample_type, cell_tissue_name, tf,
 
 \item{source}{The source of interset}
 
-\item{TFregulome_url}{TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
 }
 \value{
-data.frame containing the information of the queried TFBSs in TFregulome database
+data.frame containing the information of the queried TFBSs in TFregulomeR
 }
 \description{
-This function allows you to get the current TFBSs in TFregulome database
+This function allows you to get the current TFBSs in TFregulomeR
 }
 \examples{
 TFBS_brain <- TFBSBrowser(organ = "brain")

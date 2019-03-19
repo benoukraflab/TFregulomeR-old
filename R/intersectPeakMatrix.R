@@ -1,17 +1,17 @@
 #' intersectPeakMatrix
 #'
 #' This function allows you to obtain the pair-wise intersected regions, along with the DNA methylation profiles, between two lists of peak sets, as well as (Meth)Motif logos
-#' @param peak_id_x Character of vector, each of which is a unique TFregulome ID.
-#' @param motif_only_for_id_x Either TRUE of FALSE (default). If TRUE, only peaks with motif will be loaded for each TFregulome ID in peak_id_x.
+#' @param peak_id_x Character of vector, each of which is a unique TFregulomeR ID.
+#' @param motif_only_for_id_x Either TRUE of FALSE (default). If TRUE, only peaks with motif will be loaded for each TFregulomeR ID in peak_id_x.
 #' @param user_peak_list_x A list of data.frames, each of which contains user's own bed-format peak regions for peak list x.
-#' @param user_peak_x_id Character of vector, each of which is a unique ID corresponding to each peak set in the list user_peak_list_x. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulome database, its TFregulome ID should be used here correspondingly.
-#' @param peak_id_y Character of vector, each of which is a unique TFregulome ID.
-#' @param motif_only_for_id_y Either TRUE of FALSE (default). If TRUE, only peaks with motif will be loaded for each TFregulome ID in peak_id_y.
+#' @param user_peak_x_id Character of vector, each of which is a unique ID corresponding to each peak set in the list user_peak_list_x. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulomeR, its TFregulomeR ID should be used here correspondingly.
+#' @param peak_id_y Character of vector, each of which is a unique TFregulomeR ID.
+#' @param motif_only_for_id_y Either TRUE of FALSE (default). If TRUE, only peaks with motif will be loaded for each TFregulomeR ID in peak_id_y.
 #' @param user_peak_list_y A list of data.frames, each of which contains user's own bed-format peak regions for peak list y.
-#' @param user_peak_y_id Character of vector, each of which is a unique ID corresponding to each peak set in the list user_peak_list_y. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulome database, its TFregulome ID should be used here correspondingly.
-#' @param methylation_profile_in_narrow_region Either TRUE (default) of FALSE. If TRUE, methylation states in 200bp window surrounding peak summits for each intersected peak pair from peak_id_x (peak_id_y) and user_peak_list_x (user_peak_list_y) with TFregulome ID.
+#' @param user_peak_y_id Character of vector, each of which is a unique ID corresponding to each peak set in the list user_peak_list_y. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulomeR, its TFregulomeR ID should be used here correspondingly.
+#' @param methylation_profile_in_narrow_region Either TRUE (default) of FALSE. If TRUE, methylation states in 200bp window surrounding peak summits for each intersected peak pair from peak_id_x (peak_id_y) and user_peak_list_x (user_peak_list_y) with TFregulomeR ID.
 #' @param motif_type Motif PFM format, either in MEME by default or TRANSFAC.
-#' @param TFregulome_url TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
+#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
 #' @return  matrix of IntersectPeakMatrix class objects
 #' @keywords intersectPeakMatrix
 #' @export
@@ -39,11 +39,11 @@ intersectPeakMatrix <- function(peak_id_x,
   # check the input argument
   if (missing(peak_id_x) && missing(user_peak_list_x))
   {
-    stop("No peak list x input. Please input TFregulome peaks using TFregulome ID(s) by 'peak_id_x = ' OR your own peak list using a list of data.frame(s) containing bed-format regions by 'user_peak_list_x = '")
+    stop("No peak list x input. Please input TFregulomeR peaks using TFregulomeR ID(s) by 'peak_id_x = ' OR your own peak list using a list of data.frame(s) containing bed-format regions by 'user_peak_list_x = '")
   }
   if (missing(peak_id_y) && missing(user_peak_list_y))
   {
-    stop("No peak list y input. Please input TFregulome peaks using TFregulome ID(s) by 'peak_id_y = ' OR your own peak list using a list of data.frame(s) containing bed-format regions by 'user_peak_list_y = '")
+    stop("No peak list y input. Please input TFregulomeR peaks using TFregulomeR ID(s) by 'peak_id_y = ' OR your own peak list using a list of data.frame(s) containing bed-format regions by 'user_peak_list_y = '")
   }
   if ((!missing(user_peak_list_x) && !is.list(user_peak_list_x)) ||
       (!missing(user_peak_list_y) && !is.list(user_peak_list_y)))
@@ -78,7 +78,7 @@ intersectPeakMatrix <- function(peak_id_x,
   message("TFregulomeR::intersectPeakMatrix() starting ... ...")
   if (methylation_profile_in_narrow_region)
   {
-    message("You chose to profile the methylation levels in 200bp window around peak summits, if there is any peak loaded from TFregulome. It will make the program slow. Disable it if you want a speedy analysis and do not care about methylation")
+    message("You chose to profile the methylation levels in 200bp window around peak summits, if there is any peak loaded from TFregulomeR. It will make the program slow. Disable it if you want a speedy analysis and do not care about methylation")
   }
   else
   {
@@ -87,13 +87,13 @@ intersectPeakMatrix <- function(peak_id_x,
   # loading peak list x
   message("Loading peak list x ... ...")
   peak_list_x_all <- list()
-  # loading from TFregulome server
+  # loading from TFregulomeR server
   TFregulome_peak_x_id <- c()
   is_x_TFregulome <- c()
   peak_list_x_count <- 0
   if (!missing(peak_id_x) && length(peak_id_x)>0)
   {
-    message(paste0("... You have ", length(peak_id_x)," TFBS(s) requested to be loaded from TFregulome server"))
+    message(paste0("... You have ", length(peak_id_x)," TFBS(s) requested to be loaded from TFregulomeR server"))
     if (motif_only_for_id_x == TRUE)
     {
       message("... You chose to load TF peaks with motif only. Using 'motif_only_for_id_x' tunes your options")
@@ -102,7 +102,7 @@ intersectPeakMatrix <- function(peak_id_x,
     {
       message("... You chose to load TF peaks regardless of presence of motif. Using 'motif_only_for_id_x' tunes your options")
     }
-    message("... loading TFBS(s) from TFregulome now")
+    message("... loading TFBS(s) from TFregulomeR now")
     for (i in peak_id_x)
     {
       peak_i <- suppressMessages(loadPeaks(id = i, includeMotifOnly = motif_only_for_id_x, TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
@@ -119,7 +119,7 @@ intersectPeakMatrix <- function(peak_id_x,
         message(paste0("... ... peak file loaded successfully for id '", i,"'"))
       }
     }
-    message("... Done loading TFBS(s) from TFregulome")
+    message("... Done loading TFBS(s) from TFregulomeR")
   }
   # users' peaks
   if (!missing(user_peak_list_x) && length(user_peak_list_x)>0)
@@ -149,7 +149,7 @@ intersectPeakMatrix <- function(peak_id_x,
         peak_i_sub <- peak_i_sub[,c("chr","start","end","id")]
         peak_list_x_count <- peak_list_x_count + 1
         peak_list_x_all[[peak_list_x_count]] <- peak_i_sub
-        # test if user input id i match any TFregulome database ID
+        # test if user input id i match any TFregulomeR ID
         motif_matrix_i <- suppressMessages(searchMotif(id = user_peak_x_id[i], TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
         if (is.null(motif_matrix_i))
         {
@@ -166,19 +166,19 @@ intersectPeakMatrix <- function(peak_id_x,
   {
     user_peak_x_id_new <- c()
   }
-  # combine TFregulome ID and user ID
+  # combine TFregulomeR ID and user ID
   peak_id_x_all <- c(TFregulome_peak_x_id, user_peak_x_id_new)
 
   # loading compared peak list
   message("Loading peak list y ... ...")
   peak_list_y_all <- list()
-  # loading from TFregulome server
+  # loading from TFregulomeR server
   TFregulome_peak_y_id <- c()
   is_y_TFregulome <- c()
   peak_list_y_count <- 0
   if (!missing(peak_id_y) && length(peak_id_y)>0)
   {
-    message(paste0("... You have ", length(peak_id_y)," TFBS(s) requested to be loaded from TFregulome server"))
+    message(paste0("... You have ", length(peak_id_y)," TFBS(s) requested to be loaded from TFregulomeR server"))
     if (motif_only_for_id_y == TRUE)
     {
       message("... You chose to load TF peaks with motif only. Using 'motif_only_for_id_y' tunes your options")
@@ -187,7 +187,7 @@ intersectPeakMatrix <- function(peak_id_x,
     {
       message("... You chose to load TF peaks regardless of presence of motif. Using 'motif_only_for_id_y' tunes your options")
     }
-    message("... loading TFBS(s) from TFregulome now")
+    message("... loading TFBS(s) from TFregulomeR now")
     for (i in peak_id_y)
     {
       peak_i <- suppressMessages(loadPeaks(id = i, includeMotifOnly = motif_only_for_id_y, TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
@@ -204,7 +204,7 @@ intersectPeakMatrix <- function(peak_id_x,
         message(paste0("... ... peak file loaded successfully for id '", i,"'"))
       }
     }
-    message("... Done loading TFBS(s) from TFregulome")
+    message("... Done loading TFBS(s) from TFregulomeR")
   }
   # users' peaks
   if (!missing(user_peak_list_y) && length(user_peak_list_y)>0)
@@ -234,7 +234,7 @@ intersectPeakMatrix <- function(peak_id_x,
         peak_i_sub <- peak_i_sub[,c("chr","start","end","id")]
         peak_list_y_count <- peak_list_y_count + 1
         peak_list_y_all[[peak_list_y_count]] <- peak_i_sub
-        # test if user input id i match any TFregulome database ID
+        # test if user input id i match any TFregulomeR ID
         motif_matrix_i <- suppressMessages(searchMotif(id = user_peak_y_id[i], TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
         if (is.null(motif_matrix_i))
         {
@@ -251,7 +251,7 @@ intersectPeakMatrix <- function(peak_id_x,
   {
     user_peak_y_id_new <- c()
   }
-  # combine TFregulome ID and user ID
+  # combine TFregulomeR ID and user ID
   peak_id_y_all <- c(TFregulome_peak_y_id, user_peak_y_id_new)
 
 
@@ -284,11 +284,11 @@ intersectPeakMatrix <- function(peak_id_x,
       },
       error = function(cond)
       {
-        message("There is a warning to connect TFregulome API!")
+        message("There is a warning to connect TFregulomeR API!")
         message("Advice:")
         message("1) Check internet access;")
         message("2) Check dependent package 'jsonlite';")
-        message("3) Current TFregulome server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
+        message("3) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
         message(paste0("warning: ",cond))
         return(NULL)
       })
@@ -327,11 +327,11 @@ intersectPeakMatrix <- function(peak_id_x,
         },
         error = function(cond)
         {
-          message("There is a warning to connect TFregulome API!")
+          message("There is a warning to connect TFregulomeR API!")
           message("Advice:")
           message("1) Check internet access;")
           message("2) Check dependent package 'jsonlite';")
-          message("3) Current TFregulome server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
+          message("3) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
           message(paste0("warning: ",cond))
           return(NULL)
         })
@@ -394,7 +394,7 @@ intersectPeakMatrix <- function(peak_id_x,
       # methylation distribution only meaningful if we have WGBS and peaks
       is_methProfile_meaningful_x <- FALSE
 
-      # form MethMotif object if the id is TFregulome id
+      # form MethMotif object if the id is TFregulomeR id
       if (isTFregulome_x)
       {
         motif_seq_x <- read.delim(motif_seq_path_x, sep = "\t", header = FALSE)
@@ -524,7 +524,7 @@ intersectPeakMatrix <- function(peak_id_x,
       meth_score_collection_y <- data.frame()
       # methylation distribution only meaningful if we have WGBS and peaks
       is_methProfile_meaningful_y <- FALSE
-      # form MethMotif object if the id is TFregulome id
+      # form MethMotif object if the id is TFregulomeR id
       if (isTFregulome_y)
       {
         motif_seq_y <- read.delim(motif_seq_path_y, sep = "\t", header = FALSE)

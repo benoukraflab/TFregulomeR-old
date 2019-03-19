@@ -153,7 +153,7 @@ exportMMPFM <- function(fun_output, fun, save_motif_PFM = FALSE,
       }
       else
       {
-        message("... ... ... the original peaks of ",id_i, " is not loaded from TFregulome database, or in the common peak the number of TFBS is zero. Hence no further action for this id!")
+        message("... ... ... the original peaks of ",id_i, " is not loaded from TFregulomeR database, or in the common peak the number of TFBS is zero. Hence no further action for this id!")
       }
     }
   }

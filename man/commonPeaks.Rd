@@ -11,27 +11,27 @@ commonPeaks(target_peak_id, motif_only_for_target_peak = FALSE,
   motif_type = "MEME", TFregulome_url)
 }
 \arguments{
-\item{target_peak_id}{Character of vector, each of which is a TFregulome ID. Each of target peak will be compared with all "compared peaks" to get its common subset.}
+\item{target_peak_id}{Character of vector, each of which is a TFregulomeR ID. Each of target peak will be compared with all "compared peaks" to get its common subset.}
 
-\item{motif_only_for_target_peak}{Either TRUE of FALSE (default). If TRUE, only peaks with motif will be loaded for each TFregulome ID in target_peak_id.}
+\item{motif_only_for_target_peak}{Either TRUE of FALSE (default). If TRUE, only peaks with motif will be loaded for each TFregulomeR ID in target_peak_id.}
 
 \item{user_target_peak_list}{A list of data.frames, each of which contains user's own bed-format target peak regions.}
 
-\item{user_target_peak_id}{Character of vector, each of which is a unique ID corresponding to each peak set in the list user_target_peak_list. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulome database, its TFregulome ID should be used here correspondingly.}
+\item{user_target_peak_id}{Character of vector, each of which is a unique ID corresponding to each peak set in the list user_target_peak_list. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulomeR, its TFregulomeR ID should be used here correspondingly.}
 
-\item{compared_peak_id}{Character of vector, each of which is a TFregulome ID.}
+\item{compared_peak_id}{Character of vector, each of which is a TFregulomeR ID.}
 
-\item{motif_only_for_compared_peak}{Either TRUE of FALSE (default). If TRUE, only peaks with motif will be loaded for each TFregulome ID in compared_peak_id.}
+\item{motif_only_for_compared_peak}{Either TRUE of FALSE (default). If TRUE, only peaks with motif will be loaded for each TFregulomeR ID in compared_peak_id.}
 
 \item{user_compared_peak_list}{A list of data.frames, each of which contains user's own bed-format compared peak regions.}
 
-\item{user_compared_peak_id}{Character of vector, each of which is a unique ID corresponding to each peak set in the list user_compared_peak_list. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulome database, its TFregulome ID should be used here correspondingly.}
+\item{user_compared_peak_id}{Character of vector, each of which is a unique ID corresponding to each peak set in the list user_compared_peak_list. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulomeR, its TFregulomeR ID should be used here correspondingly.}
 
-\item{methylation_profile_in_narrow_region}{Either TRUE (default) of FALSE. If TRUE, methylation states in 200bp window surrounding peak summits for each common peak from target_peak_id and user_target_peak_list with TFregulome ID.}
+\item{methylation_profile_in_narrow_region}{Either TRUE (default) of FALSE. If TRUE, methylation states in 200bp window surrounding peak summits for each common peak from target_peak_id and user_target_peak_list with TFregulomeR ID.}
 
 \item{motif_type}{Motif PFM format, either in MEME by default or TRANSFAC.}
 
-\item{TFregulome_url}{TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
 }
 \value{
 matrix of CommonPeaksMM class objects

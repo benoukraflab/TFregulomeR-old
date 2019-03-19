@@ -8,15 +8,15 @@ motifDistrib(id, peak_list, peak_id, plot_at_each_side = 100,
   TFregulome_url)
 }
 \arguments{
-\item{id}{Required. TFregulome ID. The TFBS of interest to be profiled.}
+\item{id}{Required. TFregulomeR ID. The TFBS of interest to be profiled.}
 
-\item{peak_list}{Required. List of data.frames, each of which contains bed-format peak regions. They are the peak sets in which you want to profile the TFBS distributions, and can be loaded from TFregulome database or self-provided.}
+\item{peak_list}{Required. List of data.frames, each of which contains bed-format peak regions. They are the peak sets in which you want to profile the TFBS distributions, and can be loaded from TFregulomeR database or self-provided.}
 
-\item{peak_id}{Required. Character of vector, each of which is a unique ID corresponding to the element in "peak_list". If a peak set is orignally from TFregulome Database, its TFregulome ID should be used here.}
+\item{peak_id}{Required. Character of vector, each of which is a unique ID corresponding to the element in "peak_list". If a peak set is orignally from TFregulomeR Database, its TFregulomeR ID should be used here.}
 
 \item{plot_at_each_side}{By default 100bp, and motif occurrences in a window of +/- 100bp around peak centres will be returned.}
 
-\item{TFregulome_url}{TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
 }
 \value{
 a list containing the numbers of input peaks and peaks with motif, as well as motif occurrences in the plot window.

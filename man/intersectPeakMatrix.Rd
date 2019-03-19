@@ -11,27 +11,27 @@ intersectPeakMatrix(peak_id_x, motif_only_for_id_x = FALSE,
   TFregulome_url)
 }
 \arguments{
-\item{peak_id_x}{Character of vector, each of which is a unique TFregulome ID.}
+\item{peak_id_x}{Character of vector, each of which is a unique TFregulomeR ID.}
 
-\item{motif_only_for_id_x}{Either TRUE of FALSE (default). If TRUE, only peaks with motif will be loaded for each TFregulome ID in peak_id_x.}
+\item{motif_only_for_id_x}{Either TRUE of FALSE (default). If TRUE, only peaks with motif will be loaded for each TFregulomeR ID in peak_id_x.}
 
 \item{user_peak_list_x}{A list of data.frames, each of which contains user's own bed-format peak regions for peak list x.}
 
-\item{user_peak_x_id}{Character of vector, each of which is a unique ID corresponding to each peak set in the list user_peak_list_x. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulome database, its TFregulome ID should be used here correspondingly.}
+\item{user_peak_x_id}{Character of vector, each of which is a unique ID corresponding to each peak set in the list user_peak_list_x. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulomeR, its TFregulomeR ID should be used here correspondingly.}
 
-\item{peak_id_y}{Character of vector, each of which is a unique TFregulome ID.}
+\item{peak_id_y}{Character of vector, each of which is a unique TFregulomeR ID.}
 
-\item{motif_only_for_id_y}{Either TRUE of FALSE (default). If TRUE, only peaks with motif will be loaded for each TFregulome ID in peak_id_y.}
+\item{motif_only_for_id_y}{Either TRUE of FALSE (default). If TRUE, only peaks with motif will be loaded for each TFregulomeR ID in peak_id_y.}
 
 \item{user_peak_list_y}{A list of data.frames, each of which contains user's own bed-format peak regions for peak list y.}
 
-\item{user_peak_y_id}{Character of vector, each of which is a unique ID corresponding to each peak set in the list user_peak_list_y. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulome database, its TFregulome ID should be used here correspondingly.}
+\item{user_peak_y_id}{Character of vector, each of which is a unique ID corresponding to each peak set in the list user_peak_list_y. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulomeR, its TFregulomeR ID should be used here correspondingly.}
 
-\item{methylation_profile_in_narrow_region}{Either TRUE (default) of FALSE. If TRUE, methylation states in 200bp window surrounding peak summits for each intersected peak pair from peak_id_x (peak_id_y) and user_peak_list_x (user_peak_list_y) with TFregulome ID.}
+\item{methylation_profile_in_narrow_region}{Either TRUE (default) of FALSE. If TRUE, methylation states in 200bp window surrounding peak summits for each intersected peak pair from peak_id_x (peak_id_y) and user_peak_list_x (user_peak_list_y) with TFregulomeR ID.}
 
 \item{motif_type}{Motif PFM format, either in MEME by default or TRANSFAC.}
 
-\item{TFregulome_url}{TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
 }
 \value{
 matrix of IntersectPeakMatrix class objects

@@ -2,22 +2,22 @@
 % Please edit documentation in R/searchMotif.R
 \name{searchMotif}
 \alias{searchMotif}
-\title{Search motif PFM and beta score matrix (if source is MethMotif) for a given TFregulome ID in TFregulome database}
+\title{Search motif PFM and beta score matrix (if source is MethMotif) for a given TFregulomeR ID in TFregulomeR}
 \usage{
 searchMotif(id, motif_format = "MEME", TFregulome_url)
 }
 \arguments{
-\item{id}{Required. TFregulome ID.}
+\item{id}{Required. TFregulomeR ID.}
 
 \item{motif_format}{Motif PFM format, either in MEME by default or TRANSFAC.}
 
-\item{TFregulome_url}{TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
 }
 \value{
 MethMotif class object
 }
 \description{
-This function allows you to obtain motif PFM matrix and beta score matrix (if source is MethMotif) for a given TFregulome ID in TFregulome database.
+This function allows you to obtain motif PFM matrix and beta score matrix (if source is MethMotif) for a given TFregulomeR ID in TFregulomeR
 }
 \examples{
 K562_CEBPB <- searchMotif(id = "MM1_HSA_K562_CEBPB")

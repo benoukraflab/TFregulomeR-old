@@ -9,8 +9,7 @@ commonPeakResult(commonPeaks, return_common_peak_sites = FALSE,
   return_summary = FALSE, logo_type = "entropy", meth_level = "all")
 }
 \arguments{
-\item{commonPeaks}{Required. commonPeaks() output, a matrix of CommonPeaksMM
-class objects.}
+\item{commonPeaks}{Required. commonPeaks() output, a matrix of CommonPeaksMM class objects.}
 
 \item{return_common_peak_sites}{Either TRUE of FALSE (default). If TRUE, a list of data.frames containing common peak sets.}
 

@@ -14,7 +14,7 @@ plotLogo(MM_object, logo_type = "entropy", meth_level = "all")
 \item{meth_level}{Methylation level to be plot for the (Meth)Motif logo, and it should be one of the values, "all" (default), "methylated", and "unmethylated".}
 }
 \value{
-(Meth)Motif logo pdf file. If the TFregulome peak source is from MethMotif, MethMotif logo will be saved; if the source is GTRD, only motif logo will be saved.
+(Meth)Motif logo pdf file. If the TFregulomeR peak source is from MethMotif, MethMotif logo will be saved; if the source is GTRD, only motif logo will be saved.
 }
 \description{
 This function allows you to plot (Meth)Motif logo.

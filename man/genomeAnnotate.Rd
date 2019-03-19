@@ -21,7 +21,7 @@ genomeAnnotate(peaks, assembly = "hg38", return_annotation = FALSE,
 
 \item{TTS_range}{A numeric vector to define TTS range. By default, c(-100, 1000) defines promoters as 100bp upstream and 1000bp downstream of real TTS.}
 
-\item{TFregulome_url}{TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
 }
 \value{
 a data.frame, or an HTML report depending on the options.

@@ -39,7 +39,7 @@ intersectPeakMatrixResult(intersectPeakMatrix,
 a matrix of pair-wise intersecting percantages between two lists of peak sets, a matrix of DNA methylation data in the intersected regions or (Meth)Motif PDF files depending on the options
 }
 \description{
-This function allows you to get the reuslts from the intersectPeakMatrix() output, including a matrix of the pair-wise intersecting percentages between two lists of peak sets, DNA methylation profiles in the intersected regions (for peaks from TFregulome database) and (Meth)Motif logos for each pair of intersections (for peaks from TFregulome database).
+This function allows you to get the reuslts from the intersectPeakMatrix() output, including a matrix of the pair-wise intersecting percentages between two lists of peak sets, DNA methylation profiles in the intersected regions (for peaks from TFregulomeR) and (Meth)Motif logos for each pair of intersections (for peaks from TFregulomeR).
 }
 \examples{
 peak_id_x <- c("MM1_HSA_K562_CEBPB", "MM1_HSA_HCT116_CEBPB")

@@ -1,9 +1,9 @@
-#' load peaks from TFregulome database
+#' load peaks from TFregulomeR
 #'
-#' This function allows you to obtain the peaks from TFregulome database using TFregulome ID.
-#' @param id Required. TFregulome ID
+#' This function allows you to obtain the peaks from TFregulomeR using TFregulomeR ID.
+#' @param id Required. TFregulomeR ID
 #' @param includeMotifOnly Either TRUE or FALSE (default). If TRUE, only peaks with motif will be returned
-#' @param TFregulome_url TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
+#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
 #' @return  a data.frame containing peak coordinates
 #' @keywords loadPeaks
 #' @export
@@ -27,7 +27,7 @@ loadPeaks <- function(id, includeMotifOnly = FALSE, TFregulome_url)
   # check input argument id
   if (missing(id))
   {
-    stop("Please input a TFregulome id using 'id = '.")
+    stop("Please input a TFregulomeR id using 'id = '.")
   }
   else
   {
@@ -38,11 +38,11 @@ loadPeaks <- function(id, includeMotifOnly = FALSE, TFregulome_url)
     },
     error = function(cond)
     {
-      message("There is a warning to connect TFregulome API!")
+      message("There is a warning to connect TFregulomeR API!")
       message("Advice:")
       message("1) Check internet access;")
       message("2) Check dependent package 'jsonlite';")
-      message("3) Current TFregulome server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
+      message("3) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
       message(paste0("warning: ",cond))
       return(NULL)
     })

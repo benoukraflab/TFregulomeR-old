@@ -1,11 +1,11 @@
 #' profile TFBS distribution
 #'
 #' This function allows you to profile TFBS distributions in a given list of peak sets.
-#' @param id Required. TFregulome ID. The TFBS of interest to be profiled.
-#' @param peak_list Required. List of data.frames, each of which contains bed-format peak regions. They are the peak sets in which you want to profile the TFBS distributions, and can be loaded from TFregulome database or self-provided.
-#' @param peak_id Required. Character of vector, each of which is a unique ID corresponding to the element in "peak_list". If a peak set is orignally from TFregulome Database, its TFregulome ID should be used here.
+#' @param id Required. TFregulomeR ID. The TFBS of interest to be profiled.
+#' @param peak_list Required. List of data.frames, each of which contains bed-format peak regions. They are the peak sets in which you want to profile the TFBS distributions, and can be loaded from TFregulomeR database or self-provided.
+#' @param peak_id Required. Character of vector, each of which is a unique ID corresponding to the element in "peak_list". If a peak set is orignally from TFregulomeR Database, its TFregulomeR ID should be used here.
 #' @param plot_at_each_side By default 100bp, and motif occurrences in a window of +/- 100bp around peak centres will be returned.
-#' @param TFregulome_url TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
+#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
 #' @return  a list containing the numbers of input peaks and peaks with motif, as well as motif occurrences in the plot window.
 #' @keywords motifDistrib
 #' @export
@@ -20,15 +20,15 @@ motifDistrib <- function(id, peak_list, peak_id, plot_at_each_side = 100, TFregu
   # check input arguments
   if (missing(id))
   {
-    stop("Please provide a TFregulome ID using 'id ='!")
+    stop("Please provide a TFregulomeR ID using 'id ='!")
   }
   if (missing(peak_list))
   {
-    stop("Please provide peak sets stored in list class list() using 'peak_list ='! Peak sets can be loaded from TRregulome database using loadPeaks() or your own peaks in bed-like format")
+    stop("Please provide peak sets stored in list class list() using 'peak_list ='! Peak sets can be loaded from TRregulomeR using loadPeaks() or your own peaks in bed-like format")
   }
   if (missing(peak_id))
   {
-    stop("Please provide unique ids in vector corresponding to the peak sets in 'peak_list'. If the peak set was derived from TFregulome database, please use its TFregulome ID here!")
+    stop("Please provide unique ids in vector corresponding to the peak sets in 'peak_list'. If the peak set was derived from TFregulomeR, please use its TFregulomeR ID here!")
   }
   if (length(peak_list) != length(peak_id))
   {
@@ -60,7 +60,7 @@ motifDistrib <- function(id, peak_list, peak_id, plot_at_each_side = 100, TFregu
   }
 
   # start analysing
-  message(paste0("motifDistrib starts analysing for TFregulome ID = ", id))
+  message(paste0("motifDistrib starts analysing for TFregulomeR ID = ", id))
   # get motif sequences for id
   query_url <- paste0("listTFBS.php?AllTable=F&id=", id)
   #parse JSON from API endpoint
@@ -69,11 +69,11 @@ motifDistrib <- function(id, peak_list, peak_id, plot_at_each_side = 100, TFregu
   },
   error = function(cond)
   {
-    message("There is a warning to connect TFregulome API!")
+    message("There is a warning to connect TFregulomeR API!")
     message("Advice:")
     message("1) Check internet access;")
     message("2) Check dependent package 'jsonlite';")
-    message("3) Current TFregulome server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
+    message("3) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
     message(paste0("warning: ",cond))
     return(NULL)
   })
@@ -83,7 +83,7 @@ motifDistrib <- function(id, peak_list, peak_id, plot_at_each_side = 100, TFregu
     request_content_df <- as.data.frame(request_content_json$TFBS_records)
     if (nrow(request_content_df)==0)
     {
-      message(paste0("No record was found for your input TFregulome ID. Your input: id = ", id, "."))
+      message(paste0("No record was found for your input TFregulomeR ID. Your input: id = ", id, "."))
       return(NULL)
     }
     else
@@ -101,7 +101,7 @@ motifDistrib <- function(id, peak_list, peak_id, plot_at_each_side = 100, TFregu
   }
   else
   {
-    message("Empty output for TFregulome API request!")
+    message("Empty output for TFregulomeR API request!")
     return(NULL)
   }
   motifDistrb_list <- list()

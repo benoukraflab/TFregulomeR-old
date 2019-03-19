@@ -1,9 +1,9 @@
-#' Search motif PFM and beta score matrix (if source is MethMotif) for a given TFregulome ID in TFregulome database
+#' Search motif PFM and beta score matrix (if source is MethMotif) for a given TFregulomeR ID in TFregulomeR
 #'
-#' This function allows you to obtain motif PFM matrix and beta score matrix (if source is MethMotif) for a given TFregulome ID in TFregulome database.
-#' @param id Required. TFregulome ID.
+#' This function allows you to obtain motif PFM matrix and beta score matrix (if source is MethMotif) for a given TFregulomeR ID in TFregulomeR
+#' @param id Required. TFregulomeR ID.
 #' @param motif_format Motif PFM format, either in MEME by default or TRANSFAC.
-#' @param TFregulome_url TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
+#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
 #' @return MethMotif class object
 #' @keywords MethMotif
 #' @export
@@ -48,11 +48,11 @@ searchMotif <- function(id, motif_format = "MEME", TFregulome_url)
   },
   error = function(cond)
   {
-    message("There is a warning to connect TFregulome API!")
+    message("There is a warning to connect TFregulomeR API!")
     message("Advice:")
     message("1) Check internet access;")
     message("2) Check dependent package 'jsonlite';")
-    message("3) Current TFregulome server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
+    message("3) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
     message(paste0("warning: ",cond))
     return(NULL)
   })

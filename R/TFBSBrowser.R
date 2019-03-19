@@ -1,6 +1,6 @@
-#' Browse the current TFBSs available in TFregulome database
+#' Browse the current TFBSs available in TFregulomeR
 #'
-#' This function allows you to get the current TFBSs in TFregulome database
+#' This function allows you to get the current TFBSs in TFregulomeR
 #' @param species The species of interset
 #' @param organ The organ of interset
 #' @param sample_type The sample type of interset
@@ -8,8 +8,8 @@
 #' @param tf The TF of interset
 #' @param disease_state The disease state of interset
 #' @param source The source of interset
-#' @param TFregulome_url TFregulome server is implemented in MethMotif server. If the MethMoitf url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
-#' @return  data.frame containing the information of the queried TFBSs in TFregulome database
+#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
+#' @return  data.frame containing the information of the queried TFBSs in TFregulomeR
 #' @keywords TFBS
 #' @export
 #' @examples
@@ -88,11 +88,11 @@ TFBSBrowser <- function(species, organ, sample_type, cell_tissue_name,
   },
   error = function(cond)
   {
-    message("There is a warning to connect TFregulome API!")
+    message("There is a warning to connect TFregulomeR API!")
     message("Advice:")
     message("1) Check internet access;")
     message("2) Check dependent package 'jsonlite';")
-    message("3) Current TFregulome server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
+    message("3) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
     message(paste0("warning: ",cond))
     return(NULL)
   })

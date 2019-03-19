@@ -4,7 +4,7 @@
 #' @param MM_object Required. MethMotif class object
 #' @param logo_type Logo type for the (Meth)Motif logo to be saved, either "entropy" (default) or "frequency".
 #' @param meth_level Methylation level to be plot for the (Meth)Motif logo, and it should be one of the values, "all" (default), "methylated", and "unmethylated".
-#' @return  (Meth)Motif logo pdf file. If the TFregulome peak source is from MethMotif, MethMotif logo will be saved; if the source is GTRD, only motif logo will be saved.
+#' @return  (Meth)Motif logo pdf file. If the TFregulomeR peak source is from MethMotif, MethMotif logo will be saved; if the source is GTRD, only motif logo will be saved.
 #' @keywords plotLogo
 #' @export
 #' @examples
