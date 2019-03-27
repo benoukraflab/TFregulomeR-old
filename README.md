@@ -29,7 +29,7 @@ TFregulomeR
 
 -------
 
-## Current TFBSs in TFregulome warehouse
+## Current TFBSs in TFregulomeR warehouse
 
 TFregulomeR data warehouse version: 1.0
 

@@ -43,7 +43,7 @@ no input is given for the function, all records in TFregulomeR warehouse will be
 library(TFregulomeR)
 # browse all records in TFregulomeR TFBS warehouse
 all_record <- TFBSBrowser()
-#> 1376 TFBS(s) founded: ...
+#> 1376 TFBS(s) found: ...
 #> ... covering 374 TF(s)
 #> ... from 1 species:
 #> ... ...human
@@ -65,7 +65,7 @@ head(all_record)
 
 # browse TFBSs in blood and lymph
 blood_and_lymph_record <- TFBSBrowser(organ = "blood_and_lymph")
-#> 458 TFBS(s) founded: ...
+#> 458 TFBS(s) found: ...
 #> ... covering 172 TF(s)
 #> ... from 1 species:
 #> ... ...human
@@ -80,7 +80,7 @@ blood_and_lymph_record <- TFBSBrowser(organ = "blood_and_lymph")
 
 # browse all CEBPB TFBSs
 CEBPB_record <- TFBSBrowser(tf = "CEBPB")
-#> 16 TFBS(s) founded: ...
+#> 16 TFBS(s) found: ...
 #> ... covering 1 TF(s)
 #> ... from 1 species:
 #> ... ...human
@@ -236,7 +236,7 @@ head(my_peak)
 
 # 1) Get all CEBPB records in TFregulomeR warehouse
 CEBPB_record <- TFBSBrowser(tf = "CEBPB")
-#> 16 TFBS(s) founded: ...
+#> 16 TFBS(s) found: ...
 #> ... covering 1 TF(s)
 #> ... from 1 species:
 #> ... ...human
@@ -400,7 +400,7 @@ for each unique peak subset, whose TF source in TFregulomeR warehouse is MethMot
 
 # 1) Get all CEBPB records in TFregulomeR warehouse
 CEBPB_record <- TFBSBrowser(tf = "CEBPB")
-#> 16 TFBS(s) founded: ...
+#> 16 TFBS(s) found: ...
 #> ... covering 1 TF(s)
 #> ... from 1 species:
 #> ... ...human
@@ -543,7 +543,7 @@ automatically expand +/- 100bp during the analysis. Same principles are applicab
 
 # browse all TFBS record in K562
 K562_TFBS = TFBSBrowser(cell_tissue_name = "K562")
-#> 108 TFBS(s) founded: ...
+#> 108 TFBS(s) found: ...
 #> ... covering 108 TF(s)
 #> ... from 1 species:
 #> ... ...human

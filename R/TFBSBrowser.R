@@ -125,7 +125,7 @@ TFBSBrowser <- function(species, organ, sample_type, cell_tissue_name,
       disease_state_num <- length(disease_state_result)
       tf_num <- length(unique(request_content_df_output$TF))
       source_result <- unique(request_content_df_output$source)
-      message(paste0(tfbs_num," TFBS(s) founded: ..."))
+      message(paste0(tfbs_num," TFBS(s) found: ..."))
       message(paste0("... covering ", tf_num, " TF(s)"))
       message(paste0("... from ", species_num," species:"))
       message(paste0("... ...", paste0(species_result, collapse = ", ")))
