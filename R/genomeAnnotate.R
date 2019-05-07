@@ -145,11 +145,24 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
     name_conversion <- tryCatch(read.table(name_conversion_file, sep = "\t"),
                                 warning=function(w) data.frame())
   }
+
+  # load promoters to test the human gene name is the old UCSC version
+  # (starts with 'uc') or new version (starts with 'ENS')
+  all_TSS <- promoters(txdb, upstream = 0, downstream = 1)
+  if (assembly == "hg38" || assembly == "hg19")
+  {
+    all_TSS_df <- data.frame(all_TSS)
+    # if new version, using the new version file from the server
+    if (startsWith(all_TSS_df[1,"tx_name"], "ENS"))
+    {
+      name_conversion_file <- paste0(TFregulome_url, "hg38_UCSC_to_GeneName_NewVersion.txt")
+      name_conversion <- tryCatch(read.table(name_conversion_file, sep = "\t"),
+                                  warning=function(w) data.frame())
+    }
+  }
   colnames(name_conversion) <- c("UCSC","gene_name")
   UCSC_name <- as.character(name_conversion$UCSC)
   gene_name <- as.character(name_conversion$gene_name)
-
-  all_TSS <- promoters(txdb, upstream = 0, downstream = 1)
   # promoter
   message(paste0("... ... annotating promoters defined as upstream ",
                  abs(promoter_range[1]), "bp and downstream ",
@@ -177,7 +190,7 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
                         id=peaks$id)
     # get TTS
     all_transcript <- GenomicFeatures::transcripts(txdb, use.names=TRUE)
-    all_transcript_df <- as.data.frame(all_transcript)
+    all_transcript_df <- data.frame(all_transcript)
     all_transcript_df_pos <- all_transcript_df[all_transcript_df$strand=="+",]
     pos_newStart <- as.integer(all_transcript_df_pos$end) - abs(TTS_range[1])
     pos_newEnd <- as.integer(all_transcript_df_pos$end) + abs(TTS_range[2])
@@ -203,7 +216,7 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
     feature_id <- CharacterList(split(names(all_tts)[subjectHits(hits)],
                                       queryHits(hits)))
     mcols(tts_overlapped) <- DataFrame(mcols(tts_overlapped), feature_id)
-    tts_overlapped_df <- as.data.frame(tts_overlapped)
+    tts_overlapped_df <- data.frame(tts_overlapped)
     new_tts <- addDistanceAndClean(tts_overlapped_df, all_TSS, name_conversion,"TTS")
   } else
   {
@@ -220,14 +233,14 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
     peaks_gr <- GRanges(peaks$chr,
                         IRanges(peaks$start+1, peaks$end),
                         id=peaks$id)
-    all_exons <- GenomicFeatures::exonsBy(txdb, by = "tx",use.names=TRUE)
+    suppressWarnings(all_exons <- GenomicFeatures::exonsBy(txdb, by = "tx",use.names=TRUE))
     suppressWarnings(exons_overlapped <- subsetByOverlaps(peaks_gr, all_exons))
     # combine overlapped motif seq information with peak
     hits <- findOverlaps(peaks_gr, all_exons)
     feature_id <- CharacterList(split(names(all_exons)[subjectHits(hits)],
                                       queryHits(hits)))
     mcols(exons_overlapped) <- DataFrame(mcols(exons_overlapped), feature_id)
-    exons_overlapped_df <- as.data.frame(exons_overlapped)
+    exons_overlapped_df <- data.frame(exons_overlapped)
     new_exon <- addDistanceAndClean(exons_overlapped_df, all_TSS, name_conversion, "exon")
   } else
   {
@@ -245,14 +258,14 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
     peaks_gr <- GRanges(peaks$chr,
                         IRanges(peaks$start+1, peaks$end),
                         id=peaks$id)
-    all_5utr <- GenomicFeatures::fiveUTRsByTranscript(txdb, use.names=TRUE)
+    suppressWarnings(all_5utr <- GenomicFeatures::fiveUTRsByTranscript(txdb, use.names=TRUE))
     suppressWarnings(fiveUtr_overlapped <- subsetByOverlaps(peaks_gr, all_5utr))
     # combine overlapped motif seq information with peak
     hits <- findOverlaps(peaks_gr, all_5utr)
     feature_id <- CharacterList(split(names(all_5utr)[subjectHits(hits)],
                                       queryHits(hits)))
     mcols(fiveUtr_overlapped) <- DataFrame(mcols(fiveUtr_overlapped), feature_id)
-    fiveUtr_overlapped_df <- as.data.frame(fiveUtr_overlapped)
+    fiveUtr_overlapped_df <- data.frame(fiveUtr_overlapped)
     new_5utr <- addDistanceAndClean(fiveUtr_overlapped_df, all_TSS, name_conversion, "5UTR")
   } else
   {
@@ -270,14 +283,14 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
     peaks_gr <- GRanges(peaks$chr,
                         IRanges(peaks$start+1, peaks$end),
                         id=peaks$id)
-    all_3utr <- GenomicFeatures::threeUTRsByTranscript(txdb, use.names=TRUE)
+    suppressWarnings(all_3utr <- GenomicFeatures::threeUTRsByTranscript(txdb, use.names=TRUE))
     suppressWarnings(threeUtr_overlapped <- subsetByOverlaps(peaks_gr, all_3utr))
     # combine overlapped motif seq information with peak
     hits <- findOverlaps(peaks_gr, all_3utr)
     feature_id <- CharacterList(split(names(all_3utr)[subjectHits(hits)],
                                       queryHits(hits)))
     mcols(threeUtr_overlapped) <- DataFrame(mcols(threeUtr_overlapped), feature_id)
-    threeUtr_overlapped_df <- as.data.frame(threeUtr_overlapped)
+    threeUtr_overlapped_df <- data.frame(threeUtr_overlapped)
     new_3utr <- addDistanceAndClean(threeUtr_overlapped_df, all_TSS, name_conversion, "3UTR")
   } else
   {
@@ -294,14 +307,14 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
     peaks_gr <- GRanges(peaks$chr,
                         IRanges(peaks$start+1, peaks$end),
                         id=peaks$id)
-    all_introns <- GenomicFeatures::intronsByTranscript(txdb, use.names=TRUE)
+    suppressWarnings(all_introns <- GenomicFeatures::intronsByTranscript(txdb, use.names=TRUE))
     suppressWarnings(intron_overlapped <- subsetByOverlaps(peaks_gr, all_introns))
     # combine overlapped motif seq information with peak
     hits <- findOverlaps(peaks_gr, all_introns)
     feature_id <- CharacterList(split(names(all_introns)[subjectHits(hits)],
                                       queryHits(hits)))
     mcols(intron_overlapped) <- DataFrame(mcols(intron_overlapped), feature_id)
-    intron_overlapped_df <- as.data.frame(intron_overlapped)
+    intron_overlapped_df <- data.frame(intron_overlapped)
     new_intron <- addDistanceAndClean(intron_overlapped_df, all_TSS, name_conversion, "intron")
   } else
   {

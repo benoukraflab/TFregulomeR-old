@@ -45,6 +45,12 @@ TFregulomeR data warehouse version: 1.0.0
 | Disease state | normal, tumor, Simpson_Golabi_Behmel_syndrome, progeria, metaplasia, unknown, immortalized, premetastatic|
 | Source | GTRD, MethMotif | 
 
+-------
+
+## Release notes
+
+#### Current TFregulomeR release version: 1.0.1 (Updated on 7 May 2019).
+v1.0.1 note: UCSC changed hg38 gene name in line with Ensembl, and *genomeAnnotate()* function has been updated accordingly.
 
 -------
 
