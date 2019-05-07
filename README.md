@@ -49,8 +49,8 @@ TFregulomeR data warehouse version: 1.0.0
 
 ## Release notes
 
-#### Current TFregulomeR release version: 1.0.1 (Updated on 7 May 2019).
-v1.0.1 note: UCSC changed hg38 gene name in line with Ensembl, and *genomeAnnotate()* function has been updated accordingly.
+#### Current TFregulomeR release version: 1.0.0 (Updated on 7 May 2019).
+v1.0.0 note: stable release version.
 
 -------
 
