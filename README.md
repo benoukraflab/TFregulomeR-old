@@ -8,8 +8,6 @@
 
 TFregulomeR
 
- [![Build Status](https://travis-ci.com/linquynus/TFregulomeR.svg?branch=master)](https://travis-ci.com/linquynus/TFregulomeR)
-
 # Introduction
 *TFregulomeR* comprises of a comprehensive compendium of transcription factor binding sites (TFBSs) derived from the MethMotif and GTRD, as well as the ready-to-use functionality in R language facilitating data access, integration and analysis. The binding motifs predicted in-silico from MethMotif and GTRD describe cell specific transcription factor (TF) binding propensities, while the DNA methylation profiles from MethMotif portray a second epigenetic dimension in TF binding events. The whole toolbox allows a better understanding of the TF binding propensities in a cell-specific manner. 
 
@@ -48,9 +46,11 @@ TFregulomeR data warehouse version: 1.0.0
 -------
 
 ## Release notes
+#### This repository is TFregulomeR stable release 
+#### Current TFregulomeR stable release version: 1.0.0 (Updated on 7 May 2019).
+v1.0.0 note: stable version.
 
-#### Current TFregulomeR release version: 1.0.0 (Updated on 7 May 2019).
-v1.0.0 note: stable release version.
+#### For development release, please visit [TFregulomeR-dev](https://github.com/linquynus/TFregulomeR-dev)
 
 -------
 
@@ -85,7 +85,7 @@ In R console,
 ```r
 # if you have not installed "devtools" package
 install.packages("devtools")
-devtools::install_github("linquynus/TFregulomeR")
+devtools::install_github("benoukraflab/TFregulomeR")
 ```
 The step above will automatically install the required packages. However, you still need to install optional packages if you opt to use the functions such as `greatAnnotate()`, `genomeAnnotate()` and `toTFBSTools()`.
 
