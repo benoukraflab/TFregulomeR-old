@@ -29,7 +29,7 @@ TFregulomeR
 
 ## Current TFBSs in TFregulomeR warehouse
 
-TFregulomeR data warehouse version: 1.0.0
+TFregulomeR data compendium version: 1.0.0
 
 | Item     | Count |
 | :---------:|:------:|
@@ -51,6 +51,19 @@ TFregulomeR data warehouse version: 1.0.0
 v1.0.0 note: stable version.
 
 #### For development release, please visit [TFregulomeR-dev](https://github.com/linquynus/TFregulomeR-dev)
+
+-------
+
+## Citation
+
+*TFregulomeR* manuscript has been submitted for peer review. 
+
+The scripts of case studies used in our manuscript are available as below.
+
+1. [Case study of CEBPB](./inst/case_study/case_study_of_CEBPB.R)
+2. [Case study of MAFF](./inst/case_study/case_study_of_MAFF.R)
+3. [Case study of ATF3](./inst/case_study/case_study_of_ATF3.R)
+
 
 -------
 
