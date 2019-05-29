@@ -63,6 +63,7 @@ A manuscript describing *TFregulomeR* has been submitted for peer review. If you
 Quy Xiao Xuan Lin, Denis Thieffry, Sudhakar Jha, Touati Benoukraf.  _TFregulomeR: Flexible characterisation of transcription factor binding partners using cell-specific cistrome and methylome meta-data._ 2019. https://github.com/benoukraflab/TFregulomeR
 
 -------
+
 ## Case studies
 
 The scripts of case studies used in our manuscript are available as below.
@@ -76,7 +77,7 @@ The scripts of case studies used in our manuscript are available as below.
 
 ## Installation
 
-#### Prerequisite pakcages
+#### Prerequisite packages (Will be installed automatically)
 
 1) Required packages: the packages below are the basic prerequisite packages for *TFregulomeR* functionalities
 
