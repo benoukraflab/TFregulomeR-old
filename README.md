@@ -50,13 +50,20 @@ TFregulomeR data compendium version: 1.0.0
 #### Current TFregulomeR stable release version: 1.0.0 (Updated on 7 May 2019).
 v1.0.0 note: stable version.
 
+
 #### For development release, please visit [TFregulomeR-dev](https://github.com/linquynus/TFregulomeR-dev)
 
 -------
 
 ## Citation
 
-*TFregulomeR* manuscript has been submitted for peer review. 
+A manuscript describing *TFregulomeR* has been submitted for peer review. If you currently use *TFregulomeR*, please cite us as follows:
+
+
+Quy Xiao Xuan Lin, Denis Thieffry, Sudhakar Jha, Touati Benoukraf.  _TFregulomeR: Flexible characterisation of transcription factor binding partners using cell-specific cistrome and methylome meta-data._ 2019. https://github.com/benoukraflab/TFregulomeR
+
+-------
+## Case studies
 
 The scripts of case studies used in our manuscript are available as below.
 
