@@ -4,6 +4,9 @@
 #' @param intersectPeakMatrix Required. intersectPeakMatrix() output, a marix of IntersectPeakMatrix class objects.
 #' @param return_intersection_matrix Either TRUE of FALSE (default). If TRUE, a matrix of the pair-wise intersecting percentages between two lists of peak sets will be returned.
 #' @param angle_of_matrix Either "x" (default) or "y". If "x", a matrix denoting the percentages of peak sets in "peak_list_x" intersected with "peak_list_y" will be returned; if "y", a matrix denoting the percentages of peak sets in "peak_list_y" intersected with "peak_list_x" will be returned.
+#' @param return_tag_density Either TRUE of FALSE (default). If TRUE, a matrix of tag density values in intersected peaks between "peak_list_x" and "peak_list_y" will be returned.
+#' @param angle_of_tag_density Either "x" (default) or "y". If "x", a matrix denoting tag density values in "peak_list_x" intersected with "peak_list_y" will be returned; if "y", a matrix denoting tag density values in "peak_list_y" intersected with "peak_list_x" will be returned.
+#' @param tag_density_value The value of tag density in the intersected peaks. It should be one of the following values: "median" (default),"mean","SD","quartile_25","quartile_75".
 #' @param return_methylation_profile Either TRUE of FALSE (default). If TRUE, a matrix of DNA methylation state data in the intersected regions will be returned.
 #' @param angle_of_methylation_profile Either "x" (default) or "y". If "x", a matrix denoting DNA methylation state data in "peak_list_x" intersected with "peak_list_y" will be returned; if "y", a matrix denoting DNA methylation state data in "peak_list_y" intersected with "peak_list_x" will be returned.
 #' @param save_MethMotif_logo Either TRUE of FALSE (default). If TRUE, (Meth)Motif logos for the intersected peaks will be saved.
@@ -30,6 +33,9 @@
 intersectPeakMatrixResult <- function(intersectPeakMatrix,
                                       return_intersection_matrix = FALSE,
                                       angle_of_matrix = "x",
+                                      return_tag_density = FALSE,
+                                      angle_of_tag_density = "x",
+                                      tag_density_value = "median",
                                       return_methylation_profile = FALSE,
                                       angle_of_methylation_profile = "x",
                                       save_MethMotif_logo = FALSE,
@@ -52,6 +58,10 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
   {
     stop("'return_methylation_profile' should be either TRUE (T) or FALSE (F, default)!")
   }
+  if (!is.logical(return_tag_density))
+  {
+    stop("'return_tag_density' should be either TRUE (T) or FALSE (F, default)!")
+  }
   if (angle_of_matrix != "x" && angle_of_matrix != "y")
   {
     stop("'angle_of_matrix' should be either 'x' (default) or 'y'!")
@@ -59,6 +69,14 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
   if (angle_of_methylation_profile != "x" && angle_of_methylation_profile != "y")
   {
     stop("'angle_of_methylation_profile' should be either 'x' (default) or 'y'!")
+  }
+  if (angle_of_tag_density != "x" && angle_of_tag_density != "y")
+  {
+    stop("'angle_of_tag_density' should be either 'x' (default) or 'y'!")
+  }
+  if (!(tag_density_value %in% c("median","mean","SD","quartile_25","quartile_75")))
+  {
+    stop("'tag_density_value' should be one of the following values: 'median','mean','SD','quartile_25','quartile_75'")
   }
   if (!is.logical(save_MethMotif_logo))
   {
@@ -102,6 +120,25 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
   else
   {
     message("... ... You chose NOT to return intersection matrix;")
+  }
+
+  if (return_tag_density == TRUE)
+  {
+    message("... ... You chose to return tag density;")
+    message(paste0("... ... ... the tag density value you chose to return is ",
+                   tag_density_value))
+    if (angle_of_tag_density == "x")
+    {
+      message("... ... ... You chose to return tag density for peak list x;")
+    }
+    else
+    {
+      message("... ... ... You chose to return tag density for peak list y;")
+    }
+  }
+  else
+  {
+    message("... ... You chose NOT to return tag density;")
   }
 
   if (return_methylation_profile == TRUE)
@@ -159,7 +196,8 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
   }
 
 
-  if (return_intersection_matrix == FALSE && save_MethMotif_logo==FALSE && return_methylation_profile ==FALSE)
+  if (return_intersection_matrix == FALSE && save_MethMotif_logo==FALSE &&
+      return_methylation_profile ==FALSE && return_tag_density == FALSE)
   {
     message("... ... You chose no action. EXIT!!")
     return(NULL)
@@ -235,6 +273,29 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
       }
       return_all[["intersection_matrix"]] <- intersection_matrix
     }
+    # if return tag density
+    if (return_tag_density)
+    {
+      tag_density_matrix <- data.frame(matrix(nrow = nrow(intersectPeakMatrix),
+                                              ncol = ncol(intersectPeakMatrix)))
+      rownames(tag_density_matrix) <- rownames(intersectPeakMatrix)
+      colnames(tag_density_matrix) <- colnames(intersectPeakMatrix)
+      for (i in seq(1, nrow(intersectPeakMatrix), 1))
+      {
+        for (j in seq(1, ncol(intersectPeakMatrix), 1))
+        {
+          if (angle_of_tag_density == "x")
+          {
+            tag_density_matrix[i,j] <- intersectPeakMatrix[i,j][[1]]@tag_density_x[tag_density_value]
+          }
+          else
+          {
+            tag_density_matrix[i,j] <- intersectPeakMatrix[i,j][[1]]@tag_density_y[tag_density_value]
+          }
+        }
+      }
+      return_all[["tag_density_matrix"]] <- tag_density_matrix
+    }
     # if return methylation profile
     if (return_methylation_profile)
     {
@@ -266,7 +327,8 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
       return_all[["methylation_profile_matrix"]] <- methylation_profile_matrix
     }
     #return value
-    if (!(return_intersection_matrix==FALSE && return_methylation_profile==FALSE))
+    if (!(return_intersection_matrix==FALSE && return_methylation_profile==FALSE &&
+          return_tag_density==FALSE))
     {
       return(return_all)
     }

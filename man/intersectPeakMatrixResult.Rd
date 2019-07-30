@@ -6,7 +6,8 @@
 \usage{
 intersectPeakMatrixResult(intersectPeakMatrix,
   return_intersection_matrix = FALSE, angle_of_matrix = "x",
-  return_methylation_profile = FALSE,
+  return_tag_density = FALSE, angle_of_tag_density = "x",
+  tag_density_value = "median", return_methylation_profile = FALSE,
   angle_of_methylation_profile = "x", save_MethMotif_logo = FALSE,
   angle_of_logo = "x", logo_type = "entropy", meth_level = "all",
   saving_MethMotif_logo_x_id = "all",
@@ -18,6 +19,12 @@ intersectPeakMatrixResult(intersectPeakMatrix,
 \item{return_intersection_matrix}{Either TRUE of FALSE (default). If TRUE, a matrix of the pair-wise intersecting percentages between two lists of peak sets will be returned.}
 
 \item{angle_of_matrix}{Either "x" (default) or "y". If "x", a matrix denoting the percentages of peak sets in "peak_list_x" intersected with "peak_list_y" will be returned; if "y", a matrix denoting the percentages of peak sets in "peak_list_y" intersected with "peak_list_x" will be returned.}
+
+\item{return_tag_density}{Either TRUE of FALSE (default). If TRUE, a matrix of tag density values in intersected peaks between "peak_list_x" and "peak_list_y" will be returned.}
+
+\item{angle_of_tag_density}{Either "x" (default) or "y". If "x", a matrix denoting tag density values in "peak_list_x" intersected with "peak_list_y" will be returned; if "y", a matrix denoting tag density values in "peak_list_y" intersected with "peak_list_x" will be returned.}
+
+\item{tag_density_value}{The value of tag density in the intersected peaks. It should be one of the following values: "median" (default),"mean","SD","quartile_25","quartile_75".}
 
 \item{return_methylation_profile}{Either TRUE of FALSE (default). If TRUE, a matrix of DNA methylation state data in the intersected regions will be returned.}
 

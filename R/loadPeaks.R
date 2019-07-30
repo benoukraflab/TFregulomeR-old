@@ -77,17 +77,16 @@ loadPeaks <- function(id, includeMotifOnly = FALSE, TFregulome_url)
         {
           message(paste0("Erro: No peak file for id=", id))
         })
-        peak_df = peak_df[,c(1,2,3)]
+        colnames(peak_df) <- c("chr","start","end","id","tag_fold_change")
         # use new id for each peak region
         if (includeMotifOnly)
         {
-          peak_df$V4 = paste0(id,"_peaks_with_motif_", as.vector(rownames(peak_df)))
+          peak_df$id = paste0(id,"_peaks_with_motif_", as.vector(rownames(peak_df)))
         }
         else
         {
-          peak_df$V4 = paste0(id,"_all_peaks_", as.vector(rownames(peak_df)))
+          peak_df$id = paste0(id,"_all_peaks_", as.vector(rownames(peak_df)))
         }
-        colnames(peak_df) = c("chr","start","end","id")
         message("Success: peak file has been returned in a data frame!")
         return(peak_df)
       }

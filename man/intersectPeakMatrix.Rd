@@ -7,8 +7,8 @@
 intersectPeakMatrix(peak_id_x, motif_only_for_id_x = FALSE,
   user_peak_list_x, user_peak_x_id, peak_id_y,
   motif_only_for_id_y = FALSE, user_peak_list_y, user_peak_y_id,
-  methylation_profile_in_narrow_region = FALSE, motif_type = "MEME",
-  TFregulome_url)
+  methylation_profile_in_narrow_region = FALSE, external_source,
+  motif_type = "MEME", TFregulome_url)
 }
 \arguments{
 \item{peak_id_x}{Character of vector, each of which is a unique TFregulomeR ID.}
@@ -28,6 +28,8 @@ intersectPeakMatrix(peak_id_x, motif_only_for_id_x = FALSE,
 \item{user_peak_y_id}{Character of vector, each of which is a unique ID corresponding to each peak set in the list user_peak_list_y. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulomeR, its TFregulomeR ID should be used here correspondingly.}
 
 \item{methylation_profile_in_narrow_region}{Either TRUE (default) of FALSE. If TRUE, methylation states in 200bp window surrounding peak summits for each intersected peak pair from peak_id_x (peak_id_y) and user_peak_list_x (user_peak_list_y) with TFregulomeR ID.}
+
+\item{external_source}{a bed-like data.frame files with the fourth column as the score to be profiled in pairwise comparison regions.}
 
 \item{motif_type}{Motif PFM format, either in MEME by default or TRANSFAC.}
 

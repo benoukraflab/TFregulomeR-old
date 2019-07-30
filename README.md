@@ -8,10 +8,25 @@
 
 TFregulomeR
 
+Version: 1.1.0
+
 # Introduction
 *TFregulomeR* comprises of a comprehensive compendium of transcription factor binding sites (TFBSs) derived from the MethMotif and GTRD, as well as the ready-to-use functionality in R language facilitating data access, integration and analysis. The binding motifs predicted in-silico from MethMotif and GTRD describe cell specific transcription factor (TF) binding propensities, while the DNA methylation profiles from MethMotif portray a second epigenetic dimension in TF binding events. The whole toolbox allows a better understanding of the TF binding propensities in a cell-specific manner. 
 
-## Current functionalities
+-------
+
+## Release notes
+#### This repository is TFregulomeR stable release 
+#### Current TFregulomeR development version: 1.1.0 (Updated on 25 July 2019).
+
+
+#### For development release, please visit [TFregulomeR-dev](https://github.com/linquynus/TFregulomeR-dev)
+
+-------
+
+## Current Functionalities v1.1.0
+### Click [here](./inst/update_notes/functionality_update.md) for functionality update notes
+
 1) Browse the TFregulomeR data warehouse (TFBSBrowser)
 2) Load TF peaks (loadPeaks)
 3) Search motif matrix and DNA methylation score matrix (searchMotif)
@@ -19,39 +34,33 @@ TFregulomeR
 5) Export motif matrix and DNA methylation score matrix (exportMMPFM)
 6) Get context-independent peaks along with DNA methylation profiles (commonPeaks & commonPeakResult)
 7) Get context-dependent peaks along with DNA methylation profiles (exclusivePeaks & exclusivePeakResult)
-8) Form a intersected matrix between two lists of peak sets along with DNA methylation profiles, for interactome and co-binding partner studies (intersectPeakMatrix & intersectPeakMatrixResult)
-9) Plot the TFBS distribution in a given list of peak sets (motifDistrib & plotDistrib)
-10) Annotate peak genomic locations (genomeAnnotate)
-11) Annotate ontologies of target genes by a peak set (greatAnnotate)
-12) Convert a motif matrix to a PFMatrix calss object for *TFBSTools* package (toTFBSTools)
+8) Form a intersected matrix between two lists of peak sets along with DNA methylation profiles and read enrichments, for interactome and co-binding partner studies (intersectPeakMatrix & intersectPeakMatrixResult)
+9) Automatically generate a PDF report for TF co-factors along with motif sequences, DNA methylation (within motif and in 200bp regions) and read enrichments (cofactorReport).
+10) Plot the TFBS distribution in a given list of peak sets (motifDistrib & plotDistrib)
+11) Annotate peak genomic locations (genomeAnnotate)
+12) Annotate ontologies of target genes by a peak set (greatAnnotate)
+13) Convert a motif matrix to a PFMatrix calss object for *TFBSTools* package (toTFBSTools)
 
 -------
 
-## Current TFBSs in TFregulomeR warehouse
+## Current TFBSs in TFregulomeR compendium
 
-TFregulomeR data compendium version: 1.0.0
+ ### Click [here](./inst/update_notes/compendium_update.md) for TFregulomeR compendium update notes
+
+TFregulomeR data compendium version: 1.1.0
 
 | Item     | Count |
 | :---------:|:------:|
-| TFBS     | 1376   |
-| Unique TF     | 374   |
-| TFBS with DNA methylation records    | 563   |
-| Species     | human   |
+| TFBS     | 1468   |
+| ChIP-seq experiments    | 3891   |
+| Unique TF     | 415   |
+| TFBS with DNA methylation records    | 655   |
+| Species     | human (hg38)  |
 | Organ   | stem_cell, blood_and_lymph, connective_tissue, colorectum, brain, bone, stomach, prostate, breast, pancreas, skin, kidney, lung, eye, esophagus, heart, muscle, uterus, spleen, cervix, testis, liver, adrenal_gland, neck_and_mouth, pleura, ovary, thymus, fallopian, vagina   |
 | Sample type | primary_cells, cell_line, tissue
-| Cell or tissue | 423 |
+| Cell or tissue | 414 |
 | Disease state | normal, tumor, Simpson_Golabi_Behmel_syndrome, progeria, metaplasia, unknown, immortalized, premetastatic|
 | Source | GTRD, MethMotif | 
-
--------
-
-## Release notes
-#### This repository is TFregulomeR stable release 
-#### Current TFregulomeR stable release version: 1.0.0 (Updated on 7 May 2019).
-v1.0.0 note: stable version.
-
-
-#### For development release, please visit [TFregulomeR-dev](https://github.com/linquynus/TFregulomeR-dev)
 
 -------
 
@@ -109,11 +118,6 @@ install.packages("devtools")
 devtools::install_github("benoukraflab/TFregulomeR")
 ```
 The step above will automatically install the required packages. However, you still need to install optional packages if you opt to use the functions such as `greatAnnotate()`, `genomeAnnotate()` and `toTFBSTools()`.
-
--------
-
-## Documentation
-You can check detailed package instructions in [Vignettes](https://linquynus.github.io)
 
 -------
 

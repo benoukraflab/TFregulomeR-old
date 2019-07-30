@@ -1,9 +1,10 @@
 Package: TFregulomeR
 Type: Package
-Title: Flexible Characterisation of Transcription Factor Binding Partners and Binding Motifs using Cell-specific Cistrome and Methylome Meta-data
-Version: 1.0.0
+Title: Characterisation of transcription factor context-specific features and functions
+Version: 1.1.0
 Description: An R-package linked to a large timely-updated compendium of cistrome and methylome datasets, implemented with functionalities that facilitate the manipulation and analysis of TFBS and methylome meta-data. In particular, TFregulomeR permits the characterisation of TF binding partners and cell-specific TFBSs, along with the study of TF’s functions in the context of different partners’ combinations and DNA methylation levels.
 Authors@R: c(person("Quy Xiao Xuan", "Lin", email = "linquyzju@gmail.com", role = c("aut", "cre")), 
+             person("Denis", "Thieffry", email = "denis.thieffry@ens.fr", role = "ctb"),
              person("Sudhakar", "Jha", email = "csisjha@nus.edu.sg", role = "ctb"),
               person("Touati", "Benoukraf", email = "tbenoukraf@mun.ca", role = "aut"))
 Depends: R (>= 3.3.0), methods
@@ -14,6 +15,7 @@ Imports: graphics,
          ggplot2 (>= 3.0.0), 
          ggseqlogo (>= 0.1), 
          gridExtra (>= 2.3), 
+         grid (>= 3.6.0),
          IRanges (>= 2.14.12), 
          S4Vectors (>= 0.18.3), 
          GenomicRanges (>= 1.32.7),
@@ -40,4 +42,4 @@ Suggests:
     GenomicFeatures (>= 1.34.2)
 biocViews: MotifAnnotation, Epigenetics, ChIPSeq, MethylSeq, Transcription, DNAMethylation
 VignetteBuilder: knitr
-BugReports: https://github.com/linquynus/TFregulomeR/issues
+BugReports: https://github.com/benoukraflab/TFregulomeR/issues

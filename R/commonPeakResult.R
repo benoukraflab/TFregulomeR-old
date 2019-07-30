@@ -74,13 +74,13 @@ commonPeakResult <- function(commonPeaks,
     {
       message("... ... You chose NOT to return methylation profile;")
       message("... ... You chose to return common peak summary;")
-      message("... ... ... Both common peak sets and peak summary will be stored in a list, and named with 'common_peak_list' and 'peak_summary' in the list. Use 'names()' in the output for its detials.")
+      message("... ... ... Both common peak sets and peak summary will be stored in a list, and named with 'common_peak_list' and 'peak_summary' in the list. Use 'names()' in the output for its details.")
     }
     else if (return_summary == FALSE && return_methylation_profile == TRUE)
     {
       message("... ... You chose to return methylation profile;")
       message("... ... You chose NOT to return common peak summary;")
-      message("... ... ... Both common peak sets and methylation profiles will be stored in a list, and named with 'common_peak_list' and 'methylation_profile' in the list. Use 'names()' in the output for its detials.")
+      message("... ... ... Both common peak sets and methylation profiles will be stored in a list, and named with 'common_peak_list' and 'methylation_profile' in the list. Use 'names()' in the output for its details.")
     }
     else if (return_summary == FALSE && return_methylation_profile == FALSE)
     {
@@ -92,7 +92,7 @@ commonPeakResult <- function(commonPeaks,
     {
       message("... ... You chose to return methylation profile;")
       message("... ... You chose to return common peak summary;")
-      message("... ... ... ALL of common peak sets, methylation profiles and peak summary will be stored in a list, and named with 'common_peak_list', 'methylation_profile' and 'peak_summary' in the list. Use 'names()' in the output for its detials.")
+      message("... ... ... ALL of common peak sets, methylation profiles and peak summary will be stored in a list, and named with 'common_peak_list', 'methylation_profile' and 'peak_summary' in the list. Use 'names()' in the output for its details.")
     }
   }
   else
@@ -120,7 +120,7 @@ commonPeakResult <- function(commonPeaks,
     {
       message("... ... You chose to return methylation profile;")
       message("... ... You chose to return common peak summary;")
-      message("... ... ... Both methylation profiles and peak summary will be stored in a list, and named with 'methylation_profile' and 'peak_summary' in the list. Use 'names()' in the output for its detials.")
+      message("... ... ... Both methylation profiles and peak summary will be stored in a list, and named with 'methylation_profile' and 'peak_summary' in the list. Use 'names()' in the output for its details.")
     }
   }
 
@@ -174,7 +174,7 @@ commonPeakResult <- function(commonPeaks,
         }
         else
         {
-          message(paste0("... ... ... The input peak set for the results '",logo_id,"' was not orginated from TFregulomeR or the number of direct binding sites in the common peaks is 0, so no motif logo available."))
+          message(paste0("... ... ... The input peak set for the results '",logo_id,"' was not originated from TFregulomeR or the number of direct binding sites in the common peaks is 0, so no motif logo available."))
         }
       }
     }

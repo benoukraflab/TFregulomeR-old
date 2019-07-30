@@ -143,14 +143,30 @@ commonPeaks <- function(target_peak_id,
       else
       {
         user_target_peak_id_new <- c(user_target_peak_id_new, user_target_peak_id[i])
-        peak_i_sub <- peak_i[,c(1,2,3)]
-        colnames(peak_i_sub) <- c("chr","start","end")
-        peak_i_sub$id <- paste0(user_target_peak_id[i], "_", as.vector(rownames(peak_i_sub)))
-        peak_i_sub <- peak_i_sub[,c("chr","start","end","id")]
+        colname_new <- colnames(peak_i)
+        colname_new[1] <- "chr"
+        colname_new[2] <- "start"
+        colname_new[3] <- "end"
+        # check if the input peak set has fourth column for id
+        no_id <- TRUE
+        if (length(colname_new) >= 4)
+        {
+          if (length(unique(peak_i[,4])) == nrow(peak_i))
+          {
+            colname_new[4] <- "id"
+            no_id <- FALSE
+          }
+        }
+        colnames(peak_i) <- colname_new
+        if (no_id)
+        {
+          peak_i$id <- paste0(user_target_peak_id[i], "_", as.vector(rownames(peak_i)))
+        }
         target_list_count <- target_list_count + 1
-        target_peak_list_all[[target_list_count]] <- peak_i_sub
+        target_peak_list_all[[target_list_count]] <- peak_i
         # test if user input id i match any TFregulomeR ID
-        motif_matrix_i <- suppressMessages(searchMotif(id = user_target_peak_id[i], TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
+        motif_matrix_i <- suppressMessages(searchMotif(id = user_target_peak_id[i],
+                                                       TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
         if (is.null(motif_matrix_i))
         {
           is_taregt_TFregulome <- c(is_taregt_TFregulome, FALSE)
@@ -190,7 +206,8 @@ commonPeaks <- function(target_peak_id,
     message("... loading TFBS(s) from TFregulomeR now")
     for (i in compared_peak_id)
     {
-      peak_i <- suppressMessages(loadPeaks(id = i, includeMotifOnly = motif_only_for_compared_peak, TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
+      peak_i <- suppressMessages(loadPeaks(id = i, includeMotifOnly = motif_only_for_compared_peak,
+                                           TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
       if (is.null(peak_i))
       {
         message(paste0("... ... NO peak file for your id '", i,"'."))

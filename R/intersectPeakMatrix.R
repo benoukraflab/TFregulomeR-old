@@ -10,6 +10,7 @@
 #' @param user_peak_list_y A list of data.frames, each of which contains user's own bed-format peak regions for peak list y.
 #' @param user_peak_y_id Character of vector, each of which is a unique ID corresponding to each peak set in the list user_peak_list_y. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulomeR, its TFregulomeR ID should be used here correspondingly.
 #' @param methylation_profile_in_narrow_region Either TRUE (default) of FALSE. If TRUE, methylation states in 200bp window surrounding peak summits for each intersected peak pair from peak_id_x (peak_id_y) and user_peak_list_x (user_peak_list_y) with TFregulomeR ID.
+#' @param external_source a bed-like data.frame files with the fourth column as the score to be profiled in pairwise comparison regions.
 #' @param motif_type Motif PFM format, either in MEME by default or TRANSFAC.
 #' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
 #' @return  matrix of IntersectPeakMatrix class objects
@@ -33,6 +34,7 @@ intersectPeakMatrix <- function(peak_id_x,
                                 user_peak_list_y,
                                 user_peak_y_id,
                                 methylation_profile_in_narrow_region = FALSE,
+                                external_source,
                                 motif_type = "MEME",
                                 TFregulome_url)
 {
@@ -58,9 +60,27 @@ intersectPeakMatrix <- function(peak_id_x,
   {
     stop("methylation_profile_in_narrow_region should be either TRUE or FALSE (default)")
   }
+  if (!missing(external_source) && !is.data.frame(external_source))
+  {
+    stop("external_source should be data.frame")
+  }
   if (motif_type != "MEME" && motif_type != "TRANSFAC")
   {
     stop("motif_type should be either 'MEME' (default) or 'TRANSFAC'!")
+  }
+
+  # if the external source is provided
+  external_source_provided <- FALSE
+  if (!missing(external_source) && nrow(external_source) > 0)
+  {
+    external_source_provided <- TRUE
+    external_source_signal <- external_source[,seq(1,4,1)]
+    colnames(external_source_signal) <- c("chr","start","end","score")
+    external_source_signal$id <- paste0("external_source_", rownames(external_source_signal))
+    external_source_grange <- GRanges(external_source_signal$chr,
+                                      IRanges(external_source_signal$start+1,
+                                              external_source_signal$end),
+                                      id=external_source_signal$id)
   }
 
   # make an appropriate API url
@@ -136,19 +156,34 @@ intersectPeakMatrix <- function(peak_id_x,
     for (i in seq(1,length(user_peak_list_x),1))
     {
       peak_i <- user_peak_list_x[[i]]
-      if (nrow(peak_i)==0)
+      if (nrow(peak_i) == 0)
       {
         message(paste0("... ... Your input peak set '",user_peak_x_id[i],"' is empty, so SKIP!"))
       }
       else
       {
         user_peak_x_id_new <- c(user_peak_x_id_new, user_peak_x_id[i])
-        peak_i_sub <- peak_i[,c(1,2,3)]
-        colnames(peak_i_sub) <- c("chr","start","end")
-        peak_i_sub$id <- paste0(user_peak_x_id[i], "_", as.vector(rownames(peak_i_sub)))
-        peak_i_sub <- peak_i_sub[,c("chr","start","end","id")]
+        colname_new <- colnames(peak_i)
+        colname_new[1] <- "chr"
+        colname_new[2] <- "start"
+        colname_new[3] <- "end"
+        # check if the input peak set has fourth column for id
+        no_id <- TRUE
+        if (length(colname_new) >= 4)
+        {
+          if (length(unique(peak_i[,4])) == nrow(peak_i))
+          {
+            colname_new[4] <- "id"
+            no_id <- FALSE
+          }
+        }
+        colnames(peak_i) <- colname_new
+        if (no_id)
+        {
+          peak_i$id <- paste0(user_peak_x_id[i], "_", as.vector(rownames(peak_i)))
+        }
         peak_list_x_count <- peak_list_x_count + 1
-        peak_list_x_all[[peak_list_x_count]] <- peak_i_sub
+        peak_list_x_all[[peak_list_x_count]] <- peak_i
         # test if user input id i match any TFregulomeR ID
         motif_matrix_i <- suppressMessages(searchMotif(id = user_peak_x_id[i], TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
         if (is.null(motif_matrix_i))
@@ -169,7 +204,7 @@ intersectPeakMatrix <- function(peak_id_x,
   # combine TFregulomeR ID and user ID
   peak_id_x_all <- c(TFregulome_peak_x_id, user_peak_x_id_new)
 
-  # loading compared peak list
+  # loading  peak list y
   message("Loading peak list y ... ...")
   peak_list_y_all <- list()
   # loading from TFregulomeR server
@@ -190,7 +225,8 @@ intersectPeakMatrix <- function(peak_id_x,
     message("... loading TFBS(s) from TFregulomeR now")
     for (i in peak_id_y)
     {
-      peak_i <- suppressMessages(loadPeaks(id = i, includeMotifOnly = motif_only_for_id_y, TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
+      peak_i <- suppressMessages(loadPeaks(id = i, includeMotifOnly = motif_only_for_id_y,
+                                           TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
       if (is.null(peak_i))
       {
         message(paste0("... ... NO peak file for your id '", i,"'."))
@@ -228,12 +264,27 @@ intersectPeakMatrix <- function(peak_id_x,
       else
       {
         user_peak_y_id_new <- c(user_peak_y_id_new, user_peak_y_id[i])
-        peak_i_sub <- peak_i[,c(1,2,3)]
-        colnames(peak_i_sub) <- c("chr","start","end")
-        peak_i_sub$id <- paste0(user_peak_y_id[i], "_", as.vector(rownames(peak_i_sub)))
-        peak_i_sub <- peak_i_sub[,c("chr","start","end","id")]
+        colname_new <- colnames(peak_i)
+        colname_new[1] <- "chr"
+        colname_new[2] <- "start"
+        colname_new[3] <- "end"
+        # check if the input peak set has fourth column for id
+        no_id <- TRUE
+        if (length(colname_new) >= 4)
+        {
+          if (length(unique(peak_i[,4])) == nrow(peak_i))
+          {
+            colname_new[4] <- "id"
+            no_id <- FALSE
+          }
+        }
+        colnames(peak_i) <- colname_new
+        if (no_id)
+        {
+          peak_i$id <- paste0(user_peak_y_id[i], "_", as.vector(rownames(peak_i)))
+        }
         peak_list_y_count <- peak_list_y_count + 1
-        peak_list_y_all[[peak_list_y_count]] <- peak_i_sub
+        peak_list_y_all[[peak_list_y_count]] <- peak_i
         # test if user input id i match any TFregulomeR ID
         motif_matrix_i <- suppressMessages(searchMotif(id = user_peak_y_id[i], TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
         if (is.null(motif_matrix_i))
@@ -389,6 +440,9 @@ intersectPeakMatrix <- function(peak_id_x,
       peakx_with_peaky <- unique(as.data.frame(bedx_with_bedy))
       x_interect_percentage <- 100*nrow(peakx_with_peaky)/nrow(peak_x)
       MethMotif_x <- new('MethMotif')
+      external_signal_in_x <- c(NA)
+      tag_density_x <- c("peak_number"=NA, "mean"=NA,"SD"=NA,"median"=NA,
+                         "quartile_25"=NA, "quartile_75"=NA)
       # collecting all CpG meth scores in the defined methylation profile area
       meth_score_collection_x <- data.frame()
       # methylation distribution only meaningful if we have WGBS and peaks
@@ -400,6 +454,57 @@ intersectPeakMatrix <- function(peak_id_x,
         motif_seq_x <- read.delim(motif_seq_path_x, sep = "\t", header = FALSE)
         if (nrow(peakx_with_peaky) > 0)
         {
+          ################## profile score for the external source ########################
+          if (external_source_provided)
+          {
+            suppressWarnings(external_signal_of_peakx_with_peaky_grange <- subsetByOverlaps(external_source_grange,
+                                                                                            bedx_with_bedy))
+            external_signal_of_peakx_with_peaky <- unique(as.data.frame(external_signal_of_peakx_with_peaky_grange))
+            if (nrow(external_signal_of_peakx_with_peaky) > 0)
+            {
+              external_signal_of_peakx_with_peaky_allInfo <- external_source_signal[which(external_source_signal$id
+                                                                                          %in% external_signal_of_peakx_with_peaky$id),]
+              if (nrow(external_signal_of_peakx_with_peaky_allInfo) > 0)
+              {
+                signal_num_x <- nrow(external_signal_of_peakx_with_peaky_allInfo)
+                signal_mean_x <- mean(external_signal_of_peakx_with_peaky_allInfo$score)
+                signal_sd_x <- sd(external_signal_of_peakx_with_peaky_allInfo$score)
+                signal_median_x <- median(external_signal_of_peakx_with_peaky_allInfo$score)
+                singal_quartile_x <-quantile(external_signal_of_peakx_with_peaky_allInfo$score)
+                singal_quartile_25_x <- as.numeric(singal_quartile_x[2])
+                singal_quartile_75_x <- as.numeric(singal_quartile_x[4])
+                external_signal_in_x <- c(signal_num_x,signal_mean_x,signal_sd_x,
+                                          signal_median_x,singal_quartile_25_x,singal_quartile_75_x)
+                names(external_signal_in_x) <- c("signal_number","mean","SD",
+                                                 "median","quartile_25","quartile_75")
+              }
+              else
+              {
+                external_signal_in_x <- c(0,0,0,0,0,0)
+                names(external_signal_in_x) <- c("signal_number","mean","SD",
+                                                 "median","quartile_25","quartile_75")
+              }
+            }
+          }
+
+          ################## profile score for the external source ########################
+
+          # tag fold change summary
+          peakx_with_peaky_all_Info <- peak_x[(peak_x$id %in% peakx_with_peaky$id), ]
+          tag_x_num <- nrow(peakx_with_peaky_all_Info)
+          tag_density_x_median <- median(peakx_with_peaky_all_Info$tag_fold_change)
+          tag_density_x_mean <- mean(peakx_with_peaky_all_Info$tag_fold_change)
+          tag_density_x_sd <- sd(peakx_with_peaky_all_Info$tag_fold_change)
+          tag_density_x_quartile <- quantile(peakx_with_peaky_all_Info$tag_fold_change)
+          tag_density_x_quartile_25 <- as.numeric(tag_density_x_quartile[2])
+          tag_density_x_quartile_75 <- as.numeric(tag_density_x_quartile[4])
+          tag_density_x <- c(tag_x_num, tag_density_x_mean, tag_density_x_sd,
+                             tag_density_x_median, tag_density_x_quartile_25,
+                             tag_density_x_quartile_75)
+          names(tag_density_x) <- c("peak_number","mean","SD",
+                                    "median","quartile_25","quartile_75")
+
+
           #compute motif matrix
           colnames(motif_seq_x) <- c("chr","start","end","strand","weight", "pvalue","qvalue","sequence")
           motif_len_x <- nchar(as.character(motif_seq_x[1,"sequence"]))
@@ -520,6 +625,9 @@ intersectPeakMatrix <- function(peak_id_x,
       peaky_with_peakx <- unique(as.data.frame(bedy_with_bedx))
       y_interect_percentage <- 100*nrow(peaky_with_peakx)/nrow(peak_y)
       MethMotif_y <- new('MethMotif')
+      external_signal_in_y <- c(NA)
+      tag_density_y <- c("peak_number"=NA, "mean"=NA,"SD"=NA,"median"=NA,
+                         "quartile_25"=NA, "quartile_75"=NA)
       # collecting all CpG meth scores in the defined methylation profile area
       meth_score_collection_y <- data.frame()
       # methylation distribution only meaningful if we have WGBS and peaks
@@ -530,6 +638,57 @@ intersectPeakMatrix <- function(peak_id_x,
         motif_seq_y <- read.delim(motif_seq_path_y, sep = "\t", header = FALSE)
         if (nrow(peaky_with_peakx) > 0)
         {
+          ################## profile score for the external source ########################
+
+          if (external_source_provided)
+          {
+            suppressWarnings(external_signal_of_peaky_with_peakx_grange <- subsetByOverlaps(external_source_grange,
+                                                                                            bedy_with_bedx))
+            external_signal_of_peaky_with_peakx <- unique(as.data.frame(external_signal_of_peaky_with_peakx_grange))
+            if (nrow(external_signal_of_peaky_with_peakx) > 0)
+            {
+              external_signal_of_peaky_with_peakx_allInfo <- external_source_signal[which(external_source_signal$id
+                                                                                          %in% external_signal_of_peaky_with_peakx$id),]
+              if (nrow(external_signal_of_peaky_with_peakx_allInfo) > 0)
+              {
+                signal_num_y <- nrow(external_signal_of_peaky_with_peakx_allInfo)
+                signal_mean_y <- mean(external_signal_of_peaky_with_peakx_allInfo$score)
+                signal_sd_y <- sd(external_signal_of_peaky_with_peakx_allInfo$score)
+                signal_median_y <- median(external_signal_of_peaky_with_peakx_allInfo$score)
+                singal_quartile_y <-quantile(external_signal_of_peaky_with_peakx_allInfo$score)
+                singal_quartile_25_y <- as.numeric(singal_quartile_y[2])
+                singal_quartile_75_y <- as.numeric(singal_quartile_y[4])
+                external_signal_in_y <- c(signal_num_y,signal_mean_y,signal_sd_y,
+                                          signal_median_y,singal_quartile_25_y,singal_quartile_75_y)
+                names(external_signal_in_y) <- c("signal_number","mean","SD",
+                                                 "median","quartile_25","quartile_75")
+              }
+              else
+              {
+                external_signal_in_y <- c(0,0,0,0,0,0)
+                names(external_signal_in_y) <- c("signal_number","mean","SD",
+                                                 "median","quartile_25","quartile_75")
+              }
+            }
+          }
+
+          ################## profile score for the external source ########################
+
+          # tag fold change summary
+          peaky_with_peakx_all_Info <- peak_y[(peak_y$id %in% peaky_with_peakx$id), ]
+          tag_y_num <- nrow(peaky_with_peakx_all_Info)
+          tag_density_y_median <- median(peaky_with_peakx_all_Info$tag_fold_change)
+          tag_density_y_mean <- mean(peaky_with_peakx_all_Info$tag_fold_change)
+          tag_density_y_sd <- sd(peaky_with_peakx_all_Info$tag_fold_change)
+          tag_density_y_quartile <- quantile(peaky_with_peakx_all_Info$tag_fold_change)
+          tag_density_y_quartile_25 <- as.numeric(tag_density_y_quartile[2])
+          tag_density_y_quartile_75 <- as.numeric(tag_density_y_quartile[4])
+          tag_density_y <- c(tag_y_num, tag_density_y_mean, tag_density_y_sd,
+                             tag_density_y_median, tag_density_y_quartile_25,
+                             tag_density_y_quartile_75)
+          names(tag_density_y) <- c("peak_number","mean","SD",
+                                    "median","quartile_25","quartile_75")
+
           #compute motif matrix
           colnames(motif_seq_y) <- c("chr","start","end","strand","weight", "pvalue","qvalue","sequence")
           motif_len_y <- nchar(as.character(motif_seq_y[1,"sequence"]))
@@ -654,15 +813,22 @@ intersectPeakMatrix <- function(peak_id_x,
                                                            isxTFregulomeID = isTFregulome_x,
                                                            MethMotif_x = MethMotif_x,
                                                            methylation_profile_x = meth_score_distri_target_x,
+                                                           external_signal_x = external_signal_in_x,
+                                                           tag_density_x = tag_density_x,
                                                            id_y = id_y,
                                                            overlap_percentage_y = y_interect_percentage,
                                                            isyTFregulomeID = isTFregulome_y,
                                                            MethMotif_y = MethMotif_y,
-                                                           methylation_profile_y = meth_score_distri_target_y)
+                                                           methylation_profile_y = meth_score_distri_target_y,
+                                                           external_signal_y = external_signal_in_y,
+                                                           tag_density_y = tag_density_y)
       intersection_matrix[[paste0(id_x,"_[AND]_",id_y)]] <- new_IntersectPeakMatrix
     }
   }
-  intersection_matrix_matrix <- matrix(intersection_matrix, nrow = length(peak_id_x_all), ncol = length(peak_id_y_all), byrow = TRUE)
+  intersection_matrix_matrix <- matrix(intersection_matrix,
+                                       nrow = length(peak_id_x_all),
+                                       ncol = length(peak_id_y_all),
+                                       byrow = TRUE)
   rownames(intersection_matrix_matrix) <- c(peak_id_x_all)
   colnames(intersection_matrix_matrix) <- c(peak_id_y_all)
   return(intersection_matrix_matrix)

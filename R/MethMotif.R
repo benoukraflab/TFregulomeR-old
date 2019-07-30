@@ -186,28 +186,40 @@ IntersectPeakMatrix <- setClass(
             isxTFregulomeID = "logical",
             MethMotif_x = "MethMotif",
             methylation_profile_x = "matrix",
+            external_signal_x = "vector",
+            tag_density_x = "vector",
             id_y = "character",
             overlap_percentage_y = "numeric",
             isyTFregulomeID = "logical",
             MethMotif_y = "MethMotif",
-            methylation_profile_y = "matrix"),
+            methylation_profile_y = "matrix",
+            external_signal_y = "vector",
+            tag_density_y = "vector"),
   prototype = list(id = "",
                    id_x = "",
                    overlap_percentage_x = 0,
                    isxTFregulomeID = FALSE,
                    MethMotif_x = new('MethMotif'),
                    methylation_profile_x = matrix(),
+                   external_signal_x = c(NA),
+                   tag_density_x = c("peak_number"=NA, "mean"=NA,"SD"=NA,"median"=NA,
+                                     "quartile_25"=NA, "quartile_75"=NA),
                    id_y = "",
                    overlap_percentage_y = 0,
                    isyTFregulomeID = FALSE,
                    MethMotif_y = new('MethMotif'),
-                   methylation_profile_y = matrix())
+                   methylation_profile_y = matrix(),
+                   external_signal_y = c(NA),
+                   tag_density_y = c("peak_number"=NA, "mean"=NA,"SD"=NA,"median"=NA,
+                                     "quartile_25"=NA, "quartile_75"=NA))
 )
 
 setGeneric(name = "updateIntersectPeakMatrix",
            def = function(theObject, id, id_x, overlap_percentage_x, isxTFregulomeID,
-                          MethMotif_x, methylation_profile_x, id_y, overlap_percentage_y,
-                          isyTFregulomeID, MethMotif_y, methylation_profile_y)
+                          MethMotif_x, methylation_profile_x, external_signal_x,
+                          tag_density_x, id_y, overlap_percentage_y,isyTFregulomeID,
+                          MethMotif_y, methylation_profile_y, external_signal_y,
+                          tag_density_y)
            {
              standardGeneric("updateIntersectPeakMatrix")
            }
@@ -216,8 +228,9 @@ setMethod(f = "updateIntersectPeakMatrix",
           signature(theObject = "IntersectPeakMatrix"),
           definition = function(theObject, id, id_x, overlap_percentage_x,
                                 isxTFregulomeID, MethMotif_x, methylation_profile_x,
-                                id_y, overlap_percentage_y, isyTFregulomeID,
-                                MethMotif_y, methylation_profile_y)
+                                external_signal_x, tag_density_x, id_y, overlap_percentage_y,
+                                isyTFregulomeID, MethMotif_y, methylation_profile_y,
+                                external_signal_y, tag_density_y)
           {
             if (missing(theObject))
             {
@@ -271,6 +284,22 @@ setMethod(f = "updateIntersectPeakMatrix",
               }
               theObject@methylation_profile_x <- methylation_profile_x
             }
+            if (!missing(external_signal_x))
+            {
+              if (!is.vector(external_signal_x))
+              {
+                stop("'external_signal_x' should be class vector!")
+              }
+              theObject@external_signal_x <- external_signal_x
+            }
+            if (!missing(tag_density_x))
+            {
+              if (!is.vector(tag_density_x))
+              {
+                stop("'tag_density_x' should be class vector!")
+              }
+              theObject@tag_density_x <- tag_density_x
+            }
             if (!missing(id_y))
             {
               if (!is.character(id_y))
@@ -310,6 +339,22 @@ setMethod(f = "updateIntersectPeakMatrix",
                 stop("'methylation_profile_y' should be class matrix!")
               }
               theObject@methylation_profile_y <- methylation_profile_y
+            }
+            if (!missing(external_signal_y))
+            {
+              if (!is.vector(external_signal_y))
+              {
+                stop("'external_signal_y' should be class vector!")
+              }
+              theObject@external_signal_y <- external_signal_y
+            }
+            if (!missing(tag_density_y))
+            {
+              if (!is.vector(tag_density_y))
+              {
+                stop("'tag_density_y' should be class vector!")
+              }
+              theObject@tag_density_y <- tag_density_y
             }
             return(theObject)
           }
