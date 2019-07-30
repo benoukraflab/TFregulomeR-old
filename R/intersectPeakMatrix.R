@@ -491,18 +491,31 @@ intersectPeakMatrix <- function(peak_id_x,
 
           # tag fold change summary
           peakx_with_peaky_all_Info <- peak_x[(peak_x$id %in% peakx_with_peaky$id), ]
-          tag_x_num <- nrow(peakx_with_peaky_all_Info)
-          tag_density_x_median <- median(peakx_with_peaky_all_Info$tag_fold_change)
-          tag_density_x_mean <- mean(peakx_with_peaky_all_Info$tag_fold_change)
-          tag_density_x_sd <- sd(peakx_with_peaky_all_Info$tag_fold_change)
-          tag_density_x_quartile <- quantile(peakx_with_peaky_all_Info$tag_fold_change)
-          tag_density_x_quartile_25 <- as.numeric(tag_density_x_quartile[2])
-          tag_density_x_quartile_75 <- as.numeric(tag_density_x_quartile[4])
-          tag_density_x <- c(tag_x_num, tag_density_x_mean, tag_density_x_sd,
-                             tag_density_x_median, tag_density_x_quartile_25,
-                             tag_density_x_quartile_75)
-          names(tag_density_x) <- c("peak_number","mean","SD",
-                                    "median","quartile_25","quartile_75")
+          if (ncol(peakx_with_peaky_all_Info) <= 4)
+          {
+            message(paste0("... ... ... Warning: ", id_x,
+                           " is derived from TFregulomeR but lack fifth 'read_fold_change' column. So skip read enrichment profiling !!"))
+          }
+          else if (!is.numeric(peakx_with_peaky_all_Info[,5]))
+          {
+            message(paste0("... ... ... Warning: ", id_x,
+                           " is derived from TFregulomeR and fifth column is supposed to be 'tag_old_change' but it's NOT numeric . So skip read enrichment profiling !!"))
+          }
+          else
+          {
+            tag_x_num <- nrow(peakx_with_peaky_all_Info)
+            tag_density_x_median <- median(peakx_with_peaky_all_Info[,5])
+            tag_density_x_mean <- mean(peakx_with_peaky_all_Info[,5])
+            tag_density_x_sd <- sd(peakx_with_peaky_all_Info[,5])
+            tag_density_x_quartile <- quantile(peakx_with_peaky_all_Info[,5])
+            tag_density_x_quartile_25 <- as.numeric(tag_density_x_quartile[2])
+            tag_density_x_quartile_75 <- as.numeric(tag_density_x_quartile[4])
+            tag_density_x <- c(tag_x_num, tag_density_x_mean, tag_density_x_sd,
+                               tag_density_x_median, tag_density_x_quartile_25,
+                               tag_density_x_quartile_75)
+            names(tag_density_x) <- c("peak_number","mean","SD",
+                                      "median","quartile_25","quartile_75")
+          }
 
 
           #compute motif matrix
@@ -676,18 +689,32 @@ intersectPeakMatrix <- function(peak_id_x,
 
           # tag fold change summary
           peaky_with_peakx_all_Info <- peak_y[(peak_y$id %in% peaky_with_peakx$id), ]
-          tag_y_num <- nrow(peaky_with_peakx_all_Info)
-          tag_density_y_median <- median(peaky_with_peakx_all_Info$tag_fold_change)
-          tag_density_y_mean <- mean(peaky_with_peakx_all_Info$tag_fold_change)
-          tag_density_y_sd <- sd(peaky_with_peakx_all_Info$tag_fold_change)
-          tag_density_y_quartile <- quantile(peaky_with_peakx_all_Info$tag_fold_change)
-          tag_density_y_quartile_25 <- as.numeric(tag_density_y_quartile[2])
-          tag_density_y_quartile_75 <- as.numeric(tag_density_y_quartile[4])
-          tag_density_y <- c(tag_y_num, tag_density_y_mean, tag_density_y_sd,
-                             tag_density_y_median, tag_density_y_quartile_25,
-                             tag_density_y_quartile_75)
-          names(tag_density_y) <- c("peak_number","mean","SD",
-                                    "median","quartile_25","quartile_75")
+          if (ncol(peaky_with_peakx_all_Info) <= 4)
+          {
+            message(paste0("... ... ... Warning: ", id_y,
+                           " is derived from TFregulomeR but lack fifth 'read_fold_change' column. So skip read profiling !!"))
+          }
+          else if (!is.numeric(peaky_with_peakx_all_Info[,5]))
+          {
+            message(paste0("... ... ... Warning: ", id_y,
+                           " is derived from TFregulomeR and fifth column is supposed to be 'tag_old_change' but it's NOT numeric. So skip read profiling !!"))
+          }
+          else
+          {
+            tag_y_num <- nrow(peaky_with_peakx_all_Info)
+            tag_density_y_median <- median(peaky_with_peakx_all_Info[,5])
+            tag_density_y_mean <- mean(peaky_with_peakx_all_Info[,5])
+            tag_density_y_sd <- sd(peaky_with_peakx_all_Info[,5])
+            tag_density_y_quartile <- quantile(peaky_with_peakx_all_Info[,5])
+            tag_density_y_quartile_25 <- as.numeric(tag_density_y_quartile[2])
+            tag_density_y_quartile_75 <- as.numeric(tag_density_y_quartile[4])
+            tag_density_y <- c(tag_y_num, tag_density_y_mean, tag_density_y_sd,
+                               tag_density_y_median, tag_density_y_quartile_25,
+                               tag_density_y_quartile_75)
+            names(tag_density_y) <- c("peak_number","mean","SD",
+                                      "median","quartile_25","quartile_75")
+
+          }
 
           #compute motif matrix
           colnames(motif_seq_y) <- c("chr","start","end","strand","weight", "pvalue","qvalue","sequence")
