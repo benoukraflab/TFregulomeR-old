@@ -24,6 +24,12 @@ Version: 1.1.0
 
 -------
 
+
+## Documentation
+You can check detailed package instructions in [Vignettes](https://linquynus.github.io)
+
+-------
+
 ## Current Functionalities v1.1.0
 ### Click [here](./inst/update_notes/functionality_update.md) for functionality update notes
 
