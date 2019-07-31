@@ -75,7 +75,7 @@ TFregulomeR data compendium version: 1.1.0
 A manuscript describing *TFregulomeR* has been submitted for peer review. If you currently use *TFregulomeR*, please cite us as follows:
 
 
-Quy Xiao Xuan Lin, Denis Thieffry, Sudhakar Jha, Touati Benoukraf.  _TFregulomeR: Flexible characterisation of transcription factor binding partners using cell-specific cistrome and methylome meta-data._ 2019. https://github.com/benoukraflab/TFregulomeR
+Quy Xiao Xuan Lin, Denis Thieffry, Sudhakar Jha, Touati Benoukraf.  _TFregulomeR reveals transcription factors’ context-specific features and functions._ 2019. https://github.com/benoukraflab/TFregulomeR
 
 -------
 

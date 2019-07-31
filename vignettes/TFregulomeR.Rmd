@@ -1,5 +1,5 @@
 ---
-title: "TFregulomeR: Characterisation of transcription factor context-specific features and functions"
+title: "TFregulomeR reveals transcription factors’ context-specific features and functions"
 author: 
  - name: Quy Xiao Xuan Lin
    affiliation: National University of Singapore
@@ -18,7 +18,7 @@ output:
     toc: true
     fig_caption: yes
 vignette: >
-  %\VignetteIndexEntry{TFregulomeR: Characterisation of transcription factor context-specific features and functions}
+  %\VignetteIndexEntry{TFregulomeR reveals transcription factors’ context-specific features and functions}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
