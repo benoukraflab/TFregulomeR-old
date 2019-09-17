@@ -106,9 +106,6 @@ HepG2_MAFF_exclu_peaks_cofactor <- intersectPeakMatrix(user_peak_list_x = list(H
                                                         methylation_profile_in_narrow_region = TRUE)
 
 cofactorReport(intersectPeakMatrix = HepG2_MAFF_exclu_peaks_cofactor, cobinding_threshold = 0.1)
-HepG2_MAFF_exclu_peaks_cofactor_res <- intersectPeakMatrixResult(intersectPeakMatrix = HepG2_MAFF_exclu_peaks_cofactor,
-                                                                  return_intersection_matrix = TRUE,
-                                                                  return_methylation_profile = TRUE)
 ############### HepG2 exclusive MAFF targets (Figure 3B and C) #################################
 
 ############### Identify MAFF motif in K562 NFE2 peaks (Supplementary Figure 5B) #####################
