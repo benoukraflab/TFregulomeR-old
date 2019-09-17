@@ -389,8 +389,15 @@ exclusivePeaks <- function(target_peak_id,
                                              id=target_peak_i$id)
         suppressWarnings(motif_of_bed_target_done_exclusive <- subsetByOverlaps(motif_seq_target_grange, bed_target_done_exclusive))
         motif_of_peakTarget_done_exclusive <- unique(as.data.frame(motif_of_bed_target_done_exclusive))
+
         if (nrow(motif_of_peakTarget_done_exclusive)>0)
         {
+          # nPeaks
+          suppressWarnings(peaks_with_motif_gr <- subsetByOverlaps(bed_target_done_exclusive,
+                                                                   motif_seq_target_grange))
+          peaks_with_motif_df <- unique(as.data.frame(peaks_with_motif_gr))
+          number_of_target_peak_i_with_motif <- nrow(peaks_with_motif_df)
+
           motif_of_peakTarget_done_exclusive_allInfo <- motif_seq_target[which(motif_seq_target$id %in% motif_of_peakTarget_done_exclusive$id),]
           motif_matrix_of_peakTarget_done_exclusive <- formMatrixFromSeq(input_sequence = as.vector(motif_of_peakTarget_done_exclusive_allInfo$sequence),
                                                                       motif_format = motif_type)
@@ -443,7 +450,8 @@ exclusivePeaks <- function(target_peak_id,
                                                     id = paste0(target_id_i,"_exclusive_peaks"),
                                                     alternate_name = target_id_i,
                                                     width = motif_len_target,
-                                                    nsites=nrow(motif_of_peakTarget_done_exclusive),
+                                                    nsites = nrow(motif_of_peakTarget_done_exclusive),
+                                                    nPeaks = number_of_target_peak_i_with_motif,
                                                     motif_matrix=motif_matrix_of_peakTarget_done_exclusive)
           MethMotif_target@MMBetaScore <- beta_score_matrix_of_peakTarget_done_exclusive
         }

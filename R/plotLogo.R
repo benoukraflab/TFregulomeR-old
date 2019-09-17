@@ -20,11 +20,13 @@ plotLogo <- function(MM_object, logo_type="entropy", meth_level="all")
   }
   else if (logo_type == "entropy")
   {
-    logo_method = "bits"
+    logo_method <- "bits"
+    y_max <- 2
   }
   else if (logo_type == "frequency")
   {
-    logo_method = "prob"
+    logo_method <- "prob"
+    y_max <- 1
   }
 
   # check logo_type
@@ -51,6 +53,8 @@ plotLogo <- function(MM_object, logo_type="entropy", meth_level="all")
     motif_matrix <- t(MMmotif@motif_matrix)
 
     motif_length <- ncol(motif_matrix)
+    nPeaks <- MM_object@MMmotif@nPeaks
+    title_for_nPeaks <- paste0("Number of peaks with motif = ", nPeaks)
 
     if (!(is.na(MMBetaScore[1,1])))
     {
@@ -75,16 +79,16 @@ plotLogo <- function(MM_object, logo_type="entropy", meth_level="all")
         plot_beta_score$meth <- factor(plot_beta_score$meth,levels = c("beta score>90%",  "beta score 10-90%","beta score<10%"))
         plot_beta_score$pos <- factor(plot_beta_score$pos, levels = seq(1,motif_length,1))
         ylim <- round(max(as.vector(apply(MMBetaScore,2,sum)))/1000+1)*1000+500
-        barplot_color = c("darkorange1","darkgreen", "dodgerblue1")
-        pdf_name = paste0(ID, "-logo-", logo_type, ".pdf")
+        barplot_color <- c("darkorange1","darkgreen", "dodgerblue1")
+        pdf_name <- paste0(ID, "-logo-", logo_type, ".pdf")
       }
       else if (meth_level == "methylated")
       {
         plot_beta_score <- plot_beta_score[which(plot_beta_score$meth == "beta score>90%"), ]
         plot_beta_score$pos <- factor(plot_beta_score$pos, levels = seq(1,motif_length,1))
         ylim <- round(max(as.vector(MMBetaScore[3, ]))/1000+1)*1000+500
-        barplot_color = c("darkorange1")
-        pdf_name = paste0(ID, "-logo-", logo_type, "-methylated-only.pdf")
+        barplot_color <- c("darkorange1")
+        pdf_name <- paste0(ID, "-logo-", logo_type, "-methylated-only.pdf")
       }
       else
       {
@@ -109,15 +113,19 @@ plotLogo <- function(MM_object, logo_type="entropy", meth_level="all")
               axis.ticks.y=element_blank(), axis.ticks.x=element_blank(), axis.text.x=element_blank(),
               legend.title = element_blank(), legend.background = element_blank(),
               legend.box.background = element_rect(colour = "black"), legend.key.size = unit(0.8,"line"),
-              legend.position=c(0.9,0.9), plot.margin = margin(t = 10, r = 20, b = 0, l = 19, unit = "pt"),
+              legend.position=c(0.9,0.9), plot.margin = margin(t = 10, r = 20, b = 0, l = 35, unit = "pt"),
               panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-              panel.background = element_blank()) +
-        stat_summary(fun.y = sum, aes(label = stat(sum_of_pos$sum), group = pos), geom = "text",vjust = -0.5)
+              panel.background = element_blank(),
+              plot.title = element_text(hjust = 0.5, size = 10)) +
+        stat_summary(fun.y = sum, aes(label = stat(sum_of_pos$sum), group = pos), geom = "text",vjust = -0.5)+
+        ggtitle(title_for_nPeaks)
     }
     else
     {
       p1 <- ggplot() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                                panel.background = element_blank())
+                                panel.background = element_blank(),
+                             plot.title = element_text(hjust = 0.5, size = 10))+
+        ggtitle(title_for_nPeaks)
       pdf_name = paste0(ID, "-logo-", logo_type, ".pdf")
     }
 
@@ -125,19 +133,19 @@ plotLogo <- function(MM_object, logo_type="entropy", meth_level="all")
     #size xlab
     if (motif_length>40)
     {
-      xlab_size = 4
+      xlab_size <- 4
     }
     else
     {
-      xlab_size = -0.5*motif_length+24
+      xlab_size <- -0.5*motif_length+24
     }
     #plot motif logo
     p2 <- ggplot() + geom_logo(data = motif_matrix, method = logo_method) +
-        theme(axis.title.y=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank(),
+        theme(axis.title.y=element_blank(),
               axis.ticks.x=element_blank(),axis.text.x=element_text(size=xlab_size),
-              plot.margin = margin(t = 0, r = 0, b = 0, l = 0, unit = "pt"),
+              plot.margin = margin(t = 0, r = 0, b = 0, l = 0, unit =  "pt"),
               panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-              panel.background = element_blank())
+              panel.background = element_blank())+ylim(0,y_max)
 
     #combine p1 and p2 together
     p3 <- grid.arrange(p1,p2, nrow=2)

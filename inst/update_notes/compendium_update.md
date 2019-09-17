@@ -1,12 +1,17 @@
-## Current TFBSs in TFregulomeR compendium v1.1.0
-What's new in the version:
+## Current TFBSs in TFregulomeR compendium v1.2.0
+What's new in the version v1.2.0 - 6 September 2019:
+
+1) More detailed information about motifs added: i) consistency with the existing databases (HOCOMOCO and JASPAR); ii) correlation of the motifs identified by different motif callers, MEME-ChIP and HOMER, if not consistent or not recorded in the databases.
+
+
+## Previous TFregulomeR data compendium 
+### version: 1.1.0 - 31 July 2019
+What's new in the version v1.1.0:
 1) 92 TFBSs with DNA methylation levels were included from MethMotif
 2) Tag fold change values were added for each TF peak set. Tag fold change values were obtained from MACS2 outputs and it measures the fold change of reads in the TF ChIP-seq compared to the control ChIP-seq
 3) Re-annotate cell and tissue names.
 
-
-## Previous TFregulomeR data compendium 
-### version: 1.0.0
+### version: 1.0.0 - 7 May 2019
 
 | Item     | Count |
 | :---------:|:------:|

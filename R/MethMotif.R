@@ -12,6 +12,7 @@ MMmotif <- setClass(
     alternate_name = "character",
     width = "integer",
     nsites = "integer",
+    nPeaks = "integer",
     evalue = "numeric",
     motif_matrix = "matrix"
   ),
@@ -26,19 +27,24 @@ MMmotif <- setClass(
     alternate_name = "",
     width = 0L,
     nsites = 0L,
+    nPeaks = 0L,
     evalue = 0,
     motif_matrix = matrix()
   )
 )
 setGeneric(name = "updateMMmotif",
-           def = function(theObject, motif_format, version, alphabet, strand, background, id, alternate_name, width, nsites, evalue, motif_matrix)
+           def = function(theObject, motif_format, version, alphabet, strand,
+                          background, id, alternate_name, width, nsites, nPeaks,
+                          evalue, motif_matrix)
            {
              standardGeneric("updateMMmotif")
            }
 )
 setMethod(f = "updateMMmotif",
           signature(theObject = "MMmotif"),
-          definition = function(theObject, motif_format, version, alphabet, strand, background, id, alternate_name, width, nsites, evalue, motif_matrix)
+          definition = function(theObject, motif_format, version, alphabet, strand,
+                                background, id, alternate_name, width, nsites, nPeaks,
+                                evalue, motif_matrix)
           {
             if (missing(theObject))
             {
@@ -115,6 +121,14 @@ setMethod(f = "updateMMmotif",
                 stop("'nsites' should be integer!")
               }
               theObject@nsites <- nsites
+            }
+            if (!missing(nPeaks))
+            {
+              if (!is.integer(nPeaks))
+              {
+                stop("'nPeaks' should be integer!")
+              }
+              theObject@nPeaks <- nPeaks
             }
             if (!missing(evalue))
             {

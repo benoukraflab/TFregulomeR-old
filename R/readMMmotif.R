@@ -1,4 +1,5 @@
-readMMmotif <- function(motif_file_path, motif_format, motif_file_path_MEME)
+readMMmotif <- function(motif_file_path, motif_format, id, num_peak,
+                        nsites, motif_file_path_MEME)
 {
   con <- tryCatch({
     file(motif_file_path, "r")
@@ -65,22 +66,21 @@ readMMmotif <- function(motif_file_path, motif_format, motif_file_path_MEME)
           line_vector <- line_vector[line_vector != ""]
           if (nchar(line_vector[2]) > nchar(line_vector[3]))
           {
-            MMmotif_id <- as.character(line_vector[2])
+            MMmotif_id <- id
             alternate_name <- as.character(line_vector[3])
           }
           else
           {
-            MMmotif_id <- as.character(line_vector[3])
+            MMmotif_id <- id
             alternate_name <- as.character(line_vector[2])
           }
         }
-        # width, nsites, evalue
+        # width, evalue
         if (line_count == 12)
         {
           line_vector <- unlist(strsplit(as.character(line), split=" "))
           line_vector <- line_vector[line_vector != ""]
           width <- as.integer(line_vector[6])
-          nsites <- as.integer(line_vector[8])
           evalue <- as.numeric(line_vector[10])
         }
         # motif matrix
@@ -98,9 +98,12 @@ readMMmotif <- function(motif_file_path, motif_format, motif_file_path_MEME)
       colnames(motif_matrix) <- c("A", "C", "G", "T")
       close(con)
       MMmotif <- new("MMmotif")
-      MMmotif <- updateMMmotif(MMmotif, motif_format = motif_format, version = version, alphabet = alphabet,
-                              strand = strand, background = background, id = MMmotif_id, alternate_name = alternate_name,
-                              width = width, nsites = nsites, evalue = evalue, motif_matrix = motif_matrix )
+      MMmotif <- updateMMmotif(MMmotif, motif_format = motif_format,
+                               version = version, alphabet = alphabet,
+                              strand = strand, background = background,
+                              id = MMmotif_id, alternate_name = alternate_name,
+                              width = width, nsites = nsites, nPeaks = num_peak,
+                              evalue = evalue, motif_matrix = motif_matrix )
     }
     else
     {
@@ -118,12 +121,12 @@ readMMmotif <- function(motif_file_path, motif_format, motif_file_path_MEME)
           line_vector <- line_vector[line_vector != ""]
           if (nchar(line_vector[2]) > nchar(line_vector[3]))
           {
-            MMmotif_id <- as.character(line_vector[2])
+            MMmotif_id <- id
             alternate_name <- as.character(line_vector[3])
           }
           else
           {
-            MMmotif_id <- as.character(line_vector[3])
+            MMmotif_id <- id
             alternate_name <- as.character(line_vector[2])
           }
         }
@@ -163,12 +166,11 @@ readMMmotif <- function(motif_file_path, motif_format, motif_file_path_MEME)
           background <- c("A"=as.numeric(line_vector[2]), "C"=as.numeric(line_vector[4]),
                          "G"=as.numeric(line_vector[6]), "T"=as.numeric(line_vector[8]))
         }
-        # width, nsites, evalue
+        # width, evalue
         if (line_count_MEME == 12)
         {
           line_vector <- unlist(strsplit(as.character(line), split=" "))
           line_vector <- line_vector[line_vector != ""]
-          nsites <- as.integer(line_vector[8])
           evalue <- as.numeric(line_vector[10])
           break
         }
@@ -176,9 +178,11 @@ readMMmotif <- function(motif_file_path, motif_format, motif_file_path_MEME)
       close(con_MEME)
 
       MMmotif <- new("MMmotif")
-      MMmotif <- updateMMmotif(MMmotif, motif_format = motif_format, version = 0, alphabet = "ACGT",
+      MMmotif <- updateMMmotif(MMmotif, motif_format = motif_format,
+                               version = 0, alphabet = "ACGT",
                               strand = "+ -", background = background,
-                              id = MMmotif_id, alternate_name = alternate_name, width = width, nsites = nsites,
+                              id = MMmotif_id, alternate_name = alternate_name,
+                              width = width, nsites = nsites, nPeaks = num_peak,
                               evalue = evalue, motif_matrix = motif_matrix )
     }
 

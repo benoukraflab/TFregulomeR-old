@@ -77,11 +77,16 @@ searchMotif <- function(id, motif_format = "MEME", TFregulome_url)
         motif_file_path <- request_content_df[1, "motif_TRANSFAC"]
       }
       betaScore_file_path <- request_content_df[1, "beta_score_matrix"]
+      num_peak <- request_content_df[1,"peak_with_motif_num"]
+      nsites <- request_content_df[1,"TFBS_num"]
 
       # MEME file path for background extraction when motif formati is TRANSFAC
       motif_file_path_MEME <- request_content_df[1, "motif_MEME"]
       methmotif_item_motif <- readMMmotif(motif_file_path = motif_file_path,
                                           motif_format = motif_format,
+                                          id = id,
+                                          num_peak = as.integer(num_peak),
+                                          nsites = as.integer(nsites),
                                           motif_file_path_MEME = motif_file_path_MEME)
       methmotif_item_betaScore <- readBetaScoreMatrix(betaScore_file_path = betaScore_file_path)
       methmotif_item <- new("MethMotif")

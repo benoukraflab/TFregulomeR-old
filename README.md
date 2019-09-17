@@ -8,7 +8,7 @@
 
 TFregulomeR
 
-Version: 1.1.0
+Version: 1.2.0
 
 # Introduction
 *TFregulomeR* comprises of a comprehensive compendium of transcription factor binding sites (TFBSs) derived from the MethMotif and GTRD, as well as the ready-to-use functionality in R language facilitating data access, integration and analysis. The binding motifs predicted in-silico from MethMotif and GTRD describe cell specific transcription factor (TF) binding propensities, while the DNA methylation profiles from MethMotif portray a second epigenetic dimension in TF binding events. The whole toolbox allows a better understanding of the TF binding propensities in a cell-specific manner. 
@@ -17,7 +17,7 @@ Version: 1.1.0
 
 ## Release notes
 #### This repository is TFregulomeR stable release 
-#### Current TFregulomeR development version: 1.1.0 (Updated on 25 July 2019).
+#### Current TFregulomeR stable version: 1.2.0 (Updated on 6 September 2019).
 
 
 #### For development release, please visit [TFregulomeR-dev](https://github.com/linquynus/TFregulomeR-dev)
@@ -30,10 +30,10 @@ You can check detailed package instructions in [Vignettes](https://linquynus.git
 
 -------
 
-## Current Functionalities v1.1.0
+## Current Functionalities v1.2.0
 ### Click [here](./inst/update_notes/functionality_update.md) for functionality update notes
 
-1) Browse the TFregulomeR data warehouse (TFBSBrowser)
+1) Browse the TFregulomeR data warehouse (dataBrowser)
 2) Load TF peaks (loadPeaks)
 3) Search motif matrix and DNA methylation score matrix (searchMotif)
 4) Plot motif or MethMotif logo (plotLogo)
@@ -53,11 +53,11 @@ You can check detailed package instructions in [Vignettes](https://linquynus.git
 
  ### Click [here](./inst/update_notes/compendium_update.md) for TFregulomeR compendium update notes
 
-TFregulomeR data compendium version: 1.1.0
+TFregulomeR data compendium version: 1.2.0
 
 | Item     | Count |
 | :---------:|:------:|
-| TFBS     | 1468   |
+| PWM matrix     | 1468   |
 | ChIP-seq experiments    | 3891   |
 | Unique TF     | 415   |
 | TFBS with DNA methylation records    | 655   |
@@ -92,9 +92,9 @@ The scripts of case studies used in our manuscript are available as below.
 
 ## Installation
 
-#### Prerequisite packages (Will be installed automatically)
+#### Prerequisite packages
 
-1) Required packages: the packages below are the basic prerequisite packages for *TFregulomeR* functionalities
+1) Required packages: the packages below are the basic prerequisite packages for *TFregulomeR* functionalities  (Will be installed automatically)
 
     - [jsonlite](https://cran.r-project.org/web/packages/jsonlite/index.html) (>= 1.5)
     - [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) (>= 3.0.0)

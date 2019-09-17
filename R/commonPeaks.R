@@ -105,7 +105,8 @@ commonPeaks <- function(target_peak_id,
     message("... loading TFBS(s) from TFregulomeR now")
     for (i in target_peak_id)
     {
-      peak_i <- suppressMessages(loadPeaks(id = i, includeMotifOnly = motif_only_for_target_peak, TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
+      peak_i <- suppressMessages(loadPeaks(id = i, includeMotifOnly = motif_only_for_target_peak,
+                                           TFregulome_url = gsub("api/table_query/", "", TFregulome_url)))
       if (is.null(peak_i))
       {
         message(paste0("... ... NO peak file for your id '", i,"'."))
@@ -387,8 +388,16 @@ commonPeaks <- function(target_peak_id,
                                           id=target_peak_i$id)
         suppressWarnings(motif_of_bed_target_done_common <- subsetByOverlaps(motif_seq_target_grange, bed_target_done_common))
         motif_of_peakTarget_done_common <- unique(as.data.frame(motif_of_bed_target_done_common))
+
         if (nrow(motif_of_peakTarget_done_common)>0)
         {
+          # nPeaks
+          suppressWarnings(peaks_with_motif_gr <- subsetByOverlaps(bed_target_done_common,
+                                                                   motif_seq_target_grange))
+          peaks_with_motif_df <- unique(as.data.frame(peaks_with_motif_gr))
+          number_of_target_peak_i_with_motif <- nrow(peaks_with_motif_df)
+
+
           motif_of_peakTarget_done_common_allInfo <- motif_seq_target[which(motif_seq_target$id %in% motif_of_peakTarget_done_common$id),]
           motif_matrix_of_peakTarget_done_common <- formMatrixFromSeq(input_sequence = as.vector(motif_of_peakTarget_done_common_allInfo$sequence),
                                                                       motif_format = motif_type)
@@ -443,7 +452,8 @@ commonPeaks <- function(target_peak_id,
                                                     id = paste0(target_id_i,"_common_peaks"),
                                                     alternate_name = target_id_i,
                                                     width = motif_len_target,
-                                                    nsites=nrow(motif_of_peakTarget_done_common),
+                                                    nsites = nrow(motif_of_peakTarget_done_common),
+                                                    nPeaks = number_of_target_peak_i_with_motif,
                                                     motif_matrix=motif_matrix_of_peakTarget_done_common)
           MethMotif_target@MMBetaScore <- beta_score_matrix_of_peakTarget_done_common
         }

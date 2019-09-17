@@ -1,4 +1,4 @@
-export('TFBSBrowser')
+export('dataBrowser')
 export('searchMotif')
 export('exclusivePeaks')
 export('exclusivePeakResult')

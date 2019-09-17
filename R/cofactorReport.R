@@ -89,8 +89,9 @@ cofactorReport <- function(intersectPeakMatrix,
                                                            ncol = 5))
         colnames(intersect_matrix_heatmap_i) <- c("x","new_x","y","new_y","value")
         intersect_matrix_heatmap_i$y <- rownames(intersect_matrix_order_i)
-        intersect_matrix_heatmap_i$new_y <- unlist(lapply(rownames(intersect_matrix_order_i),
-                                                          function(x) tail(unlist(strsplit(x,split = "_")),1)))
+        intersect_matrix_heatmap_i$new_y <- paste(unlist(lapply(rownames(intersect_matrix_order_i),
+                                                          function(x) tail(unlist(strsplit(x,split = "_")),1))),
+                                                   rev(rownames(intersect_matrix_heatmap_i)), sep = "-")
         intersect_matrix_heatmap_i$x <- colnames(intersect_matrix_order_i)
         intersect_matrix_heatmap_i$new_x <- unlist(lapply(colnames(intersect_matrix_order_i),
                                                           function(x) tail(unlist(strsplit(x,split = "_")),1)))
@@ -112,7 +113,7 @@ cofactorReport <- function(intersectPeakMatrix,
                   axis.title=element_blank(),
                   axis.ticks = element_blank(),
                   plot.margin = margin(t = 0, r = 0, b = 0, l = 0, unit = "pt"),
-                  axis.text.x = element_text(size=6),axis.text.y = element_text(size=6),
+                  axis.text.x = element_text(size=6),axis.text.y = element_text(size=5),
                   legend.position = "none")+
             scale_y_discrete(breaks=cobinding_ylabel,
                              labels=cobinding_ylabel_new)
@@ -191,8 +192,10 @@ cofactorReport <- function(intersectPeakMatrix,
             methylation_matrix_inside$x <- colnames(intersect_matrix_order_i)
             methylation_matrix_inside$y <- unlist(lapply(rownames(intersect_matrix_order_i),
                                                          function(x) rep(x,3)))
-            methylation_matrix_inside$new_y <- unlist(lapply(methylation_matrix_inside$y,
-                                                             function(x) tail(unlist(strsplit(x,split = "_")),1)))
+            methylation_matrix_inside$new_y <- paste(unlist(lapply(methylation_matrix_inside$y,
+                                                             function(x) tail(unlist(strsplit(x,split = "_")),1))),
+                                                     rep(rev(rownames(intersect_matrix_heatmap_i)), each=3),
+                                                     sep="-")
 
             for(j in seq(1,nrow(intersect_matrix_heatmap_i),1))
             {
@@ -254,8 +257,10 @@ cofactorReport <- function(intersectPeakMatrix,
             methylation_matrix$x <- colnames(intersect_matrix_order_i)
             methylation_matrix$y <- unlist(lapply(rownames(intersect_matrix_order_i),
                                                   function(x) rep(x,3)))
-            methylation_matrix$new_y <- unlist(lapply(methylation_matrix$y,
-                                                      function(x) tail(unlist(strsplit(x,split = "_")),1)))
+            methylation_matrix$new_y <- paste(unlist(lapply(methylation_matrix$y,
+                                                      function(x) tail(unlist(strsplit(x,split = "_")),1))),
+                                              rep(rev(rownames(intersect_matrix_heatmap_i)), each=3),
+                                              sep="-")
 
             for (j in seq(1,nrow(intersect_matrix_order_i),1))
             {
@@ -396,7 +401,7 @@ cofactorReport <- function(intersectPeakMatrix,
         text2 <- textGrob("motif")
         text3 <- textGrob("methylation in motif")
         text4 <- textGrob("methylation in\n 200bp regions")
-        text5 = textGrob("read enrichment")
+        text5 <- textGrob("read enrichment")
 
         pdf_i_name <- paste0(id_i,"_cofactor_report.pdf")
         pdf(pdf_i_name)

@@ -1,7 +1,7 @@
 library(TFregulomeR)
 library(gplots)
 
-MAFF_TFBS <- TFBSBrowser(tf = "MAFF")
+MAFF_TFBS <- dataBrowser(tf = "MAFF")
 # plot (Meth)Motif logos for MAFF in all cell types (Figure 3A)
 for (i in MAFF_TFBS$ID){
     motif_i <- searchMotif(id = i)
@@ -31,7 +31,7 @@ K562_MAFF_exclu_res <- exclusivePeakResult(exclusivePeaks = K562_MAFF_exclu,
 K562_MAFF_exclu_peaks <- K562_MAFF_exclu_res$exclusive_peak_list$MM1_HSA_K562_MAFF_exclusive_peaks
 
 # cofactors in K562 exclusive MAFF targets
-K562_TFBS <- TFBSBrowser(cell_tissue_name = "K562")
+K562_TFBS <- dataBrowser(cell_tissue_name = "K562")
 K562_MAFF_exclu_peaks_intersect <- intersectPeakMatrix(user_peak_list_x = list(K562_MAFF_exclu_peaks),
                                                        user_peak_x_id = "MM1_HSA_K562_MAFF",
                                                        peak_id_y = K562_TFBS$ID,
@@ -42,12 +42,12 @@ K562_MAFF_exclu_peaks_intersect <- intersectPeakMatrix(user_peak_list_x = list(K
 cofactorReport(intersectPeakMatrix = K562_MAFF_exclu_peaks_intersect, cobinding_threshold = 0.1)
 
 # K562 exclusive MAFF targets without NFE2 and NFE2L2 co-binding
-K562_MAFF_exclu_no_NFE <- exclusivePeaks(user_target_peak_list = list(K562_MAFF_exclu_peaks), 
+K562_MAFF_exclu_no_NFE <- exclusivePeaks(user_target_peak_list = list(K562_MAFF_exclu_peaks),
                                          user_target_peak_id = "MM1_HSA_K562_MAFF",
                                          excluded_peak_id = c("MM1_HSA_K562_NFE2",
-                                                              "MM1_HSA_K562_NFE2L2"), 
+                                                              "MM1_HSA_K562_NFE2L2"),
                                          motif_only_for_excluded_peak = TRUE)
-K562_MAFF_exclu_no_NFE_res <- exclusivePeakResult(exclusivePeaks = K562_MAFF_exclu_no_NFE, 
+K562_MAFF_exclu_no_NFE_res <- exclusivePeakResult(exclusivePeaks = K562_MAFF_exclu_no_NFE,
                                                   return_exclusive_peak_sites = TRUE,
                                                   save_MethMotif_logo = TRUE)
 K562_MAFF_exclu_no_NFE_peaks <- K562_MAFF_exclu_no_NFE_res$exclusive_peak_list$MM1_HSA_K562_MAFF_exclusive_peaks
@@ -56,7 +56,7 @@ K562_MAFF_exclu_no_NFE_peaks <- K562_MAFF_exclu_no_NFE_res$exclusive_peak_list$M
 K562_MAFF_exclu_no_NFE_cofactor <- intersectPeakMatrix(user_peak_list_x = list(K562_MAFF_exclu_no_NFE_peaks),
                                                         user_peak_x_id = "MM1_HSA_K562_MAFF",
                                                         peak_id_y = K562_TFBS$ID,
-                                                        motif_only_for_id_y = TRUE, 
+                                                        motif_only_for_id_y = TRUE,
                                                         methylation_profile_in_narrow_region = TRUE)
 cofactorReport(K562_MAFF_exclu_no_NFE_cofactor, cobinding_threshold = 0.1)
 
@@ -73,7 +73,7 @@ HeLa_MAFF_exclu_res <- exclusivePeakResult(exclusivePeaks = HeLa_MAFF_exclu,
 HeLa_MAFF_exclu_res_peaks <- HeLa_MAFF_exclu_res$exclusive_peak_list$`MM1_HSA_HeLa-S3_MAFF_exclusive_peaks`
 
 # cofactors in HeLa-S3 exclusive MAFF targets
-HeLa_TFBS <- TFBSBrowser(cell_tissue_name = "HeLa-S3")
+HeLa_TFBS <- dataBrowser(cell_tissue_name = "HeLa-S3")
 HeLa_MAFF_exclu_peaks_cofactor <- intersectPeakMatrix(user_peak_list_x = list(HeLa_MAFF_exclu_res_peaks),
                                                        user_peak_x_id = "MM1_HSA_HeLa-S3_MAFF",
                                                        peak_id_y = HeLa_TFBS$ID,
@@ -98,7 +98,7 @@ HepG2_MAFF_exclu_res <- exclusivePeakResult(exclusivePeaks = HepG2_MAFF_exclu,
 HepG2_MAFF_exclu_peaks <- HepG2_MAFF_exclu_res$exclusive_peak_list$MM1_HSA_HepG2_MAFF_exclusive_peaks
 
 # cofactors in HepG2 exclusive MAFF targets
-HepG2_TFBS <- TFBSBrowser(cell_tissue_name = "HepG2")
+HepG2_TFBS <- dataBrowser(cell_tissue_name = "HepG2")
 HepG2_MAFF_exclu_peaks_cofactor <- intersectPeakMatrix(user_peak_list_x = list(HepG2_MAFF_exclu_peaks),
                                                         user_peak_x_id = "MM1_HSA_HepG2_MAFF",
                                                         peak_id_y = HepG2_TFBS$ID,
@@ -110,4 +110,33 @@ HepG2_MAFF_exclu_peaks_cofactor_res <- intersectPeakMatrixResult(intersectPeakMa
                                                                   return_intersection_matrix = TRUE,
                                                                   return_methylation_profile = TRUE)
 ############### HepG2 exclusive MAFF targets (Figure 3B and C) #################################
+
+############### Identify MAFF motif in K562 NFE2 peaks (Supplementary Figure 5B) #####################
+# 1) plot NFE2 overal motif logo
+NFE2_motif <- searchMotif(id="MM1_HSA_K562_NFE2")
+plotLogo(MM_object = NFE2_motif)
+# 2) get NFE2 peaks co-bound by MAFF
+NFE2_with_MAFF <- commonPeaks(target_peak_id = "MM1_HSA_K562_NFE2",
+                             motif_only_for_target_peak = TRUE,
+                             compared_peak_id = "MM1_HSA_K562_MAFF",
+                             motif_only_for_compared_peak = TRUE)
+NFE2_with_MAFF_res <- commonPeakResult(commonPeaks = NFE2_with_MAFF,
+                                      return_common_peak_sites = TRUE,
+                                      save_MethMotif_logo = TRUE)
+NFE2_peaks_with_MAFF = NFE2_with_MAFF_res$common_peak_list$MM1_HSA_K562_NFE2_common_peaks
+
+# 3) get all K562 PWM IDs except NFE2 and MAFF
+K562_TFBS <- dataBrowser(cell_tissue_name = "K562")
+K562_TFBS_no_NFE2_MAFF <- K562_TFBS$ID[(K562_TFBS$ID != "MM1_HSA_K562_NFE2" &
+                                           K562_TFBS$ID != "MM1_HSA_K562_MAFF")]
+
+NFE2_with_MAFF_no_other <- exclusivePeaks(user_target_peak_list = list(NFE2_peaks_with_MAFF),
+                                         user_target_peak_id = "MM1_HSA_K562_NFE2",
+                                         excluded_peak_id = K562_TFBS_no_NFE2_MAFF,
+                                         motif_only_for_excluded_peak = TRUE)
+NFE2_with_MAFF_no_other_res <- exclusivePeakResult(exclusivePeaks = NFE2_with_MAFF_no_other,
+                                                  save_MethMotif_logo = TRUE)
+############### Identify MAFF motif in K562 NFE2 peaks (Supplementary Figure 5B) #####################
+
+
 

@@ -1,6 +1,6 @@
-#' Browse the current TFBSs available in TFregulomeR
+#' Browse the current data available in TFregulomeR
 #'
-#' This function allows you to get the current TFBSs in TFregulomeR
+#' This function allows you to get the current data in TFregulomeR
 #' @param species The species of interset
 #' @param organ The organ of interset
 #' @param sample_type The sample type of interset
@@ -10,12 +10,12 @@
 #' @param source The source of interset
 #' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
 #' @return  data.frame containing the information of the queried TFBSs in TFregulomeR
-#' @keywords TFBS
+#' @keywords ChIPseq data
 #' @export
 #' @examples
-#' TFBS_brain <- TFBSBrowser(organ = "brain")
+#' TFBS_brain <- dataBrowser(organ = "brain")
 
-TFBSBrowser <- function(species, organ, sample_type, cell_tissue_name,
+dataBrowser <- function(species, organ, sample_type, cell_tissue_name,
                         tf, disease_state, source, TFregulome_url)
 {
   # make an appropriate API url
@@ -112,7 +112,10 @@ TFBSBrowser <- function(species, organ, sample_type, cell_tissue_name,
                                                         "description",
                                                         "disease_state",
                                                         "TF","source","source_ID",
-                                                        "peak_num","peak_with_motif_num")]
+                                                        "peak_num",
+                                                        "peak_with_motif_num",
+                                                        "Consistent_with_HOCOMOCO_JASPAR",
+                                                        "Ncor_between_MEME_ChIP_and_HOMER")]
       tfbs_num <- nrow(request_content_df_output)
       species_result <- unique(request_content_df_output$species)
       species_num <- length(species_result)
@@ -125,7 +128,7 @@ TFBSBrowser <- function(species, organ, sample_type, cell_tissue_name,
       disease_state_num <- length(disease_state_result)
       tf_num <- length(unique(request_content_df_output$TF))
       source_result <- unique(request_content_df_output$source)
-      message(paste0(tfbs_num," TFBS(s) found: ..."))
+      message(paste0(tfbs_num," record(s) found: ..."))
       message(paste0("... covering ", tf_num, " TF(s)"))
       message(paste0("... from ", species_num," species:"))
       message(paste0("... ...", paste0(species_result, collapse = ", ")))

@@ -530,6 +530,10 @@ intersectPeakMatrix <- function(peak_id_x,
           motif_of_peakx_with_peaky <- unique(as.data.frame(motif_of_peakx_with_peaky_grange))
           if (nrow(motif_of_peakx_with_peaky) > 0)
           {
+            #nPeaks
+            suppressWarnings(peakx_with_peaky_with_motif_grange <- subsetByOverlaps(bedx_with_bedy, motif_seq_x_grange))
+            peakx_with_peaky_with_motif_df <- unique(as.data.frame(peakx_with_peaky_with_motif_grange))
+
             motif_of_peakx_with_peaky_allInfo <- motif_seq_x[which(motif_seq_x$id %in% motif_of_peakx_with_peaky$id),]
             motif_matrix_of_peakx_with_y <- formMatrixFromSeq(input_sequence = as.vector(motif_of_peakx_with_peaky_allInfo$sequence),
                                                               motif_format = motif_type)
@@ -583,6 +587,7 @@ intersectPeakMatrix <- function(peak_id_x,
                                                  id = paste0(id_x,"_overlapped_with_", id_y),
                                                  width = motif_len_x,
                                                  nsites=nrow(motif_of_peakx_with_peaky),
+                                                 nPeaks=nrow(peakx_with_peaky_with_motif_df),
                                                  motif_matrix=motif_matrix_of_peakx_with_y)
             MethMotif_x@MMBetaScore <- beta_score_matrix_of_peakx_with_y
           }
@@ -728,6 +733,10 @@ intersectPeakMatrix <- function(peak_id_x,
           motif_of_peaky_with_peakx <- unique(as.data.frame(motif_of_peaky_with_peakx_grange))
           if (nrow(motif_of_peaky_with_peakx) > 0)
           {
+            #nPeaks
+            suppressWarnings(peaky_with_peakx_with_motif_grange <- subsetByOverlaps(bedy_with_bedx, motif_seq_y_grange))
+            peaky_with_peakx_with_motif_df <- unique(as.data.frame(peaky_with_peakx_with_motif_grange))
+
             motif_of_peaky_with_peakx_allInfo <- motif_seq_y[which(motif_seq_y$id %in% motif_of_peaky_with_peakx$id),]
             motif_matrix_of_peaky_with_x <- formMatrixFromSeq(input_sequence = as.vector(motif_of_peaky_with_peakx_allInfo$sequence),
                                                               motif_format = motif_type)
@@ -781,6 +790,7 @@ intersectPeakMatrix <- function(peak_id_x,
                                                  id = paste0(id_y,"_overlapped_with_", id_x),
                                                  width = motif_len_y,
                                                  nsites=nrow(motif_of_peaky_with_peakx),
+                                                 nPeaks=nrow(peaky_with_peakx_with_motif_df),
                                                  motif_matrix=motif_matrix_of_peaky_with_x)
             MethMotif_y@MMBetaScore <- beta_score_matrix_of_peaky_with_x
           }
