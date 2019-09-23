@@ -60,7 +60,7 @@ TFregulomeR data compendium version: 1.2.0
 | # of PWM     | 1468   |
 | ChIP-seq experiments    | 3891   |
 | Unique TF     | 415   |
-| TFBS with DNA methylation records    | 655   |
+| # of PWM with DNA methylation records    | 655   |
 | Species     | human (hg38)  |
 | Organ   | stem_cell, blood_and_lymph, connective_tissue, colorectum, brain, bone, stomach, prostate, breast, pancreas, skin, kidney, lung, eye, esophagus, heart, muscle, uterus, spleen, cervix, testis, liver, adrenal_gland, neck_and_mouth, pleura, ovary, thymus, fallopian, vagina   |
 | Sample type | primary_cells, cell_line, tissue
