@@ -57,7 +57,7 @@ TFregulomeR data compendium version: 1.2.0
 
 | Item     | Count |
 | :---------:|:------:|
-| PWM matrix     | 1468   |
+| # of PWM     | 1468   |
 | ChIP-seq experiments    | 3891   |
 | Unique TF     | 415   |
 | TFBS with DNA methylation records    | 655   |
