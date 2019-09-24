@@ -1,6 +1,6 @@
 Changes in version 1.2.0 (2019-09-06)
 + Changed the function name TFBSBrowser to dataBrowser.
-+ More detailed information about motifs, such as consistency with exisiting database and correlation between different motif callers, added in the output of dataBrowser.
++ More detailed information about motifs, such as consistency with existing database and correlation between different motif callers, added in the output of dataBrowser.
 + Fixed some bugs in function cofactorReport.
 + Added y axis and number of peaks with motif in the output of plotLogo.
 

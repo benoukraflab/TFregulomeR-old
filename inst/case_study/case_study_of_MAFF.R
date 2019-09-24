@@ -120,7 +120,7 @@ NFE2_with_MAFF <- commonPeaks(target_peak_id = "MM1_HSA_K562_NFE2",
 NFE2_with_MAFF_res <- commonPeakResult(commonPeaks = NFE2_with_MAFF,
                                       return_common_peak_sites = TRUE,
                                       save_MethMotif_logo = TRUE)
-NFE2_peaks_with_MAFF = NFE2_with_MAFF_res$common_peak_list$MM1_HSA_K562_NFE2_common_peaks
+NFE2_peaks_with_MAFF <- NFE2_with_MAFF_res$common_peak_list$MM1_HSA_K562_NFE2_common_peaks
 
 # 3) get all K562 PWM IDs except NFE2 and MAFF
 K562_TFBS <- dataBrowser(cell_tissue_name = "K562")

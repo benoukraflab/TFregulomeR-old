@@ -336,7 +336,7 @@ ATF4_with_CEBPB <- commonPeaks(target_peak_id = "MM1_HSA_K562_ATF4",
 ATF4_with_CEBPB_res <- commonPeakResult(commonPeaks = ATF4_with_CEBPB,
                                        return_common_peak_sites = TRUE,
                                        save_MethMotif_logo = TRUE)
-ATF4_peaks_with_CEBPB = ATF4_with_CEBPB_res$common_peak_list$MM1_HSA_K562_ATF4_common_peaks
+ATF4_peaks_with_CEBPB <- ATF4_with_CEBPB_res$common_peak_list$MM1_HSA_K562_ATF4_common_peaks
 
 K562_TFBS <- dataBrowser(cell_tissue_name = "K562")
 # 3) get all K562 PWM IDs except CEBPB and ATF4
