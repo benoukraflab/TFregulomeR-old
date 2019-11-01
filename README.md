@@ -16,11 +16,15 @@ Version: 1.2.0
 -------
 
 ## Release notes
-#### This repository is TFregulomeR stable release 
-#### Current TFregulomeR stable version: 1.2.0 (Updated on 6 September 2019).
+ This repository is TFregulomeR stable release 
+
+ 1) Current TFregulomeR stable version: 1.2.0 (Updated on 6 September 2019).
 
 
-#### For development release, please visit [TFregulomeR-dev](https://github.com/linquynus/TFregulomeR-dev)
+### For development release, please visit [TFregulomeR-dev](https://github.com/linquynus/TFregulomeR-dev) 
+
+1) Current TFregulomeR developement version 1.2.1 (Updated on 25 October 2019).
+2) For linking to human and mouse TF data compendium, please use TFregulomeR test version 1.99.0 @ brunch _with_mouse_version_.
 
 -------
 
