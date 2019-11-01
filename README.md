@@ -24,7 +24,7 @@ Version: 1.2.0
 ### For development release, please visit [TFregulomeR-dev](https://github.com/linquynus/TFregulomeR-dev) 
 
 1) Current TFregulomeR developement version 1.2.1 (Updated on 25 October 2019).
-2) For linking to human and mouse TF data compendium, please use TFregulomeR test version 1.99.0 @ brunch _with_mouse_version_.
+2) For linking to human and mouse TF data compendium, please use TFregulomeR test version 1.99.1 @ brunch _with_mouse_version_ (Updated on 1 November 2019).
 
 -------
 
