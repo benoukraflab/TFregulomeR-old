@@ -30,7 +30,7 @@ Version: 1.2.0
 
 
 ## Documentation
-You can check detailed package instructions in [Vignettes](https://linquynus.github.io)
+You can check detailed package instructions in [Vignettes](https://bioinfo-csi.nus.edu.sg/methmotif/API_TFregulomeR/TFregulomeR-Vignettes.html)
 
 -------
 
