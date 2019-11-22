@@ -76,7 +76,11 @@ TFregulomeR data compendium version: 1.2.0
 
 ## Citation
 
+<<<<<<< HEAD
 Quy Xiao Xuan Lin, Denis Thieffry, Sudhakar Jha, Touati Benoukraf. (2019) **TFregulomeR reveals transcription factors’ context-specific features and functions.** _Nucleic Acids Res._, 10.1093/nar/gkz1088. [[Manuscript](https://doi.org/10.1093/nar/gkz1088)]
+=======
+Quy Xiao Xuan Lin, Denis Thieffry, Sudhakar Jha, Touati Benoukraf.  _TFregulomeR reveals transcription factors’ context-specific features and functions._ 2019. Nucleic Acids Research, Nov. 2019, doi: 10.1093/nar/gkz1088
+>>>>>>> 345be34e1527bd0140d98683dd46ee5f8e5a35a4
 
 -------
 
