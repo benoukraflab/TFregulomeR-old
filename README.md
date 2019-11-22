@@ -76,10 +76,7 @@ TFregulomeR data compendium version: 1.2.0
 
 ## Citation
 
-A manuscript describing *TFregulomeR* has been submitted for peer review. If you currently use *TFregulomeR*, please cite us as follows:
-
-
-Quy Xiao Xuan Lin, Denis Thieffry, Sudhakar Jha, Touati Benoukraf.  _TFregulomeR reveals transcription factors’ context-specific features and functions._ 2019. https://github.com/benoukraflab/TFregulomeR
+Quy Xiao Xuan Lin, Denis Thieffry, Sudhakar Jha, Touati Benoukraf. (2019) **TFregulomeR reveals transcription factors’ context-specific features and functions.** _Nucleic Acids Res._, 10.1093/nar/gkz1088. [[Manuscript](https://doi.org/10.1093/nar/gkz1088)]
 
 -------
 
