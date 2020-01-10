@@ -20,7 +20,7 @@ Imports: graphics,
          S4Vectors (>= 0.18.3), 
          GenomicRanges (>= 1.32.7),
          curl (>= 3.2)
-License: Artistic-2.0
+License: GPL-3.0
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1

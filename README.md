@@ -128,4 +128,4 @@ The step above will automatically install the required packages. However, you st
 
 ## License
 
-Artistic-2.0
+GNU General Public License v3.0
