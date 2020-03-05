@@ -4,12 +4,14 @@
 \alias{toTFBSTools}
 \title{convert motif PFM in TFregulomeR into PFMatrix class object in TFBSTools package}
 \usage{
-toTFBSTools(id, TFregulome_url)
+toTFBSTools(id, server = "sg", TFregulome_url)
 }
 \arguments{
 \item{id}{Required. TFregulomeR ID.}
 
-\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{server}{server localtion to be linked, either 'sg' or 'ca'.}
+
+\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/" or "http://methmotif.org", please use a new url.}
 }
 \value{
 An object of class PFMatrix

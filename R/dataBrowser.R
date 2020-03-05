@@ -8,7 +8,8 @@
 #' @param tf The TF of interset
 #' @param disease_state The disease state of interset
 #' @param source The source of interset
-#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
+#' @param server server localtion to be linked, either 'sg' or 'ca'.
+#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/" or "http://methmotif.org", please use a new url.
 #' @return  data.frame containing the information of the queried TFBSs in TFregulomeR
 #' @keywords ChIPseq data
 #' @export
@@ -16,11 +17,25 @@
 #' TFBS_brain <- dataBrowser(organ = "brain")
 
 dataBrowser <- function(species, organ, sample_type, cell_tissue_name,
-                        tf, disease_state, source, TFregulome_url)
+                        tf, disease_state, source, server = 'sg',
+                        TFregulome_url)
 {
+  # check server location
+  if (server != "sg" && server != "ca")
+  {
+    stop("server should be either 'sg' (default) or 'ca'!")
+  }
+
   # make an appropriate API url
   if (missing(TFregulome_url)){
-    TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
+    if(server == 'sg')
+    {
+      TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
+    }
+    else
+    {
+      TFregulome_url <- "http://methmotif.org/api/table_query/"
+    }
   } else if (endsWith(TFregulome_url, suffix = "/index.php")==TRUE){
     TFregulome_url <- gsub("index.php", "", TFregulome_url)
     TFregulome_url <- paste0(TFregulome_url, "api/table_query/")
@@ -92,7 +107,7 @@ dataBrowser <- function(species, organ, sample_type, cell_tissue_name,
     message("Advice:")
     message("1) Check internet access;")
     message("2) Check dependent package 'jsonlite';")
-    message("3) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
+    message("3) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/' or 'http://methmotif.org'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
     message(paste0("warning: ",cond))
     return(NULL)
   })

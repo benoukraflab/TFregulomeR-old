@@ -4,14 +4,16 @@
 \alias{searchMotif}
 \title{Search motif PFM and beta score matrix (if source is MethMotif) for a given TFregulomeR ID in TFregulomeR}
 \usage{
-searchMotif(id, motif_format = "MEME", TFregulome_url)
+searchMotif(id, motif_format = "MEME", server = "sg", TFregulome_url)
 }
 \arguments{
 \item{id}{Required. TFregulomeR ID.}
 
 \item{motif_format}{Motif PFM format, either in MEME by default or TRANSFAC.}
 
-\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{server}{server localtion to be linked, either 'sg' or 'ca'.}
+
+\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/" or "http://methmotif.org", please use a new url.}
 }
 \value{
 MethMotif class object

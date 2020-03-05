@@ -1,13 +1,23 @@
-## Current Functionalities v1.2.0 (Development version)
-### What's new compared to last stable version v1.1.0 
+## Current Functionalities v2.0.0 - 5 March 2020
+### What's new compared to last version v1.2.2 
+1) Added new TFregulomeR compendium server in Canada. Users now can choose servers between Singapore and Canada.
+2) linked to mouse TFregulomeR compendium in Canada server, coming soon in Singapore server.
+
+
+## Previous  Version
+### Functionalities version 1.2.2 - 10 January 2020
+1) Modified the functions _intersectPeakMatrix_ and _intersectPeakMatrixResult_ to allow profiling of users' input external signals during pair-wise comparison analysis.
+2) Added a new function _interactome3D_ which could directly generate a dynamic 3D interface report showing TF interactome coupled with CpG methylation and users' input external signal values.
+
+### Functionalities version 1.2.1 - 25 October 2019
+1) Improved the function _greatAnnotate_, which now allows to use peak regions in hg38 directly with rGREAT >= 1.16.1 (no need liftover package).
+
+### Functionalities version 1.2.0 - 6 September 2019
 1) Changed the function name _TFBSBrowser_ to _dataBrowser_.
 2) More detailed information about motifs, such as consistency with exisiting database and correlation between different motif callers, added in the output of _dataBrowser_.
 3) Fixed some bugs in function _cofactorReport_.
 4) Added y axis and number of peaks with motif in the output of _plotLogo_.
 
-
-
-## Previous Stable Version
 ### Functionalities version 1.1.0 - 31 July 2019
 
 1) Browse the TFregulomeR data warehouse (TFBSBrowser)

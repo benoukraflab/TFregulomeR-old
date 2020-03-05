@@ -7,6 +7,9 @@
 #' @param return_tag_density Either TRUE of FALSE (default). If TRUE, a matrix of tag density values in intersected peaks between "peak_list_x" and "peak_list_y" will be returned.
 #' @param angle_of_tag_density Either "x" (default) or "y". If "x", a matrix denoting tag density values in "peak_list_x" intersected with "peak_list_y" will be returned; if "y", a matrix denoting tag density values in "peak_list_y" intersected with "peak_list_x" will be returned.
 #' @param tag_density_value The value of tag density in the intersected peaks. It should be one of the following values: "median" (default),"mean","SD","quartile_25","quartile_75".
+#' @param return_external_source Either TRUE of FALSE (default). If TRUE, a matrix of external source values in intersected peaks between "peak_list_x" and "peak_list_y" will be returned.
+#' @param angle_of_external_source Either "x" (default) or "y". If "x", a matrix denoting external source values in "peak_list_x" intersected with "peak_list_y" will be returned; if "y", a matrix denoting tag density values in "peak_list_y" intersected with "peak_list_x" will be returned.
+#' @param external_source_value The value of external source signal in the intersected peaks. It should be one of the following values: "median" (default),"mean","SD","quartile_25","quartile_75".
 #' @param return_methylation_profile Either TRUE of FALSE (default). If TRUE, a matrix of DNA methylation state data in the intersected regions will be returned.
 #' @param angle_of_methylation_profile Either "x" (default) or "y". If "x", a matrix denoting DNA methylation state data in "peak_list_x" intersected with "peak_list_y" will be returned; if "y", a matrix denoting DNA methylation state data in "peak_list_y" intersected with "peak_list_x" will be returned.
 #' @param save_MethMotif_logo Either TRUE of FALSE (default). If TRUE, (Meth)Motif logos for the intersected peaks will be saved.
@@ -36,6 +39,9 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
                                       return_tag_density = FALSE,
                                       angle_of_tag_density = "x",
                                       tag_density_value = "median",
+                                      return_external_source = FALSE,
+                                      angle_of_external_source = "x",
+                                      external_source_value = "median",
                                       return_methylation_profile = FALSE,
                                       angle_of_methylation_profile = "x",
                                       save_MethMotif_logo = FALSE,
@@ -62,6 +68,10 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
   {
     stop("'return_tag_density' should be either TRUE (T) or FALSE (F, default)!")
   }
+  if (!is.logical(return_external_source))
+  {
+    stop("'return_external_source' should be either TRUE (T) or FALSE (F, default)!")
+  }
   if (angle_of_matrix != "x" && angle_of_matrix != "y")
   {
     stop("'angle_of_matrix' should be either 'x' (default) or 'y'!")
@@ -74,9 +84,17 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
   {
     stop("'angle_of_tag_density' should be either 'x' (default) or 'y'!")
   }
+  if (angle_of_external_source != "x" && angle_of_external_source != "y")
+  {
+    stop("'angle_of_external_source' should be either 'x' (default) or 'y'!")
+  }
   if (!(tag_density_value %in% c("median","mean","SD","quartile_25","quartile_75")))
   {
     stop("'tag_density_value' should be one of the following values: 'median','mean','SD','quartile_25','quartile_75'")
+  }
+  if (!(external_source_value %in% c("median","mean","SD","quartile_25","quartile_75")))
+  {
+    stop("'external_source_value' should be one of the following values: 'median','mean','SD','quartile_25','quartile_75'")
   }
   if (!is.logical(save_MethMotif_logo))
   {
@@ -141,6 +159,25 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
     message("... ... You chose NOT to return tag density;")
   }
 
+  if (return_external_source == TRUE)
+  {
+    message("... ... You chose to return external source signal;")
+    message(paste0("... ... ... the external source signal value you chose to return is ",
+                   external_source_value))
+    if (angle_of_external_source == "x")
+    {
+      message("... ... ... You chose to return external source signal for peak list x;")
+    }
+    else
+    {
+      message("... ... ... You chose to return external source signal for peak list y;")
+    }
+  }
+  else
+  {
+    message("... ... You chose NOT to return external source signal;")
+  }
+
   if (return_methylation_profile == TRUE)
   {
     message("... ... You chose to return methylation profile;")
@@ -197,7 +234,8 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
 
 
   if (return_intersection_matrix == FALSE && save_MethMotif_logo==FALSE &&
-      return_methylation_profile ==FALSE && return_tag_density == FALSE)
+      return_methylation_profile ==FALSE && return_tag_density == FALSE &&
+      return_external_source == FALSE)
   {
     message("... ... You chose no action. EXIT!!")
     return(NULL)
@@ -296,6 +334,29 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
       }
       return_all[["tag_density_matrix"]] <- tag_density_matrix
     }
+    # if return external source signal
+    if (return_external_source)
+    {
+      external_source_matrix <- data.frame(matrix(nrow = nrow(intersectPeakMatrix),
+                                                  ncol = ncol(intersectPeakMatrix)))
+      rownames(external_source_matrix) <- rownames(intersectPeakMatrix)
+      colnames(external_source_matrix) <- colnames(intersectPeakMatrix)
+      for (i in seq(1, nrow(intersectPeakMatrix), 1))
+      {
+        for (j in seq(1, ncol(intersectPeakMatrix), 1))
+        {
+          if (angle_of_tag_density == "x")
+          {
+            external_source_matrix[i,j] <- intersectPeakMatrix[i,j][[1]]@external_signal_x[external_source_value]
+          }
+          else
+          {
+            external_source_matrix[i,j] <- intersectPeakMatrix[i,j][[1]]@external_signal_y[external_source_value]
+          }
+        }
+      }
+      return_all[["external_source_matrix"]] <- external_source_matrix
+    }
     # if return methylation profile
     if (return_methylation_profile)
     {
@@ -328,7 +389,7 @@ intersectPeakMatrixResult <- function(intersectPeakMatrix,
     }
     #return value
     if (!(return_intersection_matrix==FALSE && return_methylation_profile==FALSE &&
-          return_tag_density==FALSE))
+          return_tag_density==FALSE && return_external_source==FALSE))
     {
       return(return_all)
     }

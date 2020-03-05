@@ -12,7 +12,8 @@
 #' @param methylation_profile_in_narrow_region Either TRUE (default) of FALSE. If TRUE, methylation states in 200bp window surrounding peak summits for each intersected peak pair from peak_id_x (peak_id_y) and user_peak_list_x (user_peak_list_y) with TFregulomeR ID.
 #' @param external_source a bed-like data.frame files with the fourth column as the score to be profiled in pairwise comparison regions.
 #' @param motif_type Motif PFM format, either in MEME by default or TRANSFAC.
-#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
+#' @param server server localtion to be linked, either 'sg' or 'ca'.
+#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/" or "http://methmotif.org", please use a new url.
 #' @return  matrix of IntersectPeakMatrix class objects
 #' @keywords intersectPeakMatrix
 #' @export
@@ -36,6 +37,7 @@ intersectPeakMatrix <- function(peak_id_x,
                                 methylation_profile_in_narrow_region = FALSE,
                                 external_source,
                                 motif_type = "MEME",
+                                server = "sg",
                                 TFregulome_url)
 {
   # check the input argument
@@ -83,9 +85,22 @@ intersectPeakMatrix <- function(peak_id_x,
                                       id=external_source_signal$id)
   }
 
+  # check server location
+  if (server != "sg" && server != "ca")
+  {
+    stop("server should be either 'sg' (default) or 'ca'!")
+  }
+
   # make an appropriate API url
   if (missing(TFregulome_url)){
-    TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
+    if(server == 'sg')
+    {
+      TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
+    }
+    else
+    {
+      TFregulome_url <- "http://methmotif.org/api/table_query/"
+    }
   } else if (endsWith(TFregulome_url, suffix = "/index.php")==TRUE){
     TFregulome_url <- gsub("index.php", "", TFregulome_url)
     TFregulome_url <- paste0(TFregulome_url, "api/table_query/")
@@ -339,7 +354,7 @@ intersectPeakMatrix <- function(peak_id_x,
         message("Advice:")
         message("1) Check internet access;")
         message("2) Check dependent package 'jsonlite';")
-        message("3) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
+        message("3) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/' or 'http://methmotif.org'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
         message(paste0("warning: ",cond))
         return(NULL)
       })
@@ -382,7 +397,7 @@ intersectPeakMatrix <- function(peak_id_x,
           message("Advice:")
           message("1) Check internet access;")
           message("2) Check dependent package 'jsonlite';")
-          message("3) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
+          message("3) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/' or 'http://methmotif.org'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
           message(paste0("warning: ",cond))
           return(NULL)
         })
@@ -440,7 +455,8 @@ intersectPeakMatrix <- function(peak_id_x,
       peakx_with_peaky <- unique(as.data.frame(bedx_with_bedy))
       x_interect_percentage <- 100*nrow(peakx_with_peaky)/nrow(peak_x)
       MethMotif_x <- new('MethMotif')
-      external_signal_in_x <- c(NA)
+      external_signal_in_x <- c("signal_number"=NA, "mean"=NA,"SD"=NA,"median"=NA,
+                                "quartile_25"=NA, "quartile_75"=NA)
       tag_density_x <- c("peak_number"=NA, "mean"=NA,"SD"=NA,"median"=NA,
                          "quartile_25"=NA, "quartile_75"=NA)
       # collecting all CpG meth scores in the defined methylation profile area
@@ -643,7 +659,8 @@ intersectPeakMatrix <- function(peak_id_x,
       peaky_with_peakx <- unique(as.data.frame(bedy_with_bedx))
       y_interect_percentage <- 100*nrow(peaky_with_peakx)/nrow(peak_y)
       MethMotif_y <- new('MethMotif')
-      external_signal_in_y <- c(NA)
+      external_signal_in_y <- c("signal_number"=NA, "mean"=NA,"SD"=NA,"median"=NA,
+                                "quartile_25"=NA, "quartile_75"=NA)
       tag_density_y <- c("peak_number"=NA, "mean"=NA,"SD"=NA,"median"=NA,
                          "quartile_25"=NA, "quartile_75"=NA)
       # collecting all CpG meth scores in the defined methylation profile area

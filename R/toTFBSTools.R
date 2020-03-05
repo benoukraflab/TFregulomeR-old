@@ -2,7 +2,8 @@
 #'
 #' This function allows you to retrieve and convert motif PFM in TFregulomeR database into PFMatrix class object, which can be used in TFBSTools package.
 #' @param id Required. TFregulomeR ID.
-#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
+#' @param server server localtion to be linked, either 'sg' or 'ca'.
+#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/" or "http://methmotif.org", please use a new url.
 #' @return  An object of class PFMatrix
 #' @keywords toTFBSTools
 #' @export
@@ -10,17 +11,32 @@
 #' require(TFBSTools)
 #' CEBPB_pfm <- toTFBSTools(id = "MM1_HSA_K562_CEBPB")
 
-toTFBSTools <- function(id, TFregulome_url)
+toTFBSTools <- function(id, server = "sg",TFregulome_url)
 {
   if (missing(id))
   {
     stop("Please provide a TFregulomeR ID using 'id ='")
   }
+
+  # check server location
+  if (server != "sg" && server != "ca")
+  {
+    stop("server should be either 'sg' (default) or 'ca'!")
+  }
   # make an appropriate API url
   if (missing(TFregulome_url)){
-    TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
-    # store TFregulome_url as TFregulome_url_bk for searchMotif() later
-    TFregulome_url_bk <- "http://bioinfo-csi.nus.edu.sg/methmotif"
+    if(server == 'sg')
+    {
+      TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
+      # store TFregulome_url as TFregulome_url_bk for searchMotif() later
+      TFregulome_url_bk <- "http://bioinfo-csi.nus.edu.sg/methmotif"
+    }
+    else
+    {
+      TFregulome_url <- "http://methmotif.org/api/table_query/"
+      # store TFregulome_url as TFregulome_url_bk for searchMotif() later
+      TFregulome_url_bk <- "http://methmotif.org"
+    }
   } else if (endsWith(TFregulome_url, suffix = "/index.php")==TRUE){
     # store TFregulome_url as TFregulome_url_bk for searchMotif() later
     TFregulome_url_bk <- TFregulome_url

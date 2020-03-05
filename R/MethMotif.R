@@ -215,7 +215,8 @@ IntersectPeakMatrix <- setClass(
                    isxTFregulomeID = FALSE,
                    MethMotif_x = new('MethMotif'),
                    methylation_profile_x = matrix(),
-                   external_signal_x = c(NA),
+                   external_signal_x = c("signal_number"=NA, "mean"=NA,"SD"=NA,"median"=NA,
+                                         "quartile_25"=NA, "quartile_75"=NA),
                    tag_density_x = c("peak_number"=NA, "mean"=NA,"SD"=NA,"median"=NA,
                                      "quartile_25"=NA, "quartile_75"=NA),
                    id_y = "",
@@ -223,7 +224,8 @@ IntersectPeakMatrix <- setClass(
                    isyTFregulomeID = FALSE,
                    MethMotif_y = new('MethMotif'),
                    methylation_profile_y = matrix(),
-                   external_signal_y = c(NA),
+                   external_signal_y = c("signal_number"=NA, "mean"=NA,"SD"=NA,"median"=NA,
+                                         "quartile_25"=NA, "quartile_75"=NA),
                    tag_density_y = c("peak_number"=NA, "mean"=NA,"SD"=NA,"median"=NA,
                                      "quartile_25"=NA, "quartile_75"=NA))
 )

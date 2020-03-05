@@ -4,14 +4,16 @@
 \alias{loadPeaks}
 \title{load peaks from TFregulomeR}
 \usage{
-loadPeaks(id, includeMotifOnly = FALSE, TFregulome_url)
+loadPeaks(id, includeMotifOnly = FALSE, server = "sg", TFregulome_url)
 }
 \arguments{
 \item{id}{Required. TFregulomeR ID}
 
 \item{includeMotifOnly}{Either TRUE or FALSE (default). If TRUE, only peaks with motif will be returned}
 
-\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{server}{server localtion to be linked, either 'sg' or 'ca'.}
+
+\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/" or "http://methmotif.org", please use a new url.}
 }
 \value{
 a data.frame containing peak coordinates

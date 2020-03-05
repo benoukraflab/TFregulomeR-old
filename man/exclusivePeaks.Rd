@@ -8,7 +8,7 @@ exclusivePeaks(target_peak_id, motif_only_for_target_peak = FALSE,
   user_target_peak_list, user_target_peak_id, excluded_peak_id,
   motif_only_for_excluded_peak = FALSE, user_excluded_peak_list,
   user_excluded_peak_id, methylation_profile_in_narrow_region = TRUE,
-  motif_type = "MEME", TFregulome_url)
+  motif_type = "MEME", server = "sg", TFregulome_url)
 }
 \arguments{
 \item{target_peak_id}{Character of vector, each of which is a TFregulomeR ID. Each of target peak will be compared with all "excluded peaks" to get its exclusive subset.}
@@ -31,7 +31,9 @@ exclusivePeaks(target_peak_id, motif_only_for_target_peak = FALSE,
 
 \item{motif_type}{Motif PFM format, either in MEME by default or TRANSFAC.}
 
-\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{server}{server localtion to be linked, either 'sg' or 'ca'.}
+
+\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/" or "http://methmotif.org", please use a new url.}
 }
 \value{
 matrix of ExclusivePeaksMM class objects

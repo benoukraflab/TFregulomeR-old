@@ -11,7 +11,8 @@
 #' @param user_excluded_peak_id Character of vector, each of which is a unique ID corresponding to each peak set in the list user_excluded_peak_list. If the IDs are not provided or not unique, the function will automatically generate the IDs of its own. If any of the peak sets is derived from TFregulomeR database, its TFregulomeR ID should be used here correspondingly.
 #' @param methylation_profile_in_narrow_region Either TRUE (default) of FALSE. If TRUE, methylation states in 200bp window surrounding peak summits for each exclusive peak from target_peak_id and user_target_peak_list (with TFregulomeR ID).
 #' @param motif_type Motif PFM format, either in MEME by default or TRANSFAC.
-#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
+#' @param server server localtion to be linked, either 'sg' or 'ca'.
+#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/" or "http://methmotif.org", please use a new url.
 #' @return  matrix of ExclusivePeaksMM class objects
 #' @keywords exclusivePeaks
 #' @export
@@ -34,6 +35,7 @@ exclusivePeaks <- function(target_peak_id,
                            user_excluded_peak_id,
                            methylation_profile_in_narrow_region = TRUE,
                            motif_type = "MEME",
+                           server = 'sg',
                            TFregulome_url)
 {
   # check the input arguments
@@ -63,9 +65,22 @@ exclusivePeaks <- function(target_peak_id,
     stop("motif_type should be either 'MEME' (default) or 'TRANSFAC'!")
   }
 
+  # check server location
+  if (server != "sg" && server != "ca")
+  {
+    stop("server should be either 'sg' (default) or 'ca'!")
+  }
+
   # make an appropriate API url
   if (missing(TFregulome_url)){
-    TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
+    if(server == 'sg')
+    {
+      TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
+    }
+    else
+    {
+      TFregulome_url <- "http://methmotif.org/api/table_query/"
+    }
   } else if (endsWith(TFregulome_url, suffix = "/index.php")==TRUE){
     TFregulome_url <- gsub("index.php", "", TFregulome_url)
     TFregulome_url <- paste0(TFregulome_url, "api/table_query/")
@@ -302,7 +317,7 @@ exclusivePeaks <- function(target_peak_id,
         message("Advice:")
         message("1) Check internet access;")
         message("2) Check dependent package 'jsonlite';")
-        message("3) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
+        message("3) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/' or 'http://methmotif.org'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
         message(paste0("warning: ",cond))
         return(NULL)
       })

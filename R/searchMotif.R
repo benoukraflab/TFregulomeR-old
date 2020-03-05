@@ -3,7 +3,8 @@
 #' This function allows you to obtain motif PFM matrix and beta score matrix (if source is MethMotif) for a given TFregulomeR ID in TFregulomeR
 #' @param id Required. TFregulomeR ID.
 #' @param motif_format Motif PFM format, either in MEME by default or TRANSFAC.
-#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
+#' @param server server localtion to be linked, either 'sg' or 'ca'.
+#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/" or "http://methmotif.org", please use a new url.
 #' @return MethMotif class object
 #' @keywords MethMotif
 #' @export
@@ -12,7 +13,8 @@
 #' K562_CEBPB_transfac <- searchMotif(id = "MM1_HSA_K562_CEBPB",
 #'                                    motif_format = "TRANSFAC")
 
-searchMotif <- function(id, motif_format = "MEME", TFregulome_url)
+searchMotif <- function(id, motif_format = "MEME",
+                        server = "sg", TFregulome_url)
 {
   # check motif_format MEME and TRANSFAC.
   motif_format = toupper(motif_format)
@@ -20,9 +22,22 @@ searchMotif <- function(id, motif_format = "MEME", TFregulome_url)
   {
     stop("Please check motif_format! Currently we only support MEME (default) and TRANSFAC formats!")
   }
+
+  # check server location
+  if (server != "sg" && server != "ca")
+  {
+    stop("server should be either 'sg' (default) or 'ca'!")
+  }
   # make an appropriate API url
   if (missing(TFregulome_url)){
-    TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
+    if(server == 'sg')
+    {
+      TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
+    }
+    else
+    {
+      TFregulome_url <- "http://methmotif.org/api/table_query/"
+    }
   } else if (endsWith(TFregulome_url, suffix = "/index.php")==TRUE){
     TFregulome_url <- gsub("index.php", "", TFregulome_url)
     TFregulome_url <- paste0(TFregulome_url, "api/table_query/")
@@ -52,7 +67,7 @@ searchMotif <- function(id, motif_format = "MEME", TFregulome_url)
     message("Advice:")
     message("1) Check internet access;")
     message("2) Check dependent package 'jsonlite';")
-    message("3) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
+    message("3) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/' or 'http://methmotif.org'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
     message(paste0("warning: ",cond))
     return(NULL)
   })

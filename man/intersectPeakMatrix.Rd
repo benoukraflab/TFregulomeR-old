@@ -8,7 +8,7 @@ intersectPeakMatrix(peak_id_x, motif_only_for_id_x = FALSE,
   user_peak_list_x, user_peak_x_id, peak_id_y,
   motif_only_for_id_y = FALSE, user_peak_list_y, user_peak_y_id,
   methylation_profile_in_narrow_region = FALSE, external_source,
-  motif_type = "MEME", TFregulome_url)
+  motif_type = "MEME", server = "sg", TFregulome_url)
 }
 \arguments{
 \item{peak_id_x}{Character of vector, each of which is a unique TFregulomeR ID.}
@@ -33,7 +33,9 @@ intersectPeakMatrix(peak_id_x, motif_only_for_id_x = FALSE,
 
 \item{motif_type}{Motif PFM format, either in MEME by default or TRANSFAC.}
 
-\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{server}{server localtion to be linked, either 'sg' or 'ca'.}
+
+\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/" or "http://methmotif.org", please use a new url.}
 }
 \value{
 matrix of IntersectPeakMatrix class objects

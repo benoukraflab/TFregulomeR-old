@@ -9,7 +9,7 @@ greatAnnotate(peaks, assembly = "hg38", return_annotation = FALSE,
   great_rule = "basalPlusExt", great_adv_upstream = 5,
   great_adv_downstream = 1, great_adv_span = 1000,
   great_adv_twoDistance = 1000, great_adv_oneDistance = 1000,
-  request_interval = 60, great_version = 3)
+  request_interval = 60, great_version = "4.0")
 }
 \arguments{
 \item{peaks}{Required. A bed-format genomic regions in data frame.}
@@ -38,7 +38,7 @@ greatAnnotate(peaks, assembly = "hg38", return_annotation = FALSE,
 
 \item{request_interval}{The minimal gap time between two requests using greatAnnotate, by default 60 (s).}
 
-\item{great_version}{Equivalent to the rGREAT input 'version', by default 3.0.}
+\item{great_version}{Equivalent to the rGREAT input 'version', by default 4.0.}
 }
 \value{
 a data.frame, or an HTML report depending on the options.
@@ -48,7 +48,6 @@ This function allows you to analyse the gene ontologies of targeting genes by ci
 }
 \examples{
 require(rGREAT)
-require(liftOver)
 require(rbokeh)
 K562_CEBPB_regions <- loadPeaks(id = "MM1_HSA_K562_CEBPB")
 K562_CEBPB_regions_annotation <- greatAnnotate(peaks = K562_CEBPB_regions[1:500,],

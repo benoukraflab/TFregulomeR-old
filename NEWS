@@ -1,3 +1,13 @@
+Changes in version 2.0.0 (2020-03-05)
++ add new server connect to TFregulomeR data compendium hosted in Canada
+
+Changes in version 1.2.2 (2020-01-10)
++ Modified the functions intersectPeakMatrix and intersectPeakMatrixResult to allow profiling of users' input external signals during pair-wise comparison analysis.
++ Added a new function interactome3D which could directly generate a dynamic 3D interface report showing TF interactome coupled with CpG methylation and users' input external signal values.
+
+Changes in version 1.2.1 (2019-10-25)
++ Changed the function greatAnnotate which allows to directly use regions in hg38 (rGREAT >= 1.16.1)
+
 Changes in version 1.2.0 (2019-09-06)
 + Changed the function name TFBSBrowser to dataBrowser.
 + More detailed information about motifs, such as consistency with existing database and correlation between different motif callers, added in the output of dataBrowser.

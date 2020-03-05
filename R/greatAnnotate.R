@@ -14,13 +14,12 @@
 #' @param great_adv_twoDistance Equivalent to the rGREAT input 'adv_twoDistance' (region range to be considered). Only applicable when 'great_rule' is  'twoClosest', by default 1000.0 (kb).
 #' @param great_adv_oneDistance Equivalent to the rGREAT input 'adv_oneDistance' (region range to be considered). Only applicable when 'great_rule' is  'oneClosest', by default 1000.0 (kb).
 #' @param request_interval The minimal gap time between two requests using greatAnnotate, by default 60 (s).
-#' @param great_version Equivalent to the rGREAT input 'version', by default 3.0.
+#' @param great_version Equivalent to the rGREAT input 'version', by default 4.0.
 #' @return  a data.frame, or an HTML report depending on the options.
 #' @keywords greatAnnotate
 #' @export
 #' @examples
 #' require(rGREAT)
-#' require(liftOver)
 #' require(rbokeh)
 #' K562_CEBPB_regions <- loadPeaks(id = "MM1_HSA_K562_CEBPB")
 #' K562_CEBPB_regions_annotation <- greatAnnotate(peaks = K562_CEBPB_regions[1:500,],
@@ -31,7 +30,7 @@ greatAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
                           great_rule = "basalPlusExt", great_adv_upstream = 5.0,
                           great_adv_downstream = 1.0, great_adv_span = 1000.0,
                           great_adv_twoDistance = 1000.0, great_adv_oneDistance = 1000.0,
-                          request_interval = 60, great_version = 3.0)
+                          request_interval = 60, great_version = "4.0")
 {
   # check input arguments
   if (missing(peaks))
@@ -69,11 +68,7 @@ greatAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
   # check loaded package
   if (!("rGREAT" %in% (.packages())))
   {
-    stop("GREAT R package 'rGREAT' (>=1.14.0) is NOT loaded yet!")
-  }
-  if (assembly == "hg38" && !("liftOver" %in% (.packages())))
-  {
-    stop("Your input is hg38. Currently GREAT doesn't support hg38. We need to convert hg38 to hg19 using 'liftOver' (>= 1.4.0). But liftOver package is NOT loaded yet!")
+    stop("GREAT R package 'rGREAT' (>=1.16.1) is NOT loaded yet!")
   }
   if (return_html_report==TRUE && !("rbokeh" %in% (.packages())))
   {
@@ -107,18 +102,6 @@ greatAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
   peaks <- peaks[,c(1,2,3)]
   colnames(peaks) <- c("chr","start", "end")
   peaks$id <- paste0("greatAnnotate_peak_", as.vector(rownames(peaks)))
-  # hg38 to hg19
-  if (assembly == "hg38")
-  {
-    message("... ... assembly is hg38. Now converting to hg19 using liftOver...")
-    message(paste0("... ... number of the original input regions is ", nrow(peaks)))
-    peaks_grange <- GRanges(peaks$chr,
-                            IRanges(peaks$start, peaks$end),
-                            id=peaks$id)
-    peaks <- hg38Tohg19(peaks_grange)
-    assembly <- "hg19"
-    message(paste0("... ... number of the regions successfully converted to hg19 is ", nrow(peaks)))
-  }
   # great analysis
   message("... ... start GREAT analysis")
   if (great_rule == "basalPlusExt")

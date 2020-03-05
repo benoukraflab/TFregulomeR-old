@@ -1,10 +1,13 @@
-## Current TFBSs in TFregulomeR compendium v1.2.0
-What's new in the version v1.2.0 - 6 September 2019:
+## Current TFBSs in TFregulomeR compendium v2.0.0
+What's new in the version v2.0.0 - 5 March 2019:
 
-1) More detailed information about motifs added: i) consistency with the existing databases (HOCOMOCO and JASPAR); ii) correlation of the motifs identified by different motif callers, MEME-ChIP and HOMER, if not consistent or not recorded in the databases.
+1) 865 PWMs in mouse were added (For Canada server; for Singapore server coming soon).
 
 
 ## Previous TFregulomeR data compendium 
+### version: 1.2.0 - 6 September 2019
+What's new in the version v1.2.0
+1) More detailed information about motifs added: i) consistency with the existing databases (HOCOMOCO and JASPAR); ii) correlation of the motifs identified by different motif callers, MEME-ChIP and HOMER, if not consistent or not recorded in the databases.
 ### version: 1.1.0 - 31 July 2019
 What's new in the version v1.1.0:
 1) 92 TFBSs with DNA methylation levels were included from MethMotif

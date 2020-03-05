@@ -5,7 +5,7 @@
 \title{Browse the current data available in TFregulomeR}
 \usage{
 dataBrowser(species, organ, sample_type, cell_tissue_name, tf,
-  disease_state, source, TFregulome_url)
+  disease_state, source, server = "sg", TFregulome_url)
 }
 \arguments{
 \item{species}{The species of interset}
@@ -22,7 +22,9 @@ dataBrowser(species, organ, sample_type, cell_tissue_name, tf,
 
 \item{source}{The source of interset}
 
-\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{server}{server localtion to be linked, either 'sg' or 'ca'.}
+
+\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/" or "http://methmotif.org", please use a new url.}
 }
 \value{
 data.frame containing the information of the queried TFBSs in TFregulomeR

@@ -5,7 +5,7 @@
 \title{profile TFBS distribution}
 \usage{
 motifDistrib(id, peak_list, peak_id, plot_at_each_side = 100,
-  TFregulome_url)
+  server = "sg", TFregulome_url)
 }
 \arguments{
 \item{id}{Required. TFregulomeR ID. The TFBS of interest to be profiled.}
@@ -16,7 +16,9 @@ motifDistrib(id, peak_list, peak_id, plot_at_each_side = 100,
 
 \item{plot_at_each_side}{By default 100bp, and motif occurrences in a window of +/- 100bp around peak centres will be returned.}
 
-\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{server}{server localtion to be linked, either 'sg' or 'ca'.}
+
+\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/" or "http://methmotif.org", please use a new url.}
 }
 \value{
 a list containing the numbers of input peaks and peaks with motif, as well as motif occurrences in the plot window.

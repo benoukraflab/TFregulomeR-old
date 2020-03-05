@@ -6,7 +6,7 @@
 \usage{
 genomeAnnotate(peaks, assembly = "hg38", return_annotation = FALSE,
   return_html_report = FALSE, promoter_range = c(-1000, 100),
-  TTS_range = c(-100, 1000), TFregulome_url)
+  TTS_range = c(-100, 1000), server = "sg", TFregulome_url)
 }
 \arguments{
 \item{peaks}{Required. A bed-format genomic regions in data frame.}
@@ -21,7 +21,9 @@ genomeAnnotate(peaks, assembly = "hg38", return_annotation = FALSE,
 
 \item{TTS_range}{A numeric vector to define TTS range. By default, c(-100, 1000) defines promoters as 100bp upstream and 1000bp downstream of real TTS.}
 
-\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.}
+\item{server}{server localtion to be linked, either 'sg' or 'ca'.}
+
+\item{TFregulome_url}{TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/" or "http://methmotif.org", please use a new url.}
 }
 \value{
 a data.frame, or an HTML report depending on the options.

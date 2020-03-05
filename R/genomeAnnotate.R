@@ -7,7 +7,8 @@
 #' @param return_html_report Either TRUE of FALSE (default). If TRUE, a dynamic HTML report will be saved.
 #' @param promoter_range A numeric vector to define promoter range. By default, c(-1000, 100) defines promoters as 1000bp upstream and 100bp downstream of TSS.
 #' @param TTS_range A numeric vector to define TTS range. By default, c(-100, 1000) defines promoters as 100bp upstream and 1000bp downstream of real TTS.
-#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/", please use a new url.
+#' @param server server localtion to be linked, either 'sg' or 'ca'.
+#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/" or "http://methmotif.org", please use a new url.
 #' @return  a data.frame, or an HTML report depending on the options.
 #' @keywords genomeAnnotate
 #' @export
@@ -19,7 +20,8 @@
 
 genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
                           return_html_report = FALSE, promoter_range = c(-1000,100),
-                          TTS_range = c(-100, 1000), TFregulome_url)
+                          TTS_range = c(-100, 1000), server = "sg",
+                          TFregulome_url)
 {
   # check input arguments
   if (missing(peaks))
@@ -92,9 +94,22 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
     return(NULL)
   }
 
+  # check server location
+  if (server != "sg" && server != "ca")
+  {
+    stop("server should be either 'sg' (default) or 'ca'!")
+  }
+
   # make an appropriate API url
   if (missing(TFregulome_url)){
-    TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/TFregulomeR/genomeAnnotate/"
+    if(server == 'sg')
+    {
+      TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/TFregulomeR/genomeAnnotate/"
+    }
+    else
+    {
+      TFregulome_url <- "http://methmotif.org/api/TFregulomeR/genomeAnnotate/"
+    }
   } else if (endsWith(TFregulome_url, suffix = "/index.php")==TRUE){
     TFregulome_url <- gsub("index.php", "", TFregulome_url)
     TFregulome_url <- paste0(TFregulome_url, "api/TFregulomeR/genomeAnnotate/")
@@ -113,7 +128,7 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
     message("There is a warning to connect MethMotif API!")
     message("Advice:")
     message("1) Check internet access;")
-    message("2) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
+    message("2) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/' or 'http://methmotif.org'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
     return(NULL)
   }
 
