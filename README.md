@@ -10,6 +10,11 @@ TFregulomeR
 
 v2.0.0 [<img src="https://www.ymcachicago.org/page/-/kroehler/blog/icon-new-9.jpg" alt="new" width="30"></img>](./inst/update_notes/functionality_update.md)
 
+New features: 
+1. Link to data compendium hosted in Singapore and Canada;
+2. Link to TF motifs and DNA methylation in human and mouse;
+3. Perform TF interactome analysis coupled with DNA methylation and other chromatin signals such as chromatin accessibility.
+
 # Introduction
 *TFregulomeR* comprises of a comprehensive compendium of transcription factor binding sites (TFBSs) derived from the MethMotif and GTRD, as well as the ready-to-use functionality in R language facilitating data access, integration and analysis. The binding motifs predicted in-silico from MethMotif and GTRD describe cell specific transcription factor (TF) binding propensities, while the DNA methylation profiles from MethMotif portray a second epigenetic dimension in TF binding events. The whole toolbox allows a better understanding of the TF binding propensities in a cell-specific manner. 
 
