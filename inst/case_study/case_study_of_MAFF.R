@@ -1,7 +1,7 @@
 library(TFregulomeR)
 library(gplots)
 
-MAFF_TFBS <- dataBrowser(tf = "MAFF")
+MAFF_TFBS <- dataBrowser(tf = "MAFF", species = "human")
 # plot (Meth)Motif logos for MAFF in all cell types (Figure 3A)
 for (i in MAFF_TFBS$ID){
     motif_i <- searchMotif(id = i)

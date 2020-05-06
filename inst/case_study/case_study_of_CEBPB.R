@@ -2,7 +2,7 @@ library(TFregulomeR)
 library(gplots)
 
 # CEBPB motifs in TFregulomeR
-CEBPB_record <- dataBrowser(tf = "CEBPB")
+CEBPB_record <- dataBrowser(tf = "CEBPB", species = "human")
 
 # (Meth)Motif logo for all CEBPB in TFregulomeR compendium for Supplementary Figure 1
 for (id in CEBPB_record$ID){

@@ -3,7 +3,7 @@ library(gplots)
 
 # ATF3 (Meth)Motif in five cell types (Figure 4A)
 
-ATF3_TFBS <- dataBrowser(tf = "ATF3")
+ATF3_TFBS <- dataBrowser(tf = "ATF3", species = "human")
 for (i in ATF3_TFBS$ID){
     motif_i <- searchMotif(id = i)
     plotLogo(MM_object = motif_i)

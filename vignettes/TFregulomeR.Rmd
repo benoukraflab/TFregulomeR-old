@@ -31,6 +31,17 @@ knitr::opts_chunk$set(
 )
 ```
 
+## The servers linked by TFregulomeR
+
+TFregulomeR data compendium is hosted in Singapore and Canada. As an API, TFregulomeR (from v2.0.0)
+will dynamically access and retrieve the data either from Singapore (default) or 
+Canada server. The functions in TFregulomeR that dynamically link to the servers include
+`dataBrowser()`, `loadPeaks()`, `searchMotif()`, `commonPeaks()`, `exclusivePeaks()`,
+`intersectPeakMatrix()`, `motifDistrib()`, `genomeAnnotate()` and `toTFBSTools()`. 
+By default, these functions are linking to Singapore server. If users opt to choose the 
+Canada server, they can use the input parameter `server='ca'` when using these functions.
+
+
 ## Browse TFregulomeR data compendium
 
 TFregulomeR allows users to easily browse TFregulomeR compendium using only one simple
