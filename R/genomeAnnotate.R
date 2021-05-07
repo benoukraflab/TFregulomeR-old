@@ -8,7 +8,7 @@
 #' @param promoter_range A numeric vector to define promoter range. By default, c(-1000, 100) defines promoters as 1000bp upstream and 100bp downstream of TSS.
 #' @param TTS_range A numeric vector to define TTS range. By default, c(-100, 1000) defines promoters as 100bp upstream and 1000bp downstream of real TTS.
 #' @param server server localtion to be linked, either 'sg' or 'ca'.
-#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/" or "http://methmotif.org", please use a new url.
+#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "https://bioinfo-csi.nus.edu.sg/methmotif/" or "https://methmotif.org", please use a new url.
 #' @return  a data.frame, or an HTML report depending on the options.
 #' @keywords genomeAnnotate
 #' @export
@@ -104,11 +104,11 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
   if (missing(TFregulome_url)){
     if(server == 'sg')
     {
-      TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/TFregulomeR/genomeAnnotate/"
+      TFregulome_url <- "https://bioinfo-csi.nus.edu.sg/methmotif/api/TFregulomeR/genomeAnnotate/"
     }
     else
     {
-      TFregulome_url <- "http://methmotif.org/api/TFregulomeR/genomeAnnotate/"
+      TFregulome_url <- "https://methmotif.org/api/TFregulomeR/genomeAnnotate/"
     }
   } else if (endsWith(TFregulome_url, suffix = "/index.php")==TRUE){
     TFregulome_url <- gsub("index.php", "", TFregulome_url)
@@ -128,7 +128,7 @@ genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
     message("There is a warning to connect MethMotif API!")
     message("Advice:")
     message("1) Check internet access;")
-    message("2) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/' or 'http://methmotif.org'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
+    message("2) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'https://bioinfo-csi.nus.edu.sg/methmotif/' or 'https://methmotif.org'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
     return(NULL)
   }
 

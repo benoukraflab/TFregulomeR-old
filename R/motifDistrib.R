@@ -6,7 +6,7 @@
 #' @param peak_id Required. Character of vector, each of which is a unique ID corresponding to the element in "peak_list". If a peak set is orignally from TFregulomeR Database, its TFregulomeR ID should be used here.
 #' @param plot_at_each_side By default 100bp, and motif occurrences in a window of +/- 100bp around peak centres will be returned.
 #' @param server server localtion to be linked, either 'sg' or 'ca'.
-#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/" or "http://methmotif.org", please use a new url.
+#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "https://bioinfo-csi.nus.edu.sg/methmotif/" or "https://methmotif.org", please use a new url.
 #' @return  a list containing the numbers of input peaks and peaks with motif, as well as motif occurrences in the plot window.
 #' @keywords motifDistrib
 #' @export
@@ -59,11 +59,11 @@ motifDistrib <- function(id, peak_list, peak_id, plot_at_each_side = 100,
   if (missing(TFregulome_url)){
     if(server == 'sg')
     {
-      TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
+      TFregulome_url <- "https://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
     }
     else
     {
-      TFregulome_url <- "http://methmotif.org/api/table_query/"
+      TFregulome_url <- "https://methmotif.org/api/table_query/"
     }
   } else if (endsWith(TFregulome_url, suffix = "/index.php")==TRUE){
     TFregulome_url <- gsub("index.php", "", TFregulome_url)
@@ -88,7 +88,7 @@ motifDistrib <- function(id, peak_list, peak_id, plot_at_each_side = 100,
     message("Advice:")
     message("1) Check internet access;")
     message("2) Check dependent package 'jsonlite';")
-    message("3) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'http://bioinfo-csi.nus.edu.sg/methmotif/' or 'http://methmotif.org'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
+    message("3) Current TFregulomeR server is implemented in MethMotif database, whose homepage is 'https://bioinfo-csi.nus.edu.sg/methmotif/' or 'https://methmotif.org'. If MethMotif homepage url is no more valid, please Google 'MethMotif', and input the valid MethMotif homepage url using 'TFregulome_url = '.")
     message(paste0("warning: ",cond))
     return(NULL)
   })

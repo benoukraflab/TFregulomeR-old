@@ -3,7 +3,7 @@
 #' This function allows you to retrieve and convert motif PFM in TFregulomeR database into PFMatrix class object, which can be used in TFBSTools package.
 #' @param id Required. TFregulomeR ID.
 #' @param server server localtion to be linked, either 'sg' or 'ca'.
-#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "http://bioinfo-csi.nus.edu.sg/methmotif/" or "http://methmotif.org", please use a new url.
+#' @param TFregulome_url TFregulomeR server is implemented in MethMotif server. If the MethMotif url is NO more "https://bioinfo-csi.nus.edu.sg/methmotif/" or "https://methmotif.org", please use a new url.
 #' @return  An object of class PFMatrix
 #' @keywords toTFBSTools
 #' @export
@@ -27,15 +27,15 @@ toTFBSTools <- function(id, server = "sg",TFregulome_url)
   if (missing(TFregulome_url)){
     if(server == 'sg')
     {
-      TFregulome_url <- "http://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
+      TFregulome_url <- "https://bioinfo-csi.nus.edu.sg/methmotif/api/table_query/"
       # store TFregulome_url as TFregulome_url_bk for searchMotif() later
-      TFregulome_url_bk <- "http://bioinfo-csi.nus.edu.sg/methmotif"
+      TFregulome_url_bk <- "https://bioinfo-csi.nus.edu.sg/methmotif"
     }
     else
     {
-      TFregulome_url <- "http://methmotif.org/api/table_query/"
+      TFregulome_url <- "https://methmotif.org/api/table_query/"
       # store TFregulome_url as TFregulome_url_bk for searchMotif() later
-      TFregulome_url_bk <- "http://methmotif.org"
+      TFregulome_url_bk <- "https://methmotif.org"
     }
   } else if (endsWith(TFregulome_url, suffix = "/index.php")==TRUE){
     # store TFregulome_url as TFregulome_url_bk for searchMotif() later
