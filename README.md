@@ -10,7 +10,7 @@ TFregulomeR
 
 v2.0.1
 
-bug fixed in http failure in v2.0.0 (updated on May 7, 2021)
+**bug fixed in http failure in v2.0.0 (updated on May 7, 2021)**
 
 New features: 
 1. Link to data compendium hosted in Singapore and Canada;
