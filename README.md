@@ -8,7 +8,9 @@
 
 TFregulomeR
 
-v2.0.0 [<img src="https://www.ymcachicago.org/page/-/kroehler/blog/icon-new-9.jpg" alt="new" width="30"></img>](./inst/update_notes/functionality_update.md)
+v2.0.1
+
+bug fixed in http failure in v2.0.0 (updated on May 7, 2021)
 
 New features: 
 1. Link to data compendium hosted in Singapore and Canada;
@@ -37,7 +39,7 @@ You can check detailed package instructions in [Vignettes](https://bioinfo-csi.n
 
 -------
 
-## Current Functionalities v2.0.0
+## Current Functionalities v2.0.1
 ### Click [here](./inst/update_notes/functionality_update.md) for functionality update notes 
 
 _Currently, TFregulomeR links to data compendium hosted in Singapore (default) and Canada. User is able to switch the servers by changing the input parameter 'server' when using those functions highlighted as 'multi-servers' below. For Singapore server, please use `server='sg'`, and for Canada one, please use `server='ca'`. For example, when browsing TFregulomeR data compendium hosted in Canada, using `dataBrowser(server='ca')`. For details, please refer to the Vignettes._

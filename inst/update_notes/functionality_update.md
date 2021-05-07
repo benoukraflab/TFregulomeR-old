@@ -1,10 +1,12 @@
-## Current Functionalities v2.0.0 - 5 March 2020
-### What's new compared to last version v1.2.2 
-1) Added new TFregulomeR compendium server in Canada. Users now can choose servers between Singapore and Canada.
-2) linked to mouse TFregulomeR compendium in Canada server, coming soon in Singapore server.
+## Current Functionalities v2.0.1 - 7 May 2021
+bug fixed regarding http failure
 
 
 ## Previous  Version
+### Functionalities version 2.0.0 - 5 March 2020
+1) Added new TFregulomeR compendium server in Canada. Users now can choose servers between Singapore and Canada.
+2) linked to mouse TFregulomeR compendium in Canada server, coming soon in Singapore server.
+
 ### Functionalities version 1.2.2 - 10 January 2020
 1) Modified the functions _intersectPeakMatrix_ and _intersectPeakMatrixResult_ to allow profiling of users' input external signals during pair-wise comparison analysis.
 2) Added a new function _interactome3D_ which could directly generate a dynamic 3D interface report showing TF interactome coupled with CpG methylation and users' input external signal values.
