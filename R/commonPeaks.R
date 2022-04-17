@@ -35,7 +35,7 @@ commonPeaks <- function(target_peak_id,
                         user_compared_peak_id,
                         methylation_profile_in_narrow_region = TRUE,
                         motif_type = "MEME",
-                        server = "sg",
+                        server = "ca",
                         TFregulome_url)
 {
   # check the input arguments

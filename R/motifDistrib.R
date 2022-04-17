@@ -17,7 +17,7 @@
 #'                                     peak_id = "MM1_HSA_K562_CEBPB")
 
 motifDistrib <- function(id, peak_list, peak_id, plot_at_each_side = 100,
-                         server = "sg",TFregulome_url)
+                         server = "ca",TFregulome_url)
 {
   # check input arguments
   if (missing(id))

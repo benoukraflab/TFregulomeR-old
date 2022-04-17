@@ -20,7 +20,7 @@
 
 genomeAnnotate <- function(peaks, assembly = "hg38", return_annotation = FALSE,
                           return_html_report = FALSE, promoter_range = c(-1000,100),
-                          TTS_range = c(-100, 1000), server = "sg",
+                          TTS_range = c(-100, 1000), server = "ca",
                           TFregulome_url)
 {
   # check input arguments

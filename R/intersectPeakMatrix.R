@@ -37,7 +37,7 @@ intersectPeakMatrix <- function(peak_id_x,
                                 methylation_profile_in_narrow_region = FALSE,
                                 external_source,
                                 motif_type = "MEME",
-                                server = "sg",
+                                server = "ca",
                                 TFregulome_url)
 {
   # check the input argument

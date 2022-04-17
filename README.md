@@ -8,9 +8,9 @@
 
 TFregulomeR
 
-v2.0.1
+v2.0.2
 
-**bug fixed in http failure in v2.0.0 (updated on May 7, 2021)**
+**changed to Canada server as default (Singapore server retired) compared to v2.0.1 (updated on April 17, 2022)**
 
 New features: 
 1. Link to data compendium hosted in Singapore and Canada;
@@ -25,7 +25,7 @@ New features:
 ## Release notes
  This repository is TFregulomeR stable release 
 
- Current TFregulomeR stable version: 2.0.0 (Updated on 5 March 2020).
+ Current TFregulomeR stable version: 2.0.2 (Updated on 17 April 2022).
 
 
 ### For development release, please visit [TFregulomeR-dev](https://github.com/linquynus/TFregulomeR-dev) 
@@ -35,31 +35,31 @@ New features:
 
 
 ## Documentation
-You can check detailed package instructions in [Vignettes](https://bioinfo-csi.nus.edu.sg/methmotif/API_TFregulomeR/TFregulomeR-Vignettes.html)
+You can check detailed package instructions in [Vignettes](https://methmotif.org/API_TFregulomeR/TFregulomeR-Vignettes.html)
 
 -------
 
-## Current Functionalities v2.0.1
+## Current Functionalities v2.0.2
 ### Click [here](./inst/update_notes/functionality_update.md) for functionality update notes 
 
-_Currently, TFregulomeR links to data compendium hosted in Singapore (default) and Canada. User is able to switch the servers by changing the input parameter 'server' when using those functions highlighted as 'multi-servers' below. For Singapore server, please use `server='sg'`, and for Canada one, please use `server='ca'`. For example, when browsing TFregulomeR data compendium hosted in Canada, using `dataBrowser(server='ca')`. For details, please refer to the Vignettes._
+_Currently, TFregulomeR links to data compendium hosted in Canada (default). Singapore server is no more accessible. for Canada server, please use `server='ca'`. For example, when browsing TFregulomeR data compendium hosted in Canada, using `dataBrowser(server='ca')`._
 
 Note: new function is highlighted in bold font.
 
-1) Browse the TFregulomeR data compendium (dataBrowser(), _multi-servers_)
-2) Load TF peaks (loadPeaks(), _multi-servers_)
-3) Search motif matrix and DNA methylation score matrix (searchMotif(), _multi-servers_)
+1) Browse the TFregulomeR data compendium (dataBrowser())
+2) Load TF peaks (loadPeaks())
+3) Search motif matrix and DNA methylation score matrix (searchMotif())
 4) Plot motif or MethMotif logo (plotLogo)
 5) Export motif matrix and DNA methylation score matrix (exportMMPFM)
-6) Get context-independent peaks along with DNA methylation profiles (commonPeaks(), _multi-servers_, & commonPeakResult())
-7) Get context-dependent peaks along with DNA methylation profiles (exclusivePeaks(), _multi-servers_, & exclusivePeakResult())
-8) Form a intersected matrix between two lists of peak sets along with DNA methylation profiles, read enrichments and **users' input external signals**, for interactome and co-binding partner studies (intersectPeakMatrix(), _multi-servers_, & intersectPeakMatrixResult()). **- NEW Feature**
+6) Get context-independent peaks along with DNA methylation profiles (commonPeaks() & commonPeakResult())
+7) Get context-dependent peaks along with DNA methylation profiles (exclusivePeaks() & exclusivePeakResult())
+8) Form a intersected matrix between two lists of peak sets along with DNA methylation profiles, read enrichments and **users' input external signals**, for interactome and co-binding partner studies (intersectPeakMatrix() & intersectPeakMatrixResult()). **- NEW Feature**
 9) Automatically generate a PDF report for TF co-factors along with motif sequences, DNA methylation (within motif and in 200bp regions) and read enrichments (cofactorReport()).
 10) **Automatically produce a dynamic three-dimensional interface showing TF interactome coupled with DNA methylation and/or users’ input external signal values (interactome3D()). - NEW Function**
-11) Plot the TFBS distribution in a given list of peak sets (motifDistrib(), _multi-servers_, & plotDistrib()).
-12) Annotate peak genomic locations (genomeAnnotate(), _multi-servers_).
+11) Plot the TFBS distribution in a given list of peak sets (motifDistrib() & plotDistrib()).
+12) Annotate peak genomic locations (genomeAnnotate()).
 13) Annotate ontologies of target genes by a peak set (greatAnnotate()).
-14) Convert a motif matrix to a PFMatrix calss object for *TFBSTools* package (toTFBSTools(), _multi-servers_).
+14) Convert a motif matrix to a PFMatrix calss object for *TFBSTools* package (toTFBSTools()).
 
 -------
 

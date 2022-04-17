@@ -17,7 +17,7 @@
 #' TFBS_brain <- dataBrowser(organ = "brain")
 
 dataBrowser <- function(species, organ, sample_type, cell_tissue_name,
-                        tf, disease_state, source, server = 'sg',
+                        tf, disease_state, source, server = 'ca',
                         TFregulome_url)
 {
   # check server location

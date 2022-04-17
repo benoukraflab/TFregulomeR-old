@@ -11,7 +11,7 @@
 #' require(TFBSTools)
 #' CEBPB_pfm <- toTFBSTools(id = "MM1_HSA_K562_CEBPB")
 
-toTFBSTools <- function(id, server = "sg",TFregulome_url)
+toTFBSTools <- function(id, server = "ca",TFregulome_url)
 {
   if (missing(id))
   {

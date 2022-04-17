@@ -14,7 +14,7 @@
 #'                                    motif_format = "TRANSFAC")
 
 searchMotif <- function(id, motif_format = "MEME",
-                        server = "sg", TFregulome_url)
+                        server = "ca", TFregulome_url)
 {
   # check motif_format MEME and TRANSFAC.
   motif_format = toupper(motif_format)

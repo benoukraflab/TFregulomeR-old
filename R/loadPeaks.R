@@ -12,7 +12,7 @@
 #' CEBPB_peaks <- loadPeaks(id = "MM1_HSA_K562_CEBPB")
 
 loadPeaks <- function(id, includeMotifOnly = FALSE,
-                      server = "sg", TFregulome_url)
+                      server = "ca", TFregulome_url)
 {
   # check server location
   if (server != "sg" && server != "ca")
